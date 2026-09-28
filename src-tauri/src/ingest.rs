@@ -35,6 +35,10 @@ pub fn detect_kind(input: &AddSourceInput) -> String {
             "epub" => "epub",
             "md" | "markdown" => "md",
             "txt" | "text" | "" => "txt",
+            "py" | "c" | "cpp" | "cc" | "h" | "hpp" | "java" | "js" | "ts" | "json" | "csv"
+            | "html" | "htm" | "css" | "sh" | "yaml" | "yml" | "xml" | "log" | "rs" | "go" => {
+                "txt"
+            }
             "png" | "jpg" | "jpeg" | "webp" => "image",
             "m4a" | "mp3" | "wav" | "ogg" | "opus" => "audio",
             other => other,
