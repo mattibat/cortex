@@ -32,20 +32,68 @@ fn find_topic_by_name(conn: &Connection, subject_id: &str, name: &str) -> Result
         .optional()?)
 }
 
+struct Existing {
+    id: String,
+    subject_id: String,
+    topic_id: Option<String>,
+    kind: String,
+    stored_path: Option<String>,
+    created_at: i64,
+}
+
 fn find_source_by_origin(
     conn: &Connection,
     subject_ids: &[String],
     origin: &str,
-) -> Result<Option<(String, String, Option<String>)>> {
-    let mut stmt = conn.prepare("SELECT id, subject_id, topic_id FROM sources WHERE origin=?1")?;
-    let rows = stmt.query_map(params![origin], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))?;
+) -> Result<Option<Existing>> {
+    let mut stmt = conn.prepare(
+        "SELECT id, subject_id, topic_id, kind, stored_path, created_at FROM sources WHERE origin=?1",
+    )?;
+    let rows = stmt.query_map(params![origin], |r| {
+        Ok(Existing {
+            id: r.get(0)?,
+            subject_id: r.get(1)?,
+            topic_id: r.get(2)?,
+            kind: r.get(3)?,
+            stored_path: r.get(4)?,
+            created_at: r.get(5)?,
+        })
+    })?;
     for row in rows {
-        let row: (String, String, Option<String>) = row?;
-        if subject_ids.contains(&row.1) {
+        let row = row?;
+        if subject_ids.contains(&row.subject_id) {
             return Ok(Some(row));
         }
     }
     Ok(None)
+}
+
+async fn refresh_source(app: &AppHandle, src: &Existing, path: &Path, mtime: i64) -> Result<()> {
+    let state = app.state::<AppState>();
+    {
+        let c = state.db.lock().unwrap();
+        match src.kind.as_str() {
+            "pdf" | "image" | "audio" => {
+                if let Some(p) = &src.stored_path {
+                    std::fs::copy(path, p)?;
+                }
+            }
+            "docx" | "pptx" | "xlsx" => {
+                if let Some(p) = &src.stored_path {
+                    let _ = std::fs::remove_file(p);
+                }
+                c.execute("UPDATE sources SET stored_path=NULL WHERE id=?1", params![src.id])?;
+            }
+            "txt" | "md" => {
+                c.execute("UPDATE sources SET content=NULL WHERE id=?1", params![src.id])?;
+            }
+            _ => {}
+        }
+    }
+    let res = crate::commands::reingest_source(app.clone(), src.id.clone()).await;
+    let c = state.db.lock().unwrap();
+    set_source_timestamp(&c, &src.id, mtime)?;
+    res.map(|_| ())
 }
 
 fn set_source_timestamp(conn: &Connection, id: &str, ts_ms: i64) -> Result<()> {
@@ -88,6 +136,7 @@ fn list_entries(dir: &Path, want_dirs: bool) -> Vec<PathBuf> {
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct SchoolSyncResult {
     pub added: i64,
+    pub updated: i64,
     pub moved: i64,
     pub removed: i64,
     pub skipped: i64,
@@ -99,6 +148,7 @@ pub async fn sync_school_folder(app: AppHandle) -> Result<SchoolSyncResult> {
     let state = app.state::<AppState>();
     let mut result = SchoolSyncResult {
         added: 0,
+        updated: 0,
         moved: 0,
         removed: 0,
         skipped: 0,
@@ -176,13 +226,22 @@ pub async fn sync_school_folder(app: AppHandle) -> Result<SchoolSyncResult> {
             let c = state.db.lock().unwrap();
             find_source_by_origin(&c, &managed_ids, &origin)?
         };
-        if let Some((id, cur_subject, cur_topic)) = existing {
-            if cur_subject == subject_id && cur_topic.as_deref() == Some(topic_id.as_str()) {
-                result.skipped += 1;
-            } else {
+        if let Some(existing) = existing {
+            let in_place = existing.subject_id == subject_id
+                && existing.topic_id.as_deref() == Some(topic_id.as_str());
+            if !in_place {
                 let c = state.db.lock().unwrap();
-                repo::move_source(&c, &id, &subject_id, Some(&topic_id))?;
+                repo::move_source(&c, &existing.id, &subject_id, Some(&topic_id))?;
                 result.moved += 1;
+            }
+            let mtime = file_mtime_ms(&path);
+            if mtime > existing.created_at {
+                match refresh_source(&app, &existing, &path, mtime).await {
+                    Ok(()) => result.updated += 1,
+                    Err(e) => result.errors.push(format!("{}: {e}", path.display())),
+                }
+            } else if in_place {
+                result.skipped += 1;
             }
             continue;
         }
