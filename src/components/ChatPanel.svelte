@@ -180,7 +180,7 @@
   // breadcrumb selector and the empty state.
   const scopeName = $derived(
     level === "sources" && pickedIds.length
-      ? `${pickedIds.length} selected source${pickedIds.length === 1 ? "" : "s"}`
+      ? `${pickedIds.length} ausgewählte ${pickedIds.length === 1 ? "Quelle" : "Quellen"}`
       : effLevel === "source" ? (curSrcObj?.name ?? "")
       : effLevel === "topic" ? (curTopic?.name ?? "")
       : (app.activeSubject?.name ?? "")
@@ -220,7 +220,7 @@
 
   const switcherOptions = $derived.by<ScopeOption[]>(() => {
     const out: ScopeOption[] = [
-      { kind: "subject", label: app.activeSubject?.name ?? "Whole subject" },
+      { kind: "subject", label: app.activeSubject?.name ?? "Ganzes Fach" },
     ];
     for (const tag of subjectTags) out.push({ kind: "tag", label: `#${tag}`, tag });
     for (const t of app.activeSubject?.topics ?? []) {
@@ -285,7 +285,7 @@
       if ((t.tags ?? []).includes(tag)) for (const s of t.sources) ids[s.id] = true;
     }
     if (Object.keys(ids).length === 0) {
-      app.pushToast({ kind: "warning", title: `No sources tagged #${tag}` });
+      app.pushToast({ kind: "warning", title: `Keine Quellen mit dem Tag #${tag}` });
       return;
     }
     picked = ids;
@@ -420,12 +420,12 @@
   // Title = first ~6 words of the message; body = the full markdown.
   async function saveToNote(text: string) {
     const title =
-      text.replace(/\s+/g, " ").trim().split(" ").slice(0, 6).join(" ") || "Note";
+      text.replace(/\s+/g, " ").trim().split(" ").slice(0, 6).join(" ") || "Notiz";
     try {
       await api.createNote(title, text, app.activeSubjectId ?? null);
-      app.pushToast({ kind: "success", title: "Saved to notes" });
+      app.pushToast({ kind: "success", title: "In Notizen gespeichert" });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Save failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Speichern fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -505,7 +505,7 @@
     {#if app.activeSubject}
       <!-- One clean clickable scope selector (opens the switcher). Shows the
            current scope path; no redundant chevrons or banner. -->
-      <button class="scope-pick" type="button" title="Change scope (s)" onclick={openSwitcher}>
+      <button class="scope-pick" type="button" title="Bereich wechseln (s)" onclick={openSwitcher}>
         <span class="sp-ico">{app.activeSubject.glyph || "◆"}</span>
         <span class="sp-name">{app.activeSubject.name}</span>
         {#if effLevel !== "subject" && curTopic}
@@ -519,36 +519,36 @@
         <Icon name="chevron" size={11} style="transform:rotate(90deg);opacity:.55;margin-left:2px" />
       </button>
     {:else}
-      <span class="faint" style="font-size:12px">No subject open</span>
+      <span class="faint" style="font-size:12px">Kein Fach geöffnet</span>
     {/if}
 
     <div class="grow"></div>
     {#if !popout}
-      <div class="chat-model-pick" title="Chat model">
+      <div class="chat-model-pick" title="Chat-Modell">
         <ModelSearch
           value={chatModel}
           onChange={setChatModel}
           options={modelOptions}
           icon="bolt"
-          placeholder="Model"
+          placeholder="Modell"
           loading={orLoading && orModels.length === 0}
           onOpen={ensureOrModels}
         />
       </div>
     {/if}
-    <button class="btn btn--icon btn--sm btn--ghost" title="Chat history" onclick={openHistory}>
+    <button class="btn btn--icon btn--sm btn--ghost" title="Chatverlauf" onclick={openHistory}>
       <Icon name="book" size={13} />
     </button>
-    <button class="btn btn--icon btn--sm btn--ghost" title="New conversation" onclick={startNewConversation}>
+    <button class="btn btn--icon btn--sm btn--ghost" title="Neue Unterhaltung" onclick={startNewConversation}>
       <Icon name="plus" size={13} />
     </button>
     {#if onFullscreen}
-      <button class="btn btn--icon btn--sm btn--ghost" onclick={onFullscreen} title="Fullscreen chat">
+      <button class="btn btn--icon btn--sm btn--ghost" onclick={onFullscreen} title="Chat im Vollbild">
         <Icon name="external" size={12} />
       </button>
     {/if}
     {#if onClose}
-      <button class="btn btn--icon btn--sm btn--ghost" onclick={onClose} title="Close chat">
+      <button class="btn btn--icon btn--sm btn--ghost" onclick={onClose} title="Chat schließen">
         <Icon name="x" size={12} />
       </button>
     {/if}
@@ -561,15 +561,15 @@
         <div class="ces-ico">
           <Icon name="diamond" size={22} color="var(--fg3)" />
         </div>
-        <div class="ces-title">Open a subject to start chatting</div>
-        <div class="ces-sub">Ask questions grounded in your sources.</div>
+        <div class="ces-title">Öffne ein Fach, um zu chatten</div>
+        <div class="ces-sub">Stelle Fragen, die auf deinen Quellen beruhen.</div>
       </div>
     {:else}
       {#if messages.length === 0 && streaming === null}
         <div class="chat-empty-state" style="min-height:48vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;">
           <div class="ces-ico"><Icon name="chat" size={22} color="var(--fg3)" /></div>
-          <div class="ces-title">Ask anything about {scopeName}</div>
-          <div class="ces-sub">Press <span class="kbd">i</span> to start · <span class="kbd">s</span> to change scope</div>
+          <div class="ces-title">Frag alles zu {scopeName}</div>
+          <div class="ces-sub">Drücke <span class="kbd">i</span> zum Starten · <span class="kbd">s</span> zum Wechseln des Bereichs</div>
         </div>
       {/if}
 
@@ -594,8 +594,8 @@
               <button
                 type="button"
                 class="msg-action"
-                title="Save to notes"
-                aria-label="Save to notes"
+                title="In Notizen speichern"
+                aria-label="In Notizen speichern"
                 onclick={() => saveToNote(m.text)}
               >
                 <Icon name="plus" size={12} />
@@ -617,24 +617,24 @@
   <div class="chat-compose">
     {#if suggestions.length && streaming === null}
       <div class="chat-suggest">
-        <span class="cs-label mono">Next</span>
+        <span class="cs-label mono">Weiter</span>
         {#each suggestions as s}
           <button type="button" class="suggest-chip" title={s} onclick={() => send(s)}>{s}</button>
         {/each}
       </div>
     {/if}
     {#if queued.length}
-      <div class="chat-queued mono faint">{queued.length} message{queued.length === 1 ? "" : "s"} queued…</div>
+      <div class="chat-queued mono faint">{queued.length} {queued.length === 1 ? "Nachricht" : "Nachrichten"} in der Warteschlange…</div>
     {/if}
     <div class="compose-box{app.mode === 'INS' ? ' is-insert' : ''}">
       <textarea
         bind:this={composeEl}
         rows={1}
         placeholder={!app.activeSubject
-          ? "Open a subject first…"
+          ? "Öffne zuerst ein Fach…"
           : app.mode === "INS"
-          ? "Ask about " + scopeName + "…"
-          : isMobile ? "Ask…" : "Press i to ask…"}
+          ? "Frage zu " + scopeName + "…"
+          : isMobile ? "Frage stellen…" : "Drücke i, um zu fragen…"}
         bind:value={draft}
         disabled={!app.activeSubject}
         onfocus={() => app.setMode("INS")}
@@ -645,13 +645,13 @@
         type="button"
         class="btn btn--icon btn--sm chat-web{webOn ? ' is-on' : ''}"
         onclick={() => (webOn = !webOn)}
-        title={webOn ? "Web mode on — pulls live results + images (needs SearXNG)" : "Web mode off — answers from your sources only"}
+        title={webOn ? "Webmodus an – holt aktuelle Ergebnisse und Bilder (braucht SearXNG)" : "Webmodus aus – Antworten nur aus deinen Quellen"}
         aria-pressed={webOn}
       >
         <Icon name="globe" size={13} />
       </button>
       {#if streaming !== null}
-        <button class="btn btn--icon btn--sm chat-stop" onclick={stop} title="Stop generating">
+        <button class="btn btn--icon btn--sm chat-stop" onclick={stop} title="Antwort abbrechen">
           <span class="stop-sq"></span>
         </button>
       {:else}
@@ -659,17 +659,17 @@
           class="btn btn--icon btn--sm btn--primary"
           onclick={() => send()}
           disabled={!draft.trim() || !app.activeSubject}
-          title="Send"
+          title="Senden"
         >
           <Icon name="arrowR" size={13} />
         </button>
       {/if}
     </div>
     <div class="compose-hint">
-      <span><span class="kbd">i</span> insert</span>
-      <span><span class="kbd">⏎</span> send</span>
+      <span><span class="kbd">i</span> schreiben</span>
+      <span><span class="kbd">⏎</span> senden</span>
       <span><span class="kbd">⎋</span> normal</span>
-      <span><span class="kbd">s</span> scope</span>
+      <span><span class="kbd">s</span> Bereich</span>
     </div>
   </div>
 
@@ -690,10 +690,10 @@
         use:autofocus
       >
         <div class="scopesw-head">
-          <span class="scopesw-title mono">Switch chat scope</span>
+          <span class="scopesw-title mono">Chat-Bereich wechseln</span>
           <span class="kbd">esc</span>
         </div>
-        <div class="scopesw-list" role="listbox" aria-label="chat scope options">
+        <div class="scopesw-list" role="listbox" aria-label="Chat-Bereiche">
           {#each switcherOptions as o, i (i)}
             {@const sel = i === switcherSel}
             {@const isCur = i === currentOptionIndex}
@@ -708,7 +708,7 @@
             >
               {#if o.kind === "subject"}
                 <Icon name="diamond" size={12} color="var(--accent)" />
-                <span class="scopesw-label">Whole subject — {o.label}</span>
+                <span class="scopesw-label">Ganzes Fach – {o.label}</span>
               {:else if o.kind === "tag"}
                 <span class="scopesw-hash mono">#</span>
                 <span class="scopesw-label">{o.tag}</span>
@@ -716,12 +716,12 @@
               {:else if o.kind === "topic"}
                 <Icon name="chevron" size={11} color="var(--fg-faint)" />
                 <span class="scopesw-label">{o.label}</span>
-                <span class="scopesw-kindtag mono">TOPIC</span>
+                <span class="scopesw-kindtag mono">THEMA</span>
               {:else}
                 <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
                 <span
                   class="scopesw-check{picked[o.src.id] ? ' on' : ''}"
-                  title="Add to multi-source selection"
+                  title="Zur Mehrfachauswahl hinzufügen"
                   onclick={(e) => togglePick(o.src.id, e)}
                 >
                   {#if picked[o.src.id]}<Icon name="check" size={10} />{/if}
@@ -737,13 +737,13 @@
         </div>
         {#if pickedIds.length > 0}
           <button class="btn btn--sm btn--primary" style="margin:8px 10px 0" onclick={applyMulti}>
-            Chat with {pickedIds.length} selected source{pickedIds.length === 1 ? "" : "s"}
+            Mit {pickedIds.length} {pickedIds.length === 1 ? "ausgewählten Quelle" : "ausgewählten Quellen"} chatten
           </button>
         {/if}
         <div class="scopesw-foot mono">
-          <span><span class="kbd">↑</span><span class="kbd">↓</span> move</span>
-          <span><span class="kbd">⏎</span> select · tick = multi</span>
-          <span><span class="kbd">esc</span> close</span>
+          <span><span class="kbd">↑</span><span class="kbd">↓</span> bewegen</span>
+          <span><span class="kbd">⏎</span> auswählen · Haken = mehrere</span>
+          <span><span class="kbd">esc</span> schließen</span>
         </div>
       </div>
     </div>
@@ -754,24 +754,24 @@
     <div class="hist-overlay" role="presentation" onmousedown={() => (historyOpen = false)}>
       <div class="hist-panel" role="dialog" aria-modal="true" tabindex="-1" onmousedown={(e) => e.stopPropagation()}>
         <div class="hist-head">
-          <span class="hist-title">Chat history</span>
+          <span class="hist-title">Chatverlauf</span>
           <div class="grow"></div>
-          <button class="btn btn--sm btn--ghost" onclick={startNewConversation} title="New conversation">
-            <Icon name="plus" size={12} /> New
+          <button class="btn btn--sm btn--ghost" onclick={startNewConversation} title="Neue Unterhaltung">
+            <Icon name="plus" size={12} /> Neu
           </button>
-          <button class="btn btn--icon btn--sm btn--ghost" onclick={() => (historyOpen = false)} title="Close">
+          <button class="btn btn--icon btn--sm btn--ghost" onclick={() => (historyOpen = false)} title="Schließen">
             <Icon name="x" size={12} />
           </button>
         </div>
         {#if threads.length === 0}
-          <div class="hist-empty mono faint">No past conversations yet.</div>
+          <div class="hist-empty mono faint">Noch keine früheren Unterhaltungen.</div>
         {:else}
           <div class="hist-list">
             {#each threads as th}
               <button type="button" class="hist-item" onclick={() => pickThread(th.id)}>
                 <Icon name="chat" size={13} color="var(--fg-faint)" />
-                <span class="hist-item-title">{th.title || "New conversation"}</span>
-                <span class="hist-item-meta mono faint">{th.count} msg</span>
+                <span class="hist-item-title">{th.title || "Neue Unterhaltung"}</span>
+                <span class="hist-item-meta mono faint">{th.count} Nachr.</span>
               </button>
             {/each}
           </div>

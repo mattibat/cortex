@@ -80,9 +80,9 @@
     try {
       await api.moodleLinkSubject(subj.id, courseId);
       await app.refresh();
-      app.pushToast({ kind: "success", title: "Linked to Moodle course" });
+      app.pushToast({ kind: "success", title: "Mit Moodle-Kurs verknüpft" });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Link failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Verknüpfen fehlgeschlagen", body: String(e) });
     } finally {
       linking = false;
     }
@@ -93,7 +93,7 @@
       await api.moodleLinkSubject(subj.id, null);
       await app.refresh();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Unlink failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Trennen fehlgeschlagen", body: String(e) });
     }
   }
   async function autoMatch() {
@@ -103,11 +103,11 @@
       await app.refresh();
       app.pushToast({
         kind: n > 0 ? "success" : "info",
-        title: n > 0 ? `Matched ${n} subject${n === 1 ? "" : "s"}` : "No new matches",
-        body: n > 0 ? undefined : "Pick the course manually below.",
+        title: n > 0 ? `${n} ${n === 1 ? "Fach" : "Fächer"} zugeordnet` : "Keine neuen Zuordnungen",
+        body: n > 0 ? undefined : "Wähle den Kurs unten manuell aus.",
       });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Auto-match failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Automatische Zuordnung fehlgeschlagen", body: String(e) });
     } finally {
       linking = false;
     }
@@ -121,11 +121,11 @@
       app.notifyEventsChanged();    // deadlines mirrored into the calendar
       app.pushToast({
         kind: "success",
-        title: "Moodle synced",
-        body: `${s.grades} grades · ${s.deadlines} deadlines · ${s.announcements} announcements`,
+        title: "Moodle synchronisiert",
+        body: `${s.grades} Noten · ${s.deadlines} Termine · ${s.announcements} Ankündigungen`,
       });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Sync failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Synchronisierung fehlgeschlagen", body: String(e) });
     } finally {
       syncing = false;
     }
@@ -166,27 +166,27 @@
       const picked = await open({
         multiple: false,
         directory: false,
-        filters: [{ name: "Documents", extensions: ["pdf", "epub", "docx", "pptx", "doc", "ppt", "txt", "md", "png", "jpg", "jpeg"] }],
+        filters: [{ name: "Dokumente", extensions: ["pdf", "epub", "docx", "pptx", "doc", "ppt", "txt", "md", "png", "jpg", "jpeg"] }],
       });
       const path = typeof picked === "string" ? picked : picked?.[0] ?? null;
       if (!path) return;
       fwBusy = true;
       framework = await api.setSubjectFramework(subj.id, path);
-      app.pushToast({ kind: "success", title: "Module framework saved", body: framework.filename });
+      app.pushToast({ kind: "success", title: "Modulbeschreibung gespeichert", body: framework.filename });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Could not read framework", body: String(e) });
+      app.pushToast({ kind: "error", title: "Modulbeschreibung konnte nicht gelesen werden", body: String(e) });
     } finally {
       fwBusy = false;
     }
   }
   async function removeFramework() {
     if (!subj) return;
-    if (!(await app.confirm({ title: "Remove module framework?", okLabel: "Remove", danger: true }))) return;
+    if (!(await app.confirm({ title: "Modulbeschreibung entfernen?", okLabel: "Entfernen", danger: true }))) return;
     try {
       await api.clearSubjectFramework(subj.id);
       framework = null;
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Remove failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Entfernen fehlgeschlagen", body: String(e) });
     }
   }
   async function viewFramework() {
@@ -199,7 +199,7 @@
   }
 
   async function addTopic() {
-    const name = await app.prompt({ title: "Add topic", label: "Topic name", placeholder: "e.g. Determinism" });
+    const name = await app.prompt({ title: "Thema hinzufügen", label: "Name des Themas", placeholder: "z. B. Determinismus" });
     if (name) await app.createTopic(name);
   }
 
@@ -213,9 +213,9 @@
       const n = await api.setSubjectAliases(subj.id, aliasInput);
       await app.refresh();
       app.notifyEventsChanged();
-      if (n > 0) app.pushToast({ kind: "success", title: `Filed ${n} calendar event${n === 1 ? "" : "s"}` });
+      if (n > 0) app.pushToast({ kind: "success", title: `${n} ${n === 1 ? "Termin" : "Termine"} zugeordnet` });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Couldn't save keywords", body: String(e) });
+      app.pushToast({ kind: "error", title: "Stichwörter konnten nicht gespeichert werden", body: String(e) });
     }
   }
 
@@ -265,11 +265,11 @@
   function relMs(ms: number): string {
     if (!ms) return "never";
     const mins = Math.round((Date.now() - ms) / 60000);
-    if (mins < 1) return "just now";
-    if (mins < 60) return `${mins}m ago`;
+    if (mins < 1) return "gerade eben";
+    if (mins < 60) return `vor ${mins} Min.`;
     const hrs = Math.round(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    return `${Math.round(hrs / 24)}d ago`;
+    if (hrs < 24) return `vor ${hrs} Std.`;
+    return `vor ${Math.round(hrs / 24)} Tagen`;
   }
   // Plain-text preview of a Moodle HTML message (for the row's hover title).
   function stripHtml(html: string): string {
@@ -292,12 +292,12 @@
           <div class="sp-name">{subj.name}</div>
           <div class="sp-sub mono">
             {subj.code ? subj.code + " · " : ""}{subj.sourceCount}
-            {subj.sourceCount === 1 ? "source" : "sources"} · {subj.topics.length}
-            {subj.topics.length === 1 ? "topic" : "topics"}
+            {subj.sourceCount === 1 ? "Quelle" : "Quellen"} · {subj.topics.length}
+            {subj.topics.length === 1 ? "Thema" : "Themen"}
           </div>
         </div>
-        <button class="btn btn--sm btn--ghost" onclick={editSubject}><Icon name="pencil" size={12} /> Edit</button>
-        <button class="btn btn--icon btn--sm btn--ghost" title="Close" onclick={() => app.closeSubjectPanel()}>
+        <button class="btn btn--sm btn--ghost" onclick={editSubject}><Icon name="pencil" size={12} /> Bearbeiten</button>
+        <button class="btn btn--icon btn--sm btn--ghost" title="Schließen" onclick={() => app.closeSubjectPanel()}>
           <Icon name="x" size={14} />
         </button>
       </div>
@@ -306,31 +306,31 @@
         <!-- University portal (Moodle) -->
         <section class="sp-card">
           <div class="sp-card-h">
-            <Icon name="link" size={14} /><span>University portal</span>
+            <Icon name="link" size={14} /><span>Schul-/Uniportal</span>
             <div class="grow"></div>
             {#if mdStatus.configured && linkedCourse}
               <span class="sp-faint mono sm">synced {relMs(mdStatus.last_sync)}</span>
               <button class="btn btn--sm" onclick={syncNow} disabled={syncing}>
-                <Icon name="refresh" size={12} /> {syncing ? "Syncing…" : "Sync"}
+                <Icon name="refresh" size={12} /> {syncing ? "Synchronisiert…" : "Synchronisieren"}
               </button>
             {/if}
           </div>
 
           {#if !mdStatus.configured}
             <div class="sp-empty">
-              <p class="sp-faint">Connect your Moodle portal to pull grades, deadlines and announcements into this subject.</p>
+              <p class="sp-faint">Verbinde dein Moodle, um Noten, Termine und Ankündigungen in dieses Fach zu holen.</p>
               <button class="btn btn--sm btn--primary" onclick={() => { app.closeSubjectPanel(); app.openSettings("experimental"); }}>
-                <Icon name="settings" size={12} /> Open Moodle settings
+                <Icon name="settings" size={12} /> Moodle-Einstellungen öffnen
               </button>
             </div>
           {:else if !linkedCourse}
             <div class="sp-empty">
-              <p class="sp-faint">This subject isn't linked to a Moodle course yet.</p>
+              <p class="sp-faint">Dieses Fach ist noch mit keinem Moodle-Kurs verknüpft.</p>
               <div class="sp-link-row">
                 <div style:flex="1">
-                  <Picker value="" onChange={linkCourse} options={courseOptions} placeholder={courseOptions.length ? "Link a Moodle course…" : "No courses — sync in Settings first"} />
+                  <Picker value="" onChange={linkCourse} options={courseOptions} placeholder={courseOptions.length ? "Moodle-Kurs verknüpfen…" : "Keine Kurse – zuerst in den Einstellungen synchronisieren"} />
                 </div>
-                <button class="btn btn--sm" onclick={autoMatch} disabled={linking}><Icon name="bolt" size={12} /> Auto-match</button>
+                <button class="btn btn--sm" onclick={autoMatch} disabled={linking}><Icon name="bolt" size={12} /> Automatisch zuordnen</button>
               </div>
             </div>
           {:else}
@@ -338,16 +338,16 @@
               <Icon name="check" size={12} /> {linkedCourse.fullname || linkedCourse.shortname}
               <div class="grow"></div>
               {#if courseUrl}
-                <button class="btn btn--sm" onclick={openCourse} title="Open this course in Moodle">
-                  <Icon name="external" size={12} /> Open in Moodle
+                <button class="btn btn--sm" onclick={openCourse} title="Diesen Kurs in Moodle öffnen">
+                  <Icon name="external" size={12} /> In Moodle öffnen
                 </button>
               {/if}
-              <button class="sp-unlink" onclick={unlinkCourse} title="Unlink course">unlink</button>
+              <button class="sp-unlink" onclick={unlinkCourse} title="Kurs trennen">trennen</button>
             </div>
             <div class="sp-grid">
               <div class="sp-sub-card">
-                <div class="sp-sub-h mono"><Icon name="chart" size={12} /> Grades <span class="sp-faint">· {courseGrades.length}</span></div>
-                {#if courseGrades.length === 0}<p class="sp-faint sm">No grades synced.</p>{:else}
+                <div class="sp-sub-h mono"><Icon name="chart" size={12} /> Noten <span class="sp-faint">· {courseGrades.length}</span></div>
+                {#if courseGrades.length === 0}<p class="sp-faint sm">Keine Noten synchronisiert.</p>{:else}
                   <ul class="sp-list">
                     {#each courseGrades as g (g.course_id + g.item_name)}
                       <li><span class="sp-li-name" title={g.item_name}>{g.item_name}</span><span class="sp-li-val mono">{g.percentage || g.grade || "—"}</span></li>
@@ -356,8 +356,8 @@
                 {/if}
               </div>
               <div class="sp-sub-card">
-                <div class="sp-sub-h mono"><Icon name="calendar" size={12} /> Deadlines <span class="sp-faint">· {courseDeadlines.length}</span></div>
-                {#if courseDeadlines.length === 0}<p class="sp-faint sm">Nothing due.</p>{:else}
+                <div class="sp-sub-h mono"><Icon name="calendar" size={12} /> Termine <span class="sp-faint">· {courseDeadlines.length}</span></div>
+                {#if courseDeadlines.length === 0}<p class="sp-faint sm">Nichts fällig.</p>{:else}
                   <ul class="sp-list">
                     {#each courseDeadlines.slice(0, 8) as d (d.id)}
                       <li>
@@ -371,8 +371,8 @@
                 {/if}
               </div>
               <div class="sp-sub-card">
-                <div class="sp-sub-h mono"><Icon name="chat" size={12} /> Announcements <span class="sp-faint">· {courseAnnouncements.length}</span></div>
-                {#if courseAnnouncements.length === 0}<p class="sp-faint sm">No announcements.</p>{:else}
+                <div class="sp-sub-h mono"><Icon name="chat" size={12} /> Ankündigungen <span class="sp-faint">· {courseAnnouncements.length}</span></div>
+                {#if courseAnnouncements.length === 0}<p class="sp-faint sm">Keine Ankündigungen.</p>{:else}
                   <ul class="sp-list">
                     {#each courseAnnouncements.slice(0, 8) as a (a.id)}
                       <li>
@@ -391,20 +391,20 @@
 
         <!-- Calendar matching -->
         <section class="sp-card">
-          <div class="sp-card-h"><Icon name="calendar" size={14} /><span>Calendar matching</span></div>
-          <input class="input mono" placeholder="keywords, e.g. GenLing, GL178" bind:value={aliasInput} onblur={saveAliases} />
+          <div class="sp-card-h"><Icon name="calendar" size={14} /><span>Kalender-Zuordnung</span></div>
+          <input class="input mono" placeholder="Stichwörter, z. B. Mathe, M-11" bind:value={aliasInput} onblur={saveAliases} />
           <p class="sp-faint sm" style="margin:8px 0 0">Comma-separated terms that appear in your timetable events for this subject — lectures with these in the title auto-file here (no AI). Saved on blur; re-files your calendar instantly.</p>
         </section>
 
         <!-- Topics -->
         <section class="sp-card">
           <div class="sp-card-h">
-            <Icon name="grid" size={14} /><span>Topics</span>
+            <Icon name="grid" size={14} /><span>Themen</span>
             <div class="grow"></div>
-            <button class="btn btn--sm btn--ghost" onclick={addTopic}><Icon name="plus" size={12} /> Add topic</button>
+            <button class="btn btn--sm btn--ghost" onclick={addTopic}><Icon name="plus" size={12} /> Thema hinzufügen</button>
           </div>
           {#if subj.topics.length === 0}
-            <p class="sp-faint sm">No topics yet. Add one to group sources, cheatsheets and chats.</p>
+            <p class="sp-faint sm">Noch keine Themen. Lege eines an, um Quellen, Lernzettel und Chats zu gruppieren.</p>
           {:else}
             <div class="sp-topics">
               {#each subj.topics as t (t.id)}
@@ -417,29 +417,29 @@
         <!-- Module framework -->
         <section class="sp-card">
           <div class="sp-card-h">
-            <Icon name="doc" size={14} /><span>Module framework</span>
+            <Icon name="doc" size={14} /><span>Modulbeschreibung</span>
             <div class="grow"></div>
             {#if framework}
-              <button class="btn btn--sm btn--ghost" onclick={uploadFramework} disabled={fwBusy}><Icon name="upload" size={12} /> Replace</button>
-              <button class="btn btn--sm btn--ghost" onclick={removeFramework}><Icon name="x" size={12} /> Remove</button>
+              <button class="btn btn--sm btn--ghost" onclick={uploadFramework} disabled={fwBusy}><Icon name="upload" size={12} /> Ersetzen</button>
+              <button class="btn btn--sm btn--ghost" onclick={removeFramework}><Icon name="x" size={12} /> Entfernen</button>
             {/if}
           </div>
           {#if framework}
             <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-            <div class="sp-fw" role="button" tabindex="0" title="Open framework" onclick={viewFramework}
+            <div class="sp-fw" role="button" tabindex="0" title="Modulbeschreibung öffnen" onclick={viewFramework}
                  onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); viewFramework(); } }}>
               <Icon name="doc" size={14} />
               <span class="mono sp-fw-name">{framework.filename}</span>
               <span class="sp-faint mono sm">· {fmtMs(framework.updated_at)}</span>
               <div class="grow"></div>
-              <span class="sp-open mono sm"><Icon name="external" size={11} /> view</span>
+              <span class="sp-open mono sm"><Icon name="external" size={11} /> ansehen</span>
             </div>
-            <p class="sp-faint sm">Chat uses this for mark/weighting questions — e.g. <em>"what is my A2 weighted?"</em>. Ignored in normal chat.</p>
+            <p class="sp-faint sm">Der Chat nutzt sie für Fragen zu Noten und Gewichtung – z. B. <em>„Wie stark zählt die Klausur?“</em>. Im normalen Chat wird sie ignoriert.</p>
           {:else}
             <div class="sp-empty">
-              <p class="sp-faint">Upload your module framework (course outline with assessment weights). Chat references it only when you explicitly ask about marks or weighting.</p>
+              <p class="sp-faint">Lade deine Modulbeschreibung hoch (Kursübersicht mit Gewichtung der Leistungen). Der Chat nutzt sie nur, wenn du ausdrücklich nach Noten oder Gewichtung fragst.</p>
               <button class="btn btn--sm btn--primary" onclick={uploadFramework} disabled={fwBusy}>
-                <Icon name="upload" size={12} /> {fwBusy ? "Reading…" : "Upload framework"}
+                <Icon name="upload" size={12} /> {fwBusy ? "Wird gelesen…" : "Modulbeschreibung hochladen"}
               </button>
             </div>
           {/if}
@@ -455,7 +455,7 @@
             <Icon name="doc" size={13} />
             <span class="mono">{framework.filename}</span>
             <div class="grow"></div>
-            <button class="btn btn--icon btn--sm btn--ghost" title="Close" onclick={() => (fwViewing = false)}>
+            <button class="btn btn--icon btn--sm btn--ghost" title="Schließen" onclick={() => (fwViewing = false)}>
               <Icon name="x" size={14} />
             </button>
           </div>

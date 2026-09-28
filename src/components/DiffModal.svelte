@@ -20,7 +20,7 @@
   let focus = $state(0);
   let bodyEl = $state<HTMLElement | null>(null);
   let loading = $state(false);
-  let sourceLabel = $state("cheatsheet draft");
+  let sourceLabel = $state("Lernzettel-Entwurf");
   // True once we know the subject has ANY stored cheatsheet — drives the
   // "nothing here at all" empty state so `space d` never shows a blank modal.
   let hasSheet = $state(false);
@@ -56,7 +56,7 @@
             }));
         }
       } catch (e) {
-        app.pushToast({ kind: "error", title: "Couldn't load draft", body: String(e) });
+        app.pushToast({ kind: "error", title: "Entwurf konnte nicht geladen werden", body: String(e) });
       } finally {
         loading = false;
       }
@@ -175,7 +175,7 @@
     try {
       versions = await api.listCheatsheetVersions(sid, app.cheatTopicId ?? undefined);
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Couldn't load history", body: String(e) });
+      app.pushToast({ kind: "error", title: "Verlauf konnte nicht geladen werden", body: String(e) });
     } finally {
       histLoading = false;
     }
@@ -191,19 +191,19 @@
       const secs = await api.getCheatsheetVersion(meta.id);
       viewing = { meta, sections: secs };
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Couldn't load version", body: String(e) });
+      app.pushToast({ kind: "error", title: "Version konnte nicht geladen werden", body: String(e) });
     }
   }
 
   async function restoreVersion(meta: CheatsheetVersionMeta) {
     if (restoringId) return;
     const ok = await app.confirm({
-      title: "Restore this version?",
+      title: "Diese Version wiederherstellen?",
       body:
-        `This replaces the current cheatsheet with the version from ` +
-        `${fmtTime(meta.created_at)}. Your current sheet is snapshotted first, ` +
-        `so you can undo by restoring that.`,
-      okLabel: "Restore",
+        `Der aktuelle Lernzettel wird durch die Version vom ` +
+        `${fmtTime(meta.created_at)} ersetzt. Vorher wird eine Sicherung des aktuellen Stands angelegt, ` +
+        `die du ebenfalls wiederherstellen kannst.`,
+      okLabel: "Wiederherstellen",
     });
     if (!ok) return;
     restoringId = meta.id;
@@ -213,13 +213,13 @@
       app.scheduleSync(); // restored content is a change → push to homelab
       app.pushToast({
         kind: "success",
-        title: "Version restored",
-        body: "The cheatsheet now matches the selected version.",
+        title: "Version wiederhergestellt",
+        body: "Der Lernzettel entspricht jetzt der gewählten Version.",
       });
       viewing = null;
       await loadHistory(); // the restore added new snapshot rows
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Restore failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Wiederherstellen fehlgeschlagen", body: String(e) });
     } finally {
       restoringId = null;
     }
@@ -227,15 +227,15 @@
 
   // ── FOOTER: homelab sync awareness ───────────────────────────
   const syncLabel = $derived.by(() => {
-    if (app.syncState === "off") return "sync off";
-    if (app.syncState === "syncing") return "syncing…";
-    if (app.syncState === "error") return "sync error";
+    if (app.syncState === "off") return "Sync aus";
+    if (app.syncState === "syncing") return "synchronisiert…";
+    if (app.syncState === "error") return "Sync-Fehler";
     if (app.syncLastAt > 0) {
       const mins = Math.max(0, Math.round((Date.now() - app.syncLastAt) / 60000));
-      const ago = mins < 1 ? "just now" : mins < 60 ? `${mins}m ago` : `${Math.round(mins / 60)}h ago`;
-      return `synced · ${ago}`;
+      const ago = mins < 1 ? "gerade eben" : mins < 60 ? `vor ${mins} Min.` : `vor ${Math.round(mins / 60)} Std.`;
+      return `synchronisiert · ${ago}`;
     }
-    return "synced";
+    return "synchronisiert";
   });
   const syncConfigured = $derived(app.syncState !== "off");
 </script>
@@ -248,7 +248,7 @@
     onmousedown={close}
     role="dialog"
     aria-modal="true"
-    aria-label="Cheatsheet review"
+    aria-label="Lernzettel prüfen"
     tabindex="-1"
   >
     <!-- Modal panel — stop propagation so backdrop click doesn't close when clicking inside -->
@@ -260,7 +260,7 @@
       <!-- Header -->
       <header class="diff-head">
         <div>
-          <div class="eyebrow">Cheatsheet review</div>
+          <div class="eyebrow">Lernzettel prüfen</div>
           <div class="diff-title mono">
             <span class="badge badge--web" style="margin-left: 0;">
               <span class="dot"></span>{sourceLabel}
@@ -268,14 +268,14 @@
           </div>
         </div>
         <div class="diff-head-tools">
-          <div class="seg" role="tablist" aria-label="Review section">
+          <div class="seg" role="tablist" aria-label="Bereich">
             <button
               class="seg-opt{tab === 'draft' ? ' on' : ''}"
               role="tab"
               aria-selected={tab === "draft"}
               onclick={() => (tab = "draft")}
             >
-              Draft changes{#if remaining.length}<span class="diff-tab-count">{remaining.length}</span>{/if}
+              Änderungen im Entwurf{#if remaining.length}<span class="diff-tab-count">{remaining.length}</span>{/if}
             </button>
             <button
               class="seg-opt{tab === 'history' ? ' on' : ''}"
@@ -283,7 +283,7 @@
               aria-selected={tab === "history"}
               onclick={() => (tab = "history")}
             >
-              History
+              Verlauf
             </button>
           </div>
           <button class="btn btn--icon btn--sm btn--ghost" onclick={close}>
@@ -299,43 +299,43 @@
           <span><i class="lg add"></i> added</span>
           <span><i class="lg del"></i> removed</span>
           <span class="diff-keys">
-            <span class="kbd">j</span><span class="kbd">k</span> move ·
-            <span class="kbd">a</span> accept ·
-            <span class="kbd">x</span> reject ·
-            <span class="kbd">A</span> all ·
-            <span class="kbd">s</span> view
+            <span class="kbd">j</span><span class="kbd">k</span> bewegen ·
+            <span class="kbd">a</span> annehmen ·
+            <span class="kbd">x</span> ablehnen ·
+            <span class="kbd">A</span> alle ·
+            <span class="kbd">s</span> Ansicht
           </span>
           <div class="grow"></div>
-          <div class="seg-toggle" title="Toggle with s">
+          <div class="seg-toggle" title="Mit s umschalten">
             <button class={view === "inline" ? "on" : ""} onclick={() => (view = "inline")}>Inline</button>
-            <button class={view === "split" ? "on" : ""} onclick={() => (view = "split")}>Side-by-side</button>
+            <button class={view === "split" ? "on" : ""} onclick={() => (view = "split")}>Nebeneinander</button>
           </div>
         </div>
 
         <!-- Diff body -->
         <div class="diff-body" bind:this={bodyEl}>
           {#if loading}
-            <div class="mono faint" style="display:flex;align-items:center;justify-content:center;min-height:200px;">Loading draft…</div>
+            <div class="mono faint" style="display:flex;align-items:center;justify-content:center;min-height:200px;">Entwurf wird geladen…</div>
           {:else if !hasSheet}
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:240px;text-align:center;padding:24px;">
               <Icon name="diamond" size={26} color="var(--fg3)" />
-              <div class="read" style="font-size:18px;color:var(--fg-bright);">No cheatsheet yet</div>
+              <div class="read" style="font-size:18px;color:var(--fg-bright);">Noch kein Lernzettel</div>
               <p class="mono faint" style="max-width:360px;line-height:1.5;">
                 {#if app.activeSubjectId}
-                  Generate a cheatsheet for this subject first — proposed changes
-                  and version history will appear here.
+                  Erstelle zuerst einen Lernzettel für dieses Fach – vorgeschlagene Änderungen
+                  und der Versionsverlauf erscheinen dann hier.
                 {:else}
-                  Open a subject to review its cheatsheet draft changes and history.
+                  Öffne ein Fach, um die Änderungen und den Verlauf seines Lernzettels zu prüfen.
                 {/if}
               </p>
             </div>
           {:else if sections.length === 0}
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:240px;text-align:center;padding:24px;">
               <Icon name="check" size={26} color="var(--ok)" />
-              <div class="read" style="font-size:18px;color:var(--fg-bright);">No pending changes</div>
+              <div class="read" style="font-size:18px;color:var(--fg-bright);">Keine offenen Änderungen</div>
               <p class="mono faint" style="max-width:360px;line-height:1.5;">
-                Nothing is awaiting review for this subject. Regenerate the cheatsheet
-                to propose additions, or browse <button class="diff-linkbtn" onclick={() => (tab = "history")}>History</button>.
+                Für dieses Fach wartet nichts auf Prüfung. Erstelle den Lernzettel neu,
+                um Ergänzungen vorzuschlagen, oder sieh dir den <button class="diff-linkbtn" onclick={() => (tab = "history")}>Verlauf</button> an.
               </p>
             </div>
           {:else}
@@ -361,16 +361,16 @@
                   <button
                     class="btn btn--sm btn--ghost"
                     onclick={() => resolve(sec.id, "reject")}
-                    title="Reject (x)"
+                    title="Ablehnen (x)"
                   >
-                    <span class="kbd">x</span> Reject
+                    <span class="kbd">x</span> Ablehnen
                   </button>
                   <button
                     class="btn btn--sm btn--primary"
                     onclick={() => resolve(sec.id, "accept")}
-                    title="Accept section (a)"
+                    title="Abschnitt annehmen (a)"
                   >
-                    <span class="kbd" style="border-color: currentColor;">a</span> Accept section
+                    <span class="kbd" style="border-color: currentColor;">a</span> Abschnitt annehmen
                   </button>
                 {:else if r === "accept"}
                   <span class="resolved-tag ok"><Icon name="check" size={13} /> merged</span>
@@ -391,7 +391,7 @@
               {:else}
                 <div class="diff-split">
                   <div class="ds-col">
-                    <div class="ds-col-l mono">Current</div>
+                    <div class="ds-col-l mono">Aktuell</div>
                     {#each sec.changes.filter((c) => c.type !== "add") as c, i (i)}
                       <div class="diff-line {c.type === 'del' ? 'del' : ''}">
                         <span class="txt read">{c.text}</span>
@@ -399,7 +399,7 @@
                     {/each}
                   </div>
                   <div class="ds-col">
-                    <div class="ds-col-l mono">Proposed</div>
+                    <div class="ds-col-l mono">Vorschlag</div>
                     {#each sec.changes.filter((c) => c.type !== "del") as c, i (i)}
                       <div class="diff-line {c.type === 'add' ? 'add' : ''}">
                         <span class="txt read">{c.text}</span>
@@ -416,19 +416,19 @@
         <!-- ── HISTORY (editable: view + restore) ── -->
         <div class="diff-body">
           {#if histLoading}
-            <div class="mono faint" style="display:flex;align-items:center;justify-content:center;min-height:200px;">Loading history…</div>
+            <div class="mono faint" style="display:flex;align-items:center;justify-content:center;min-height:200px;">Verlauf wird geladen…</div>
           {:else if viewing}
             <!-- Read-only render of one stored version -->
             <div class="cmdk-group">
               <button class="diff-linkbtn" onclick={() => (viewing = null)}>
-                ← Back to versions
+                ← Zurück zu den Versionen
               </button>
             </div>
             <div class="set-card" style="padding:14px;">
               <div class="diff-sec-head" style="margin-bottom:10px;">
                 <h3>{viewing.meta.note || "version"}</h3>
                 <div class="grow"></div>
-                <span class="mono faint">{fmtTime(viewing.meta.created_at)} · {viewing.meta.section_count} sec</span>
+                <span class="mono faint">{fmtTime(viewing.meta.created_at)} · {viewing.meta.section_count} Abschn.</span>
               </div>
               {#each viewing.sections as sec (sec.id)}
                 {#if !sec.id.startsWith("__topic__")}
@@ -455,42 +455,42 @@
                   disabled={restoringId === viewing.meta.id}
                 >
                   <Icon name="refresh" size={13} />
-                  {restoringId === viewing.meta.id ? "Restoring…" : "Restore this version"}
+                  {restoringId === viewing.meta.id ? "Wird wiederhergestellt…" : "Diese Version wiederherstellen"}
                 </button>
               </div>
             </div>
           {:else if versions.length === 0}
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:240px;text-align:center;padding:24px;">
               <Icon name="refresh" size={26} color="var(--fg3)" />
-              <div class="read" style="font-size:18px;color:var(--fg-bright);">No versions yet</div>
+              <div class="read" style="font-size:18px;color:var(--fg-bright);">Noch keine Versionen</div>
               <p class="mono faint" style="max-width:360px;line-height:1.5;">
-                Edits and regenerations of this cheatsheet are recorded here — you'll
-                be able to view and restore them.
+                Änderungen und Neuerstellungen dieses Lernzettels werden hier gespeichert –
+                du kannst sie ansehen und wiederherstellen.
               </p>
             </div>
           {:else}
             <div class="cmdk-group">
-              <div class="gl">Versions — newest first</div>
+              <div class="gl">Versionen – neueste zuerst</div>
               {#each versions as v, i (v.id)}
                 <div class="diff-hist-row set-card">
                   <div class="diff-hist-meta">
                     <span class="diff-hist-when mono">{fmtTime(v.created_at)}</span>
                     <span class="diff-hist-note">
-                      {i === 0 ? "current" : v.note} · {v.section_count} section{v.section_count !== 1 ? "s" : ""}
+                      {i === 0 ? "aktuell" : v.note} · {v.section_count} {v.section_count !== 1 ? "Abschnitte" : "Abschnitt"}
                     </span>
                   </div>
                   <div class="grow"></div>
                   <button class="btn btn--sm btn--ghost" onclick={() => viewVersion(v)}>
-                    <Icon name="doc" size={12} /> View
+                    <Icon name="doc" size={12} /> Ansehen
                   </button>
                   <button
                     class="btn btn--sm btn--primary"
                     onclick={() => restoreVersion(v)}
                     disabled={i === 0 || restoringId === v.id}
-                    title={i === 0 ? "This is already the current sheet" : "Restore this version"}
+                    title={i === 0 ? "Das ist bereits der aktuelle Lernzettel" : "Diese Version wiederherstellen"}
                   >
                     <Icon name="refresh" size={12} />
-                    {restoringId === v.id ? "Restoring…" : "Restore"}
+                    {restoringId === v.id ? "Wird wiederhergestellt…" : "Wiederherstellen"}
                   </button>
                 </div>
               {/each}
@@ -501,23 +501,23 @@
 
       <!-- Footer -->
       <footer class="diff-foot">
-        <div class="diff-foot-sync mono faint" title="Homelab sync">
+        <div class="diff-foot-sync mono faint" title="Homelab-Sync">
           <span class="dot" class:dot--on={syncConfigured && app.syncState !== 'error'}></span>
           {syncLabel}
           {#if syncConfigured}
             <button class="diff-linkbtn" onclick={() => app.syncNow()} disabled={app.syncState === 'syncing'}>
-              Sync now
+              Jetzt synchronisieren
             </button>
           {/if}
         </div>
         <div class="grow"></div>
         {#if tab === "draft" && hasSheet && remaining.length}
-          <button class="btn btn--sm btn--ghost" onclick={close}>Later</button>
+          <button class="btn btn--sm btn--ghost" onclick={close}>Später</button>
           <button class="btn btn--sm btn--primary" onclick={acceptAll}>
-            <span class="kbd" style="border-color: currentColor;">A</span> Approve all &amp; merge
+            <span class="kbd" style="border-color: currentColor;">A</span> Alle annehmen &amp; übernehmen
           </button>
         {:else}
-          <button class="btn btn--sm btn--ghost" onclick={close}>Close</button>
+          <button class="btn btn--sm btn--ghost" onclick={close}>Schließen</button>
         {/if}
       </footer>
     </div>

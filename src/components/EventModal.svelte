@@ -56,15 +56,16 @@
 
   // ---- reminder offsets ----
   const REMINDER_OPTS = [
-    { id: "none", label: "None" },
-    { id: "0", label: "At time of event" },
-    { id: "600000", label: "10 minutes before" },
-    { id: "3600000", label: "1 hour before" },
-    { id: "86400000", label: "1 day before" },
+    { id: "none", label: "Keine" },
+    { id: "0", label: "Zum Zeitpunkt des Termins" },
+    { id: "600000", label: "10 Minuten vorher" },
+    { id: "3600000", label: "1 Stunde vorher" },
+    { id: "86400000", label: "1 Tag vorher" },
   ];
 
   // ---- kind segmented control (top-level event/task/deadline) ----
   const DEADLINE_KINDS = ["exam", "assignment", "project"] as const;
+  const DEADLINE_LABEL: Record<(typeof DEADLINE_KINDS)[number], string> = { exam: "Prüfung", assignment: "Abgabe", project: "Projekt" };
   type Kind = "event" | "task" | "exam" | "assignment" | "project";
   const isDeadlineKind = (k: string) => (DEADLINE_KINDS as readonly string[]).includes(k);
 
@@ -163,7 +164,7 @@
   }
 
   const subjectOptions = $derived([
-    { id: "", label: "— no subject —" },
+    { id: "", label: "– kein Fach –" },
     ...app.subjects.map((s) => ({ id: s.id, label: s.name })),
   ]);
 
@@ -186,11 +187,11 @@
     const t = title.trim();
     const startMs = startMsOf();
     if (!t) {
-      app.pushToast({ kind: "warning", title: "Title required" });
+      app.pushToast({ kind: "warning", title: "Titel erforderlich" });
       return;
     }
     if (startMs == null) {
-      app.pushToast({ kind: "warning", title: "Date required" });
+      app.pushToast({ kind: "warning", title: "Datum erforderlich" });
       return;
     }
     const endMs = endMsOf();
@@ -218,16 +219,16 @@
       onSaved();
       onClose();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Save failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Speichern fehlgeschlagen", body: String(e) });
     }
   }
 
   async function del() {
     if (!event) return;
     const ok = await app.confirm({
-      title: "Delete event?",
+      title: "Termin löschen?",
       danger: true,
-      okLabel: "Delete",
+      okLabel: "Löschen",
     });
     if (!ok) return;
     try {
@@ -236,7 +237,7 @@
       onSaved();
       onClose();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Delete failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Löschen fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -266,8 +267,8 @@
     onmousedown={(e) => e.stopPropagation()}
   >
     <div class="ev-head">
-      <div class="ev-title">{event ? "Edit event" : "New event"}</div>
-      <button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Close" onclick={() => onClose()}>
+      <div class="ev-title">{event ? "Termin bearbeiten" : "Neuer Termin"}</div>
+      <button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Schließen" onclick={() => onClose()}>
         <Icon name="x" size={13} />
       </button>
     </div>
@@ -277,50 +278,50 @@
       bind:this={firstInput}
       bind:value={title}
       class="input ev-title-input"
-      placeholder="Add a title…"
+      placeholder="Titel eingeben…"
     />
 
     <!-- WHEN block: date + all-day toggle, then a start–end time row. -->
     <div class="ev-when">
       <div class="ev-when-row">
         <div class="ev-date">
-          <DatePicker value={dateVal} onChange={(v) => (dateVal = dateOf(v))} withTime={false} placeholder="Pick a date" />
+          <DatePicker value={dateVal} onChange={(v) => (dateVal = dateOf(v))} withTime={false} placeholder="Datum wählen" />
         </div>
         <button
           type="button"
           class={"st-toggle" + (allDay ? " on" : "")}
           role="switch"
           aria-checked={allDay}
-          aria-label="All day"
+          aria-label="Ganztägig"
           onclick={() => (allDay = !allDay)}
         >
           <span class="st-knob"></span>
         </button>
-        <span class="ev-allday-lbl">All day</span>
+        <span class="ev-allday-lbl">Ganztägig</span>
       </div>
 
       {#if !allDay}
         <div class="ev-time-row">
-          <input class="input ev-time" type="time" bind:value={startTime} aria-label="Start time" />
+          <input class="input ev-time" type="time" bind:value={startTime} aria-label="Beginn" />
           <span class="ev-time-dash">→</span>
-          <input class="input ev-time" type="time" bind:value={endTime} aria-label="End time" />
-          <span class="ev-time-opt">end optional</span>
+          <input class="input ev-time" type="time" bind:value={endTime} aria-label="Ende" />
+          <span class="ev-time-opt">Ende optional</span>
         </div>
       {/if}
     </div>
 
     <!-- KIND — segmented control, active accent matches the kind color. -->
     <div class="ev-seg-block" style:--kind-accent={kindColor(kind)}>
-      <div class="seg ev-kind-seg" role="group" aria-label="Type">
-        <button type="button" class={"seg-opt" + (kind === "event" ? " on" : "")} onclick={() => (kind = "event")}>Event</button>
-        <button type="button" class={"seg-opt" + (kind === "task" ? " on" : "")} onclick={() => (kind = "task")}>Task</button>
-        <button type="button" class={"seg-opt" + (isDeadline ? " on" : "")} onclick={setDeadline}>Deadline</button>
+      <div class="seg ev-kind-seg" role="group" aria-label="Art">
+        <button type="button" class={"seg-opt" + (kind === "event" ? " on" : "")} onclick={() => (kind = "event")}>Termin</button>
+        <button type="button" class={"seg-opt" + (kind === "task" ? " on" : "")} onclick={() => (kind = "task")}>Aufgabe</button>
+        <button type="button" class={"seg-opt" + (isDeadline ? " on" : "")} onclick={setDeadline}>Frist</button>
       </div>
       {#if isDeadline}
-        <div class="seg ev-kind-seg ev-kind-sub" role="group" aria-label="Deadline type">
+        <div class="seg ev-kind-seg ev-kind-sub" role="group" aria-label="Art der Frist">
           {#each DEADLINE_KINDS as dk (dk)}
             <button type="button" class={"seg-opt" + (kind === dk ? " on" : "")} onclick={() => (kind = dk)}>
-              {dk.charAt(0).toUpperCase() + dk.slice(1)}
+              {DEADLINE_LABEL[dk]}
             </button>
           {/each}
         </div>
@@ -337,43 +338,43 @@
       <span class={"ev-disclose-caret" + (showDetails ? " open" : "")}>
         <Icon name="chevron" size={11} />
       </span>
-      <span>{showDetails ? "Hide details" : "Add details"}</span>
+      <span>{showDetails ? "Details ausblenden" : "Details hinzufügen"}</span>
     </button>
 
     {#if showDetails}
       <div class="ev-details">
         <label class="ev-field">
-          <span class="ev-lbl">Location</span>
-          <input bind:value={location} class="input" placeholder="Room, link, place…" />
+          <span class="ev-lbl">Ort</span>
+          <input bind:value={location} class="input" placeholder="Raum, Link, Ort…" />
         </label>
 
         <div class="ev-field">
-          <span class="ev-lbl">Subject</span>
+          <span class="ev-lbl">Fach</span>
           <Picker
             value={subjectId}
             onChange={(id) => (subjectId = id)}
             options={subjectOptions}
-            placeholder="— no subject —"
+            placeholder="– kein Fach –"
           />
         </div>
 
         <div class="ev-field">
-          <span class="ev-lbl">Reminder</span>
+          <span class="ev-lbl">Erinnerung</span>
           <Picker
             value={reminder}
             onChange={(id) => (reminder = id)}
             options={REMINDER_OPTS}
-            placeholder="None"
+            placeholder="Keine"
           />
         </div>
 
         <label class="ev-field">
-          <span class="ev-lbl">Tags <span class="ev-opt">{isDeadline ? "— topics with these tags become this deadline's checklist" : "(optional)"}</span></span>
-          <input bind:value={tagsText} class="input" placeholder="e.g. A2, midterm" />
+          <span class="ev-lbl">Tags <span class="ev-opt">{isDeadline ? "– Themen mit diesen Tags werden zur Checkliste dieser Frist" : "(optional)"}</span></span>
+          <input bind:value={tagsText} class="input" placeholder="z. B. Klausur, Referat" />
         </label>
 
         <div class="ev-field">
-          <span class="ev-lbl">Color</span>
+          <span class="ev-lbl">Farbe</span>
           <div class="ev-colors">
             {#each SUBJECT_COLORS as c}
               <button
@@ -387,8 +388,8 @@
             <button
               type="button"
               class={"swatch swatch-clear" + (color === null ? " on" : "")}
-              aria-label="No color"
-              title="No color (use subject / accent)"
+              aria-label="Keine Farbe"
+              title="Keine Farbe (Fach- bzw. Akzentfarbe)"
               onclick={() => (color = null)}
             >
               <span class="swatch-x">×</span>
@@ -397,12 +398,12 @@
         </div>
 
         <label class="ev-field">
-          <span class="ev-lbl">Description</span>
+          <span class="ev-lbl">Beschreibung</span>
           <textarea
             bind:value={description}
             class="input ev-textarea"
             rows="3"
-            placeholder="Notes…"
+            placeholder="Notizen…"
           ></textarea>
         </label>
       </div>
@@ -410,10 +411,10 @@
 
     <div class="ev-actions">
       {#if event}
-        <button class="btn btn--danger btn--sm ev-del" type="button" onclick={del}>Delete</button>
+        <button class="btn btn--danger btn--sm ev-del" type="button" onclick={del}>Löschen</button>
       {/if}
-      <button class="btn btn--ghost btn--sm" type="button" onclick={() => onClose()}>Cancel</button>
-      <button class="btn btn--primary btn--sm" type="button" onclick={save}>Save</button>
+      <button class="btn btn--ghost btn--sm" type="button" onclick={() => onClose()}>Abbrechen</button>
+      <button class="btn btn--primary btn--sm" type="button" onclick={save}>Speichern</button>
     </div>
   </div>
 </div>
