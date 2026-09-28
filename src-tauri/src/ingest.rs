@@ -506,6 +506,9 @@ fn msoffice_to_pdf(path: &str, dest: &Path) -> Result<()> {
     let _ = std::fs::remove_file(&tmp);
 
     let _guard = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    if dest.is_file() {
+        return Ok(());
+    }
     let mut child = Command::new("powershell")
         .args(["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", script])
         .env("CORTEX_SRC", path)

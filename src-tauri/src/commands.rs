@@ -539,34 +539,36 @@ pub fn get_source(state: State<AppState>, id: String) -> Result<Source> {
     repo::get_source(&c, &id)
 }
 
+pub fn ensure_office_preview(app: &AppHandle, id: &str) -> Result<Source> {
+    let state = app.state::<AppState>();
+    let src = {
+        let c = state.db.lock().unwrap();
+        repo::get_source(&c, id)?
+    };
+    if src.stored_path.as_deref().is_some_and(|p| Path::new(p).is_file()) {
+        return Ok(src);
+    }
+    let origin = src
+        .origin
+        .clone()
+        .ok_or_else(|| Error::Other("the original file is unknown".into()))?;
+    let dest = app
+        .path()
+        .app_data_dir()
+        .map_err(|e| Error::Other(e.to_string()))?
+        .join("sources")
+        .join(format!("{id}.pdf"));
+    ingest::office_to_pdf(&origin, &dest)?;
+    let c = state.db.lock().unwrap();
+    repo::set_stored_path(&c, id, &dest.to_string_lossy())?;
+    repo::get_source(&c, id)
+}
+
 #[tauri::command]
 pub async fn render_source_preview(app: AppHandle, id: String) -> Result<Source> {
-    tauri::async_runtime::spawn_blocking(move || {
-        let state = app.state::<AppState>();
-        let src = {
-            let c = state.db.lock().unwrap();
-            repo::get_source(&c, &id)?
-        };
-        if src.stored_path.as_deref().is_some_and(|p| Path::new(p).is_file()) {
-            return Ok(src);
-        }
-        let origin = src
-            .origin
-            .clone()
-            .ok_or_else(|| Error::Other("the original file is unknown".into()))?;
-        let dest = app
-            .path()
-            .app_data_dir()
-            .map_err(|e| Error::Other(e.to_string()))?
-            .join("sources")
-            .join(format!("{id}.pdf"));
-        ingest::office_to_pdf(&origin, &dest)?;
-        let c = state.db.lock().unwrap();
-        repo::set_stored_path(&c, &id, &dest.to_string_lossy())?;
-        repo::get_source(&c, &id)
-    })
-    .await
-    .map_err(|e| Error::Other(format!("preview task failed: {e}")))?
+    tauri::async_runtime::spawn_blocking(move || ensure_office_preview(&app, &id))
+        .await
+        .map_err(|e| Error::Other(format!("preview task failed: {e}")))?
 }
 
 #[tauri::command]
