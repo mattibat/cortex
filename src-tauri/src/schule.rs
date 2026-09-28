@@ -5,6 +5,7 @@ use crate::repo;
 use rusqlite::{params, Connection, OptionalExtension};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
 
 const LEGACY_SUBJECT: &str = "Schule";
@@ -160,7 +161,46 @@ pub async fn sync_school_folder(app: AppHandle) -> Result<SchoolSyncResult> {
         return Err(Error::Other("school folder sync is already running".into()));
     }
     let _guard = RunningGuard;
-    run_sync(&app).await
+    let result = run_sync(&app).await?;
+    spawn_preview_prerender(app);
+    Ok(result)
+}
+
+static PRERENDER_RUNNING: AtomicBool = AtomicBool::new(false);
+static PRERENDER_FAILED: Mutex<Vec<String>> = Mutex::new(Vec::new());
+
+fn spawn_preview_prerender(app: AppHandle) {
+    if PRERENDER_RUNNING.swap(true, Ordering::SeqCst) {
+        return;
+    }
+    tauri::async_runtime::spawn_blocking(move || {
+        let ids: Vec<String> = {
+            let state = app.state::<AppState>();
+            let c = state.db.lock().unwrap();
+            let names: Vec<&str> = WEEKDAYS.iter().copied().chain([UNSORTED]).collect();
+            let sql = format!(
+                "SELECT s.id FROM sources s JOIN subjects su ON su.id=s.subject_id \
+                 WHERE su.archived=0 AND s.kind IN ('docx','pptx','xlsx') AND s.origin IS NOT NULL \
+                 AND su.name IN ({})",
+                vec!["?"; names.len()].join(",")
+            );
+            c.prepare(&sql)
+                .and_then(|mut st| {
+                    st.query_map(rusqlite::params_from_iter(names), |r| r.get(0))?
+                        .collect::<rusqlite::Result<Vec<String>>>()
+                })
+                .unwrap_or_default()
+        };
+        for id in ids {
+            if PRERENDER_FAILED.lock().unwrap().contains(&id) {
+                continue;
+            }
+            if crate::commands::ensure_office_preview(&app, &id).is_err() {
+                PRERENDER_FAILED.lock().unwrap().push(id);
+            }
+        }
+        PRERENDER_RUNNING.store(false, Ordering::SeqCst);
+    });
 }
 
 async fn run_sync(app: &AppHandle) -> Result<SchoolSyncResult> {
