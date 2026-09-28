@@ -416,6 +416,32 @@ class AppStore {
     } catch { /* offline / not configured — silent */ }
   }
 
+  #schoolSynced = false;
+  async autoSyncSchoolFolder() {
+    if (this.#schoolSynced) return;
+    this.#schoolSynced = true;
+    try {
+      const path = await api.getSetting("school_folder_path");
+      if (!path?.trim()) return;
+      const result = await api.syncSchoolFolder();
+      await this.refresh();
+      if (result.added > 0) {
+        this.pushToast({
+          kind: "success",
+          title: "Schule synchronisiert",
+          body: `${result.added} neue Datei${result.added === 1 ? "" : "en"} eingelesen.`,
+        });
+      }
+      if (result.errors.length > 0) {
+        this.pushToast({
+          kind: "error",
+          title: "Schule-Sync: einige Dateien fehlgeschlagen",
+          body: result.errors.slice(0, 3).join(" · "),
+        });
+      }
+    } catch {}
+  }
+
   // chrome / modal state
   mode = $state<Mode>("NOR");
   theme = $state<Theme>("everforest");
@@ -840,6 +866,7 @@ class AppStore {
     // background so the unread badge + feed are current on launch.
     this.loadNotifReads();
     void this.autoSyncMoodle();
+    void this.autoSyncSchoolFolder();
   }
 
   /** Re-ingest sources stuck in error/draft, one at a time so we don't hammer
