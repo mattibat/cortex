@@ -3548,7 +3548,7 @@ fn transcribe(
     if let Some(bin) = whisper_bin {
         let out = Command::new(&bin)
             .arg(file)
-            .args(["--model", cli_model, "--language", "en", "--output_format", "txt", "--output_dir"])
+            .args(["--model", cli_model, "--language", "de", "--output_format", "txt", "--output_dir"])
             .arg(&outdir)
             .output();
         if let Ok(o) = out {
@@ -3641,7 +3641,7 @@ fn transcribe(
             // vad_filter=True so silences are skipped instead of hallucinated, and
             // condition_on_previous_text=False so one bad segment can't cascade into
             // the repetition loops that collapsed long lectures into a page of noise.
-            let runner = format!("import sys\nfrom faster_whisper import WhisperModel\nm=WhisperModel('{fw_model}',device='cpu',compute_type='int8',download_root=sys.argv[2])\nsegs,_=m.transcribe(sys.argv[1],language='en',vad_filter=True,condition_on_previous_text=False)\nprint(' '.join(s.text.strip() for s in segs))");
+            let runner = format!("import sys\nfrom faster_whisper import WhisperModel\nm=WhisperModel('{fw_model}',device='cpu',compute_type='int8',download_root=sys.argv[2])\nsegs,_=m.transcribe(sys.argv[1],language='de',vad_filter=True,condition_on_previous_text=False)\nprint(' '.join(s.text.strip() for s in segs))");
             let out = Command::new(&py).arg("-c").arg(&runner).arg(&decodable).arg(&models_dir).output();
             match out {
                 Ok(o) if o.status.success() => {
@@ -3931,7 +3931,7 @@ fn transcribe_asr(rw: &RemoteWhisper, file: &Path, full: bool) -> std::result::R
     // encode=true lets the server ffmpeg-normalize whatever container we send.
     let diarize = rw.diarize && full;
     let url = format!(
-        "{base}/asr?task=transcribe&output=json&encode=true{}",
+        "{base}/asr?task=transcribe&language=de&output=json&encode=true{}",
         if diarize { "&diarize=true" } else { "" }
     );
     let bytes = std::fs::read(file).map_err(|e| format!("read audio: {e}"))?;
@@ -4036,6 +4036,7 @@ fn transcribe_remote(rw: &RemoteWhisper, file: &Path, model: &str, full: bool) -
             // faster-whisper/speaches (the homelab server); unknown form fields are
             // ignored by other OpenAI-compatible servers.
             .text("vad_filter", "true")
+            .text("language", "de")
             .part("file", part);
         if !model.is_empty() {
             form = form.text("model", model.to_string());
