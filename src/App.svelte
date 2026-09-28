@@ -302,7 +302,7 @@
 </script>
 
 {#if app.loading}
-  <div class="boot">Cortex — loading…</div>
+  <div class="boot">Cortex – wird geladen…</div>
 {:else if app.onboarding}
   <Onboarding onFinish={() => (app.onboarding = false)} />
 {:else if isMobile}
@@ -325,15 +325,15 @@
     {/if}
     {#if drawer}
       <!-- Sub-1080: hamburger toggles the slide-in sidebar drawer (overlay). -->
-      <button class="nav-toggle" onclick={() => (navOpen = !navOpen)} aria-label="Toggle menu">
+      <button class="nav-toggle" onclick={() => (navOpen = !navOpen)} aria-label="Menü umschalten">
         <Icon name="grid" size={16} />
       </button>
       <Sidebar />
-      <button class="nav-backdrop" aria-label="Close menu" onclick={() => (navOpen = false)}></button>
+      <button class="nav-backdrop" aria-label="Menü schließen" onclick={() => (navOpen = false)}></button>
     {:else if !app.sidebarCollapsed}
       <Sidebar />
     {:else}
-      <button class="sb-expand" onclick={() => app.toggleSidebar()} title="Show sidebar (b)">
+      <button class="sb-expand" onclick={() => app.toggleSidebar()} title="Seitenleiste anzeigen (b)">
         <Icon name="chevron" size={14} />
       </button>
     {/if}
@@ -368,7 +368,7 @@
       </div>
 
       {#if showChatDock}
-        <button class="chatdock-backdrop" aria-label="Close chat" onclick={() => (app.chatOpen = false)}></button>
+        <button class="chatdock-backdrop" aria-label="Chat schließen" onclick={() => (app.chatOpen = false)}></button>
         <div class="chatdock chatdock--float">
           {#if !compact}
             <ResizeHandle
@@ -390,8 +390,8 @@
       {/if}
 
       {#if showChatFab}
-        <button class="chat-fab" onclick={() => (app.chatOpen = true)} title="Open chat (c)">
-          Ask <span class="kbd">c</span>
+        <button class="chat-fab" onclick={() => (app.chatOpen = true)} title="Chat öffnen (c)">
+          Fragen <span class="kbd">c</span>
         </button>
       {/if}
     </div>

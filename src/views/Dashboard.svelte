@@ -20,12 +20,12 @@
   <div class="dash">
     <header class="dash-head">
       <div>
-        <div class="eyebrow">{dayName} · week {weekNum}</div>
-        <h1 class="dash-title">Your subjects</h1>
+        <div class="eyebrow">{dayName} · KW {weekNum}</div>
+        <h1 class="dash-title">Deine Fächer</h1>
       </div>
       <div class="row gap-2">
         <button class="btn btn--sm btn--primary" onclick={() => app.setView("add-subject")}>
-          <Icon name="plus" size={13} /> New subject
+          <Icon name="plus" size={13} /> Neues Fach
         </button>
       </div>
     </header>
@@ -33,7 +33,7 @@
     <div class="subj-grid">
       {#if app.subjects.length === 0}
         <div style:grid-column="1 / -1" style:text-align="center" style:padding="48px 0" style:color="var(--fg-faint)">
-          Add your first subject.
+          Füge dein erstes Fach hinzu.
         </div>
       {/if}
 
@@ -49,16 +49,16 @@
             <span class="subj-code mono">{s.code ?? ""}</span>
             <div class="grow"></div>
             {#if s.streak > 0}
-              <span class="streak mono" title="study streak">
+              <span class="streak mono" title="Lernserie">
                 <Icon name="bolt" size={11} color="var(--warn)" /> {s.streak}
               </span>
             {/if}
           </div>
           <h3 class="subj-name read">{s.name}</h3>
-          <div class="subj-stat mono">{s.sourceCount} sources · {s.topics.length} topics</div>
+          <div class="subj-stat mono">{s.sourceCount} Quellen · {s.topics.length} Themen</div>
           <div class="subj-foot">
             {#if s.sourceCount === 0}
-              <span class="status-pill status-pill--review"><span class="dot"></span>No sources yet</span>
+              <span class="status-pill status-pill--review"><span class="dot"></span>Noch keine Quellen</span>
             {:else}
               <span class="status-pill status-pill--ready"><span class="dot"></span>{s.sourceCount} source{s.sourceCount === 1 ? "" : "s"}</span>
             {/if}
@@ -69,7 +69,7 @@
       <button class="subj-card subj-card--add" onclick={() => app.setView("add-subject")}>
         <div class="add-inner">
           <Icon name="plus" size={20} color="var(--fg-faint)" />
-          <span>Add subject</span>
+          <span>Fach hinzufügen</span>
         </div>
       </button>
     </div>

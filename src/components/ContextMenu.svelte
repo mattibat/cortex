@@ -17,9 +17,9 @@
       const topic = subj?.topics.find((t) => t.id === tid);
       if (!topic) return null;
       return [
-        { label: "Edit topic", run: () => app.openEdit({ kind: "topic", id: topic.id, name: topic.name, subjectId: sid, glyph: topic.glyph || "◆", tags: topic.tags ?? [] }) },
-        { label: "Delete topic", run: async () => {
-            if (await app.confirm({ title: `Delete topic "${topic.name}"?`, danger: true, okLabel: "Delete" })) app.deleteTopic(topic.id, sid);
+        { label: "Thema bearbeiten", run: () => app.openEdit({ kind: "topic", id: topic.id, name: topic.name, subjectId: sid, glyph: topic.glyph || "◆", tags: topic.tags ?? [] }) },
+        { label: "Thema löschen", run: async () => {
+            if (await app.confirm({ title: `Thema „${topic.name}“ löschen?`, danger: true, okLabel: "Löschen" })) app.deleteTopic(topic.id, sid);
           } },
       ];
     }
@@ -29,12 +29,12 @@
       const s = app.subjects.find((x) => x.id === sid);
       if (!s) return null;
       return [
-        { label: "Edit subject", run: () => app.openEdit({ kind: "subject", id: s.id, name: s.name, code: s.code ?? "", glyph: s.glyph, color: app.subjectColor(s) }) },
-        { label: "Archive subject", run: async () => {
-            if (await app.confirm({ title: `Archive "${s.name}"?`, body: "Hidden everywhere but its data is kept. Restore from Settings → Data.", okLabel: "Archive" })) app.setSubjectArchived(s.id, true);
+        { label: "Fach bearbeiten", run: () => app.openEdit({ kind: "subject", id: s.id, name: s.name, code: s.code ?? "", glyph: s.glyph, color: app.subjectColor(s) }) },
+        { label: "Fach archivieren", run: async () => {
+            if (await app.confirm({ title: `„${s.name}“ archivieren?`, body: "Wird überall ausgeblendet, die Daten bleiben erhalten. Wiederherstellen unter Einstellungen → Daten.", okLabel: "Archivieren" })) app.setSubjectArchived(s.id, true);
           } },
-        { label: "Delete subject", run: async () => {
-            if (await app.confirm({ title: `Delete "${s.name}"?`, danger: true, okLabel: "Delete" })) app.deleteSubject(s.id);
+        { label: "Fach löschen", run: async () => {
+            if (await app.confirm({ title: `„${s.name}“ löschen?`, danger: true, okLabel: "Löschen" })) app.deleteSubject(s.id);
           } },
       ];
     }
@@ -104,19 +104,19 @@
       const el = target;
       const hasSel = (el.selectionStart ?? 0) !== (el.selectionEnd ?? 0);
       out.push({
-        label: "Cut", key: "⌘X", disabled: !hasSel,
+        label: "Ausschneiden", key: "⌘X", disabled: !hasSel,
         run: async () => { const t = fieldSelection(el); if (t) { await writeClipboard(t); deleteFieldSelection(el); } },
       });
       out.push({
-        label: "Copy", key: "⌘C", disabled: !hasSel,
+        label: "Kopieren", key: "⌘C", disabled: !hasSel,
         run: async () => { const t = fieldSelection(el); if (t) await writeClipboard(t); },
       });
       out.push({
-        label: "Paste", key: "⌘V",
+        label: "Einfügen", key: "⌘V",
         run: async () => { el.focus(); const t = await readClipboard(); if (t) insertIntoField(el, t); },
       });
       out.push({
-        label: "Select all", key: "⌘A",
+        label: "Alles auswählen", key: "⌘A",
         run: () => { el.focus(); el.select(); },
       });
       return out;
@@ -125,11 +125,11 @@
     // Non-editable: operate on the page text selection.
     const sel = selectionText();
     out.push({
-      label: "Copy", key: "⌘C", disabled: !sel,
+      label: "Kopieren", key: "⌘C", disabled: !sel,
       run: async () => { if (sel) await writeClipboard(sel); },
     });
     out.push({
-      label: "Select all", key: "⌘A",
+      label: "Alles auswählen", key: "⌘A",
       run: () => {
         const range = document.createRange();
         const root = (target?.closest("p, li, td, .read, .bubble, .workspace-scroll") as Element) ?? document.body;

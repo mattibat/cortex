@@ -35,10 +35,10 @@
   <button
     class="sb-seg sb-seg-btn"
     type="button"
-    title="Leader actions (Space)"
+    title="Leertaste-Menü (Leertaste)"
     onclick={() => (app.leaderOpen = true)}
   >
-    <span class="sb-key">␣</span> actions
+    <span class="sb-key">␣</span> Aktionen
   </button>
 
   <!-- scope breadcrumb (present working directory) -->
@@ -65,12 +65,12 @@
 
   <div class="sb-spacer"></div>
 
-  <button class="sb-seg sb-seg-btn" type="button" title="Keyboard shortcuts (?)" onclick={() => (app.helpOpen = true)}>
-    <span class="sb-key">?</span> help
+  <button class="sb-seg sb-seg-btn" type="button" title="Tastenkürzel (?)" onclick={() => (app.helpOpen = true)}>
+    <span class="sb-key">?</span> Hilfe
   </button>
 
-  <button class="sb-seg sb-seg-btn" type="button" title="Command palette (:)" style:border-right="none" onclick={() => (app.cmdkOpen = true)}>
-    <span class="sb-key">:</span> command
+  <button class="sb-seg sb-seg-btn" type="button" title="Befehlspalette (:)" style:border-right="none" onclick={() => (app.cmdkOpen = true)}>
+    <span class="sb-key">:</span> Befehl
   </button>
 </div>
 

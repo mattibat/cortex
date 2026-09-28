@@ -21,19 +21,19 @@ export type Action =
   | "dismissToast";
 
 export const ACTION_LABELS: Record<Action, string> = {
-  cmdk: "Command palette",
-  leader: "Leader menu",
-  toggleChat: "Toggle chat",
-  toggleSidebar: "Toggle sidebar",
-  newSubject: "New subject",
-  recorder: "Record lecture",
-  cycleTheme: "Cycle theme",
-  music: "Music panel",
-  notifications: "Notifications",
-  insert: "Insert / focus compose",
-  dashboard: "Go to dashboard (after g)",
-  help: "Help overlay",
-  dismissToast: "Dismiss toast",
+  cmdk: "Befehlspalette",
+  leader: "Leertaste-Menü",
+  toggleChat: "Chat umschalten",
+  toggleSidebar: "Seitenleiste umschalten",
+  newSubject: "Neues Fach",
+  recorder: "Unterricht aufnehmen",
+  cycleTheme: "Design wechseln",
+  music: "Musik",
+  notifications: "Benachrichtigungen",
+  insert: "Eingabefeld fokussieren",
+  dashboard: "Zur Übersicht (nach g)",
+  help: "Hilfe",
+  dismissToast: "Hinweis schließen",
 };
 
 export const ACTION_ORDER: Action[] = [
@@ -77,22 +77,22 @@ export interface LeaderAction {
   detail: string;
 }
 export const LEADER_ACTIONS: LeaderAction[] = [
-  { key: "s", label: "Sources",     detail: "view all sources" },
-  { key: "h", label: "Cheatsheet",  detail: "back to your sheet" },
-  { key: "c", label: "Chat",        detail: "open chat dock" },
-  { key: "r", label: "Record",      detail: "lecture recorder" },
-  { key: "f", label: "Flashcards",  detail: "decks & study" },
-  { key: "e", label: "Materials",   detail: "study materials" },
-  { key: "d", label: "Review cheatsheet", detail: "draft + history" },
-  { key: "o", label: "Notes",       detail: "markdown notes" },
-  { key: "a", label: "Calendar",    detail: "events & tasks" },
-  { key: "i", label: "Insights",    detail: "study analytics" },
-  { key: "t", label: "Theme",       detail: "cycle Omarchy theme" },
-  { key: "m", label: "Music",       detail: "study sound panel" },
-  { key: "p", label: "Pomodoro",    detail: "focus timer + bonsai" },
-  { key: "b", label: "Sidebar",     detail: "minimize / show navbar" },
-  { key: ",", label: "Settings",    detail: "open preferences" },
-  { key: "g", label: "Dashboard",   detail: "go to dashboard" },
+  { key: "s", label: "Quellen",      detail: "alle Quellen anzeigen" },
+  { key: "h", label: "Lernzettel",   detail: "zurück zum Lernzettel" },
+  { key: "c", label: "Chat",         detail: "Chat öffnen" },
+  { key: "r", label: "Aufnahme",     detail: "Unterricht aufnehmen" },
+  { key: "f", label: "Karteikarten", detail: "Stapel & lernen" },
+  { key: "e", label: "Materialien",  detail: "Lernmaterialien" },
+  { key: "d", label: "Lernzettel prüfen", detail: "Entwurf + Verlauf" },
+  { key: "o", label: "Notizen",      detail: "Markdown-Notizen" },
+  { key: "a", label: "Kalender",     detail: "Termine & Aufgaben" },
+  { key: "i", label: "Statistik",    detail: "Lernstatistik" },
+  { key: "t", label: "Design",       detail: "Omarchy-Design wechseln" },
+  { key: "m", label: "Musik",        detail: "Lernmusik" },
+  { key: "p", label: "Pomodoro",     detail: "Fokus-Timer + Bonsai" },
+  { key: "b", label: "Seitenleiste", detail: "einklappen / anzeigen" },
+  { key: ",", label: "Einstellungen", detail: "Einstellungen öffnen" },
+  { key: "g", label: "Übersicht",    detail: "zur Übersicht" },
 ];
 
 const MODIFIER_KEYS = ["Control", "Shift", "Alt", "Meta", "AltGraph", "CapsLock", "ContextMenu"];

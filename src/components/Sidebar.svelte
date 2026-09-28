@@ -17,7 +17,7 @@
   }
 
   const stationName = $derived(
-    stations.find((s) => s.id === app.music.current)?.name ?? "Study sound"
+    stations.find((s) => s.id === app.music.current)?.name ?? "Lernmusik"
   );
 
   // Local state: which subject is expanded in the tree
@@ -109,8 +109,8 @@
     <button
       class="sb-bell"
       type="button"
-      title="Notifications (u)"
-      aria-label="Notifications{app.unreadCount > 0 ? ` — ${app.unreadCount} unread` : ''}"
+      title="Benachrichtigungen (u)"
+      aria-label="Benachrichtigungen{app.unreadCount > 0 ? ` – ${app.unreadCount} ungelesen` : ''}"
       onclick={() => app.toggleNotifications()}
     >
       <Icon name="bell" size={15} />
@@ -118,7 +118,7 @@
         <span class="sb-bell-badge">{app.unreadCount > 99 ? "99+" : app.unreadCount}</span>
       {/if}
     </button>
-    <button class="b-cmd" type="button" title="Minimize sidebar (b)" style="background:none;border:none;padding:0;cursor:pointer;color:inherit;display:inline-flex;align-items:center;transform:rotate(180deg)" onclick={() => app.toggleSidebar()}>
+    <button class="b-cmd" type="button" title="Seitenleiste einklappen (b)" style="background:none;border:none;padding:0;cursor:pointer;color:inherit;display:inline-flex;align-items:center;transform:rotate(180deg)" onclick={() => app.toggleSidebar()}>
       <Icon name="chevron" size={15} />
     </button>
   </div>
@@ -132,7 +132,7 @@
       tabindex="0"
       onkeydown={(e) => e.key === "Enter" && app.setView("dashboard")}
     >
-      <Icon name="home" size={14} /> Dashboard <span class="nav-k">␣ g</span>
+      <Icon name="home" size={14} /> Übersicht <span class="nav-k">␣ g</span>
     </div>
     <div
       class="sb-nav-item{app.view === 'recorder' ? ' on' : ''}"
@@ -141,7 +141,7 @@
       tabindex="0"
       onkeydown={(e) => e.key === "Enter" && app.setView("recorder")}
     >
-      <Icon name="record" size={13} /> Record lecture <span class="nav-k">␣ r</span>
+      <Icon name="record" size={13} /> Unterricht aufnehmen <span class="nav-k">␣ r</span>
     </div>
     <div
       class="sb-nav-item{app.view === 'add-source' ? ' on' : ''}"
@@ -150,7 +150,7 @@
       tabindex="0"
       onkeydown={(e) => e.key === "Enter" && app.setView("add-source")}
     >
-      <Icon name="plus" size={14} /> Add source <span class="nav-k">␣ s</span>
+      <Icon name="plus" size={14} /> Quelle hinzufügen <span class="nav-k">␣ s</span>
     </div>
     <div
       class="sb-nav-item{app.view === 'notes' ? ' on' : ''}"
@@ -159,7 +159,7 @@
       tabindex="0"
       onkeydown={(e) => e.key === "Enter" && app.setView("notes")}
     >
-      <Icon name="reader" size={14} /> Notes <span class="nav-k">␣ o</span>
+      <Icon name="reader" size={14} /> Notizen <span class="nav-k">␣ o</span>
     </div>
     <div
       class="sb-nav-item{app.view === 'calendar' ? ' on' : ''}"
@@ -168,7 +168,7 @@
       tabindex="0"
       onkeydown={(e) => e.key === "Enter" && app.setView("calendar")}
     >
-      <Icon name="calendar" size={14} /> Calendar <span class="nav-k">␣ a</span>
+      <Icon name="calendar" size={14} /> Kalender <span class="nav-k">␣ a</span>
     </div>
     <div
       class="sb-nav-item{app.view === 'analytics' ? ' on' : ''}"
@@ -177,15 +177,15 @@
       tabindex="0"
       onkeydown={(e) => e.key === "Enter" && app.setView("analytics")}
     >
-      <Icon name="chart" size={14} /> Insights <span class="nav-k">␣ i</span>
+      <Icon name="chart" size={14} /> Statistik <span class="nav-k">␣ i</span>
     </div>
 
     <!-- Subjects section header -->
     <div class="sb-section-l">
-      <span class="label">Subjects</span>
+      <span class="label">Fächer</span>
       <span
         class="add"
-        title="New subject"
+        title="Neues Fach"
         role="button"
         tabindex="0"
         onclick={() => app.setView("add-subject")}
@@ -213,7 +213,7 @@
             onclick={(e) => toggleExpand(s.id, e)}
             role="button"
             tabindex="-1"
-            aria-label="Expand {s.name}"
+            aria-label="{s.name} aufklappen"
           >
             <Icon name="chevron" size={11} />
           </span>
@@ -225,8 +225,8 @@
             <button
               class="s-act"
               type="button"
-              title="Edit subject"
-              aria-label="Edit {s.name}"
+              title="Fach bearbeiten"
+              aria-label="{s.name} bearbeiten"
               onclick={(e) => editSubject(s, e)}
             >
               <Icon name="pencil" size={12} />
@@ -234,12 +234,12 @@
             <button
               class="s-act"
               type="button"
-              title="Add a topic to {s.name}"
-              aria-label="Add topic to {s.name}"
+              title="Thema zu {s.name} hinzufügen"
+              aria-label="Thema zu {s.name} hinzufügen"
               onclick={async (e) => {
                 e.stopPropagation();
                 app.activeSubjectId = s.id;
-                const n = await app.prompt({ title: "Add topic to " + s.name, label: "Topic name", placeholder: "e.g. Determinism" });
+                const n = await app.prompt({ title: "Thema zu " + s.name + " hinzufügen", label: "Name des Themas", placeholder: "z. B. Determinismus" });
                 if (n) app.createTopic(n);
               }}
             >
@@ -268,15 +268,15 @@
                 use:reorderable={{ index: ti, group: "topics:" + s.id, onReorder: (from, to) => reorderTopic(s.id, s.topics.map((x) => x.id), from, to) }}
               >
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <span class="t-tw{tOpen ? ' open' : ''}" role="button" tabindex="-1" aria-label="Toggle sources" onclick={(e) => toggleTopic(t.id, e)}><Icon name="chevron" size={10} /></span>
+                <span class="t-tw{tOpen ? ' open' : ''}" role="button" tabindex="-1" aria-label="Quellen ein-/ausklappen" onclick={(e) => toggleTopic(t.id, e)}><Icon name="chevron" size={10} /></span>
                 <span class="t-glyph" style="flex:none;font-size:11px;margin-right:5px">{t.glyph || topicGlyph(t.id)}</span>
                 <span class="t-name">{t.name}</span>
                 <span class="t-actions">
                   <button
                     class="s-act"
                     type="button"
-                    title="Rename topic"
-                    aria-label="Rename {t.name}"
+                    title="Thema umbenennen"
+                    aria-label="{t.name} umbenennen"
                     onclick={(e) => editTopic(t, s.id, e)}
                   >
                     <Icon name="pencil" size={11} />
@@ -284,8 +284,8 @@
                   <button
                     class="s-act"
                     type="button"
-                    title="Add a source to {t.name}"
-                    aria-label="Add source to {t.name}"
+                    title="Quelle zu {t.name} hinzufügen"
+                    aria-label="Quelle zu {t.name} hinzufügen"
                     onclick={(e) => { e.stopPropagation(); app.newSourceInTopic(t.id); }}
                   >
                     <Icon name="plus" size={11} />
@@ -294,11 +294,11 @@
                     <button
                       class="s-act"
                       type="button"
-                      title="Delete empty topic"
-                      aria-label="Delete topic {t.name}"
+                      title="Leeres Thema löschen"
+                      aria-label="Thema {t.name} löschen"
                       onclick={async (e) => {
                         e.stopPropagation();
-                        const ok = await app.confirm({ title: `Delete topic "${t.name}"?`, body: "This empty topic will be removed.", danger: true, okLabel: "Delete" });
+                        const ok = await app.confirm({ title: `Thema „${t.name}“ löschen?`, body: "Dieses leere Thema wird entfernt.", danger: true, okLabel: "Löschen" });
                         if (ok) app.deleteTopic(t.id, s.id);
                       }}
                     >
@@ -339,7 +339,7 @@
                 onkeydown={(e) => (e.key === "Enter" || e.key === " ") && toggleTopic(ugId, e)}
               >
                 <span class="t-tw{ugOpen ? ' open' : ''}"><Icon name="chevron" size={10} /></span>
-                <span class="t-name">Ungrouped</span>
+                <span class="t-name">Ohne Thema</span>
               </div>
               {#if ugOpen}
                 {#each ungroupedSources(s) as src (src.id)}
@@ -370,9 +370,9 @@
   <button
     class="sb-settings{app.view === 'settings' ? ' on' : ''}"
     onclick={() => app.setView("settings")}
-    title="Settings"
+    title="Einstellungen"
   >
-    <Icon name="settings" size={14} /> Settings
+    <Icon name="settings" size={14} /> Einstellungen
   </button>
 
   <!-- Music mini row — opens the study-sound panel -->
@@ -380,7 +380,7 @@
     class="sb-music"
     role="button"
     tabindex="0"
-    title="Study sound (m)"
+    title="Lernmusik (m)"
     onclick={() => (app.musicOpen = true)}
     onkeydown={(e) => e.key === "Enter" && (app.musicOpen = true)}
   >
@@ -393,11 +393,11 @@
     </div>
     <div style:flex="1" style:min-width="0">
       <div class="m-name">{stationName}</div>
-      <div class="m-sub">lo-fi · ad-free study</div>
+      <div class="m-sub">Lo-Fi · werbefrei lernen</div>
     </div>
     <button
       class="m-play"
-      title={app.music.playing ? "Pause" : "Play"}
+      title={app.music.playing ? "Pause" : "Abspielen"}
       onclick={(e) => { e.stopPropagation(); app.toggleMusic(); }}
     >
       <Icon name={app.music.playing ? "pause" : "play"} size={14} />

@@ -61,7 +61,7 @@
         />
       {/if}
       <div class="dlg-actions">
-        <button class="btn btn--ghost btn--sm" type="button" onclick={cancel}>Cancel</button>
+        <button class="btn btn--ghost btn--sm" type="button" onclick={cancel}>Abbrechen</button>
         <button
           class={"btn btn--sm " + (app.dialog.danger ? "btn--danger" : "btn--primary")}
           type="button"

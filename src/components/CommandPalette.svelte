@@ -43,7 +43,7 @@
           // jump to the section heading
           items.push({
             id: `csh-${t.id}-${sec.id}`,
-            group: "Cheatsheet",
+            group: "Lernzettel",
             label: sec.title,
             kind: t.name,
             icon: "book",
@@ -54,7 +54,7 @@
             if (it.t.startsWith("__topic__")) return; // composed-only divider sentinel
             items.push({
               id: `csi-${t.id}-${sec.id}-${i}`,
-              group: "Cheatsheet",
+              group: "Lernzettel",
               label: it.t,
               kind: `${t.name} · ${sec.title}`,
               icon: "book",
@@ -82,7 +82,7 @@
     ...cheatItems,
     ...app.subjects.map((s) => ({
       id: "subj-" + s.id,
-      group: "Subjects",
+      group: "Fächer",
       label: s.name,
       kind: s.code ?? "",
       icon: "diamond",
@@ -92,30 +92,30 @@
     ...app.subjects.flatMap((s) =>
       s.topics.map((t) => ({
         id: "topic-" + t.id,
-        group: "Topics",
+        group: "Themen",
         label: t.name,
         kind: s.name,
         icon: "chevron",
         run: () => app.openTopicSheet(s.id, t.id),
       }))
     ),
-    { id: "a-record", group: "Actions", label: "Record lecture", kind: "command", icon: "record", hint: kh(keybinds.map.recorder), run: () => app.setView("recorder") },
-    { id: "a-source", group: "Actions", label: "Add source", kind: "command", icon: "plus", hint: kh(keybinds.map.leader) + " s", run: () => app.setView("add-source") },
-    { id: "a-diff", group: "Actions", label: "Review cheatsheet diff", kind: "command", icon: "book", hint: app.pending ? app.pending + " pending" : kh(keybinds.map.leader) + " d", run: () => app.reviewDiff() },
-    { id: "a-regen", group: "Actions", label: "Regenerate cheatsheet", kind: "command", icon: "refresh", run: () => app.regenCheatsheet() },
-    { id: "a-flash", group: "Actions", label: "Study flashcards", kind: "command", icon: "cards", run: () => { app.setView("subject"); app.setTab("materials"); } },
-    { id: "a-quiz", group: "Actions", label: "Generate quiz", kind: "command", icon: "check", run: () => { app.setView("subject"); app.setTab("materials"); } },
-    { id: "a-chat", group: "Actions", label: app.chatOpen ? "Hide chat panel" : "Show chat panel", kind: "command", icon: "chat", hint: kh(keybinds.map.toggleChat), run: () => app.toggleChat() },
-    { id: "a-music", group: "Actions", label: "Study sound…", kind: "command", icon: "music", hint: kh(keybinds.map.music), run: () => (app.musicOpen = true) },
-    { id: "a-pomo", group: "Actions", label: "Pomodoro timer", kind: "command", icon: "record", hint: "␣ p", run: () => (app.pomodoroOpen = true) },
-    { id: "a-newsubj", group: "Actions", label: "New subject", kind: "command", icon: "plus", hint: kh(keybinds.map.newSubject), run: () => app.setView("add-subject") },
-    { id: "v-dash", group: "Go to", label: "Dashboard", kind: "view", icon: "home", hint: "g " + kh(keybinds.map.dashboard), run: () => app.setView("dashboard") },
-    { id: "v-analytics", group: "Go to", label: "Study analytics", kind: "view", icon: "chart", run: () => app.setView("analytics") },
-    { id: "v-exam", group: "Go to", label: "Start exam", kind: "view", icon: "check", run: () => app.setView("exam") },
-    { id: "s-settings", group: "Settings", label: "Open settings", kind: "setting", icon: "settings", run: () => app.setView("settings") },
-    { id: "s-keys", group: "Settings", label: "API keys & models", kind: "setting", icon: "lock", run: () => app.setView("settings") },
-    { id: "s-profile", group: "Settings", label: "Edit your profile", kind: "setting", icon: "diamond", run: () => app.setView("settings") },
-    { id: "s-theme", group: "Settings", label: "Cycle Omarchy theme", kind: "setting", icon: "settings", hint: "␣ t", run: () => app.cycleTheme() },
+    { id: "a-record", group: "Aktionen", label: "Unterricht aufnehmen", kind: "command", icon: "record", hint: kh(keybinds.map.recorder), run: () => app.setView("recorder") },
+    { id: "a-source", group: "Aktionen", label: "Quelle hinzufügen", kind: "command", icon: "plus", hint: kh(keybinds.map.leader) + " s", run: () => app.setView("add-source") },
+    { id: "a-diff", group: "Aktionen", label: "Lernzettel-Änderungen prüfen", kind: "command", icon: "book", hint: app.pending ? app.pending + " offen" : kh(keybinds.map.leader) + " d", run: () => app.reviewDiff() },
+    { id: "a-regen", group: "Aktionen", label: "Lernzettel neu erstellen", kind: "command", icon: "refresh", run: () => app.regenCheatsheet() },
+    { id: "a-flash", group: "Aktionen", label: "Karteikarten lernen", kind: "command", icon: "cards", run: () => { app.setView("subject"); app.setTab("materials"); } },
+    { id: "a-quiz", group: "Aktionen", label: "Quiz erstellen", kind: "command", icon: "check", run: () => { app.setView("subject"); app.setTab("materials"); } },
+    { id: "a-chat", group: "Aktionen", label: app.chatOpen ? "Chat ausblenden" : "Chat einblenden", kind: "command", icon: "chat", hint: kh(keybinds.map.toggleChat), run: () => app.toggleChat() },
+    { id: "a-music", group: "Aktionen", label: "Lernmusik…", kind: "command", icon: "music", hint: kh(keybinds.map.music), run: () => (app.musicOpen = true) },
+    { id: "a-pomo", group: "Aktionen", label: "Pomodoro-Timer", kind: "command", icon: "record", hint: "␣ p", run: () => (app.pomodoroOpen = true) },
+    { id: "a-newsubj", group: "Aktionen", label: "Neues Fach", kind: "command", icon: "plus", hint: kh(keybinds.map.newSubject), run: () => app.setView("add-subject") },
+    { id: "v-dash", group: "Gehe zu", label: "Übersicht", kind: "view", icon: "home", hint: "g " + kh(keybinds.map.dashboard), run: () => app.setView("dashboard") },
+    { id: "v-analytics", group: "Gehe zu", label: "Lernstatistik", kind: "view", icon: "chart", run: () => app.setView("analytics") },
+    { id: "v-exam", group: "Gehe zu", label: "Prüfung starten", kind: "view", icon: "check", run: () => app.setView("exam") },
+    { id: "s-settings", group: "Einstellungen", label: "Einstellungen öffnen", kind: "setting", icon: "settings", run: () => app.setView("settings") },
+    { id: "s-keys", group: "Einstellungen", label: "API-Schlüssel & Modelle", kind: "setting", icon: "lock", run: () => app.setView("settings") },
+    { id: "s-profile", group: "Einstellungen", label: "Profil bearbeiten", kind: "setting", icon: "diamond", run: () => app.setView("settings") },
+    { id: "s-theme", group: "Einstellungen", label: "Omarchy-Design wechseln", kind: "setting", icon: "settings", hint: "␣ t", run: () => app.cycleTheme() },
   ]);
 
   const filtered = $derived(
@@ -189,7 +189,7 @@
           bind:value={q}
           oninput={() => { sel = 0; }}
           onkeydown={onKey}
-          placeholder="Search actions, subjects, sources…"
+          placeholder="Aktionen, Fächer, Quellen durchsuchen…"
         />
         <span class="kbd">esc</span>
       </div>
@@ -197,7 +197,7 @@
       <div style:max-height="46vh" style:overflow-y="auto" style:overflow-x="hidden">
         {#if flat.length === 0}
           <div style:padding="22px" style:text-align="center" style:color="var(--fg-faint)" style:font-size="var(--t-sm)">
-            No matches
+            Keine Treffer
           </div>
         {/if}
 

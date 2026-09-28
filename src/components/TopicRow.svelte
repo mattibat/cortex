@@ -32,16 +32,16 @@
     await save();
   }
   async function del() {
-    if (!(await app.confirm({ title: `Delete topic "${topic.name}"?`, body: "Sources in it become ungrouped.", danger: true, okLabel: "Delete" }))) return;
+    if (!(await app.confirm({ title: `Thema „${topic.name}“ löschen?`, body: "Die Quellen darin werden keinem Thema mehr zugeordnet.", danger: true, okLabel: "Löschen" }))) return;
     await app.deleteTopic(topic.id, subjectId);
   }
 </script>
 
 <div class="tr">
   <EmojiPicker value={glyph} onPick={pick} size={28} />
-  <input class="input tr-name" bind:value={name} onblur={save} placeholder="Topic name" />
-  <input class="input tr-tags mono" bind:value={tags} onblur={save} placeholder="tags, comma separated" />
-  <button class="btn btn--icon btn--sm btn--ghost" title="Delete topic" onclick={del}>
+  <input class="input tr-name" bind:value={name} onblur={save} placeholder="Name des Themas" />
+  <input class="input tr-tags mono" bind:value={tags} onblur={save} placeholder="Tags, durch Komma getrennt" />
+  <button class="btn btn--icon btn--sm btn--ghost" title="Thema löschen" onclick={del}>
     <Icon name="x" size={12} />
   </button>
 </div>

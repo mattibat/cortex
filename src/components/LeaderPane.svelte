@@ -57,7 +57,7 @@
     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
     <div class="leader" onmousedown={e => e.stopPropagation()}>
       <div class="leader-head">
-        <span class="kbd">␣</span> Space leader — context actions
+        <span class="kbd">␣</span> Leertaste-Menü – Aktionen
       </div>
       <div class="leader-grid">
         {#each actions as a}
