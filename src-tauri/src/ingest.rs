@@ -439,6 +439,119 @@ pub fn office_converter_available() -> bool {
     which("libreoffice").is_some() || which("soffice").is_some()
 }
 
+pub fn office_to_pdf(path: &str, dest: &Path) -> Result<()> {
+    if office_converter_available() {
+        return libreoffice_to_pdf(path, dest);
+    }
+    #[cfg(windows)]
+    return msoffice_to_pdf(path, dest);
+    #[cfg(not(windows))]
+    Err(Error::Other("install LibreOffice to render office previews".into()))
+}
+
+#[cfg(windows)]
+const MSO_WORD_PS: &str = r#"$ErrorActionPreference='Stop'
+$app=New-Object -ComObject Word.Application
+try{
+ $doc=$app.Documents.Open($env:CORTEX_SRC,$false,$true,$false)
+ try{ $doc.ExportAsFixedFormat($env:CORTEX_DST,17) } finally { $doc.Close(0) }
+} finally { if($app.Documents.Count -eq 0){ $app.Quit() } }"#;
+
+#[cfg(windows)]
+const MSO_POWERPOINT_PS: &str = r#"$ErrorActionPreference='Stop'
+$app=New-Object -ComObject PowerPoint.Application
+try{
+ $p=$app.Presentations.Open($env:CORTEX_SRC,-1,0,0)
+ try{ $p.SaveAs($env:CORTEX_DST,32) } finally { $p.Close() }
+} finally { if($app.Presentations.Count -eq 0){ $app.Quit() } }"#;
+
+#[cfg(windows)]
+const MSO_EXCEL_PS: &str = r#"$ErrorActionPreference='Stop'
+$app=New-Object -ComObject Excel.Application
+try{
+ $wb=$app.Workbooks.Open($env:CORTEX_SRC,0,$true)
+ try{
+  foreach($ws in $wb.Worksheets){ try{ $ws.PageSetup.Zoom=$false; $ws.PageSetup.FitToPagesWide=1; $ws.PageSetup.FitToPagesTall=$false }catch{} }
+  $wb.ExportAsFixedFormat(0,$env:CORTEX_DST)
+ } finally { $wb.Close($false) }
+} finally { if($app.Workbooks.Count -eq 0){ $app.Quit() } }"#;
+
+#[cfg(windows)]
+fn msoffice_to_pdf(path: &str, dest: &Path) -> Result<()> {
+    use std::io::Read;
+    use std::os::windows::process::CommandExt;
+    use std::process::{Command, Stdio};
+    use std::time::{Duration, Instant};
+    static LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+
+    if !Path::new(path).exists() {
+        return Err(Error::NotFound(format!("file not found: {path}")));
+    }
+    let ext = Path::new(path)
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("")
+        .to_lowercase();
+    let script = match ext.as_str() {
+        "docx" | "doc" | "docm" | "rtf" | "odt" => MSO_WORD_PS,
+        "pptx" | "ppt" | "pptm" | "odp" => MSO_POWERPOINT_PS,
+        "xlsx" | "xls" | "xlsm" | "ods" => MSO_EXCEL_PS,
+        _ => return Err(Error::Other(format!("no Office preview for .{ext} files"))),
+    };
+    if let Some(parent) = dest.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let tmp = dest.with_extension("tmp.pdf");
+    let _ = std::fs::remove_file(&tmp);
+
+    let _guard = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    let mut child = Command::new("powershell")
+        .args(["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", script])
+        .env("CORTEX_SRC", path)
+        .env("CORTEX_DST", &tmp)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::piped())
+        .creation_flags(CREATE_NO_WINDOW)
+        .spawn()
+        .map_err(|e| Error::Other(format!("couldn't start PowerShell: {e}")))?;
+    let stderr_reader = child.stderr.take().map(|mut e| {
+        std::thread::spawn(move || {
+            let mut s = String::new();
+            let _ = e.read_to_string(&mut s);
+            s
+        })
+    });
+
+    let deadline = Instant::now() + Duration::from_secs(180);
+    let status = loop {
+        if let Some(status) = child.try_wait()? {
+            break status;
+        }
+        if Instant::now() > deadline {
+            let _ = child.kill();
+            let _ = std::fs::remove_file(&tmp);
+            return Err(Error::Other(format!("Microsoft Office timed out rendering {path}")));
+        }
+        std::thread::sleep(Duration::from_millis(200));
+    };
+    let stderr = stderr_reader
+        .and_then(|h| h.join().ok())
+        .unwrap_or_default();
+    if !status.success() || !tmp.is_file() {
+        let _ = std::fs::remove_file(&tmp);
+        let msg = stderr.trim();
+        return Err(Error::Other(if msg.is_empty() {
+            format!("Microsoft Office couldn't render {path} (is Office installed?)")
+        } else {
+            format!("Microsoft Office couldn't render {path}: {msg}")
+        }));
+    }
+    std::fs::rename(&tmp, dest)?;
+    Ok(())
+}
+
 /// Extract text from a `.docx`/`.pptx` natively (they're just zip + XML) so
 /// office documents ingest on every OS with **no external tool** — Windows and
 /// macOS users don't need LibreOffice. Legacy binary `.doc`/`.ppt` aren't
