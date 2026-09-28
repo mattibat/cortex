@@ -416,30 +416,44 @@ class AppStore {
     } catch { /* offline / not configured — silent */ }
   }
 
-  #schoolSynced = false;
+  #schoolSyncing = false;
+  #schoolWatching = false;
+  #schoolErrorsShown = new Set<string>();
   async autoSyncSchoolFolder() {
-    if (this.#schoolSynced) return;
-    this.#schoolSynced = true;
+    if (this.#schoolSyncing) return;
+    this.#schoolSyncing = true;
     try {
       const path = await api.getSetting("school_folder_path");
       if (!path?.trim()) return;
       const result = await api.syncSchoolFolder();
-      await this.refresh();
-      if (result.added > 0) {
-        this.pushToast({
-          kind: "success",
-          title: "Schule synchronisiert",
-          body: `${result.added} neue Datei${result.added === 1 ? "" : "en"} eingelesen.`,
-        });
+      if (result.added || result.updated || result.moved || result.removed) await this.refresh();
+      const parts = [
+        result.added > 0 ? `${result.added} neu eingelesen` : "",
+        result.updated > 0 ? `${result.updated} aktualisiert` : "",
+      ].filter(Boolean);
+      if (parts.length) {
+        this.pushToast({ kind: "success", title: "Schule synchronisiert", body: parts.join(" · ") });
       }
-      if (result.errors.length > 0) {
+      const fresh = result.errors.filter((e) => !this.#schoolErrorsShown.has(e));
+      fresh.forEach((e) => this.#schoolErrorsShown.add(e));
+      if (fresh.length > 0) {
         this.pushToast({
           kind: "error",
           title: "Schule-Sync: einige Dateien fehlgeschlagen",
-          body: result.errors.slice(0, 3).join(" · "),
+          body: fresh.slice(0, 3).join(" · "),
         });
       }
-    } catch {}
+    } catch {
+    } finally {
+      this.#schoolSyncing = false;
+    }
+  }
+  watchSchoolFolder() {
+    if (this.#schoolWatching) return;
+    this.#schoolWatching = true;
+    void this.autoSyncSchoolFolder();
+    window.addEventListener("focus", () => void this.autoSyncSchoolFolder());
+    setInterval(() => void this.autoSyncSchoolFolder(), 120_000);
   }
 
   // chrome / modal state
@@ -866,7 +880,7 @@ class AppStore {
     // background so the unread badge + feed are current on launch.
     this.loadNotifReads();
     void this.autoSyncMoodle();
-    void this.autoSyncSchoolFolder();
+    this.watchSchoolFolder();
   }
 
   /** Re-ingest sources stuck in error/draft, one at a time so we don't hammer

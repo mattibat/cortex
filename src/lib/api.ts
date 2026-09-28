@@ -252,7 +252,7 @@ export const installKind = () => invoke<string>("install_kind");
 export interface FolderFile { path: string; name: string }
 export const listFolderSources = (dir: string) => invoke<FolderFile[]>("list_folder_sources", { dir });
 
-export interface SchoolSyncResult { added: number; moved: number; skipped: number; errors: string[] }
+export interface SchoolSyncResult { added: number; updated: number; moved: number; removed: number; skipped: number; errors: string[] }
 export const syncSchoolFolder = () => invoke<SchoolSyncResult>("sync_school_folder");
 
 // ---- per-subject module framework ----
