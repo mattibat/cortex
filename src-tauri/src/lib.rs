@@ -24,6 +24,7 @@ mod notes;
 mod recorder;
 mod repo;
 mod review;
+mod schule;
 mod sync;
 mod vector;
 
@@ -422,6 +423,7 @@ pub fn run() {
             commands::install_dependencies,
             commands::install_kind,
             commands::list_folder_sources,
+            schule::sync_school_folder,
             // notes
             notes::create_note,
             notes::list_notes,
