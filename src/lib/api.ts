@@ -178,6 +178,7 @@ export const deleteTopic = (id: string, subjectId: string) =>
 export const listSources = (subjectId: string) =>
   invoke<Source[]>("list_sources", { subjectId });
 export const getSource = (id: string) => invoke<Source>("get_source", { id });
+export const renderSourcePreview = (id: string) => invoke<Source>("render_source_preview", { id });
 export const updateSource = (
   id: string,
   name: string,

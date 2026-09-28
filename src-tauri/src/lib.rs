@@ -317,6 +317,7 @@ pub fn run() {
             commands::list_sources,
             commands::list_failed_sources,
             commands::get_source,
+            commands::render_source_preview,
             commands::update_source,
             commands::delete_source,
             commands::move_source,
