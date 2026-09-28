@@ -89,6 +89,7 @@ fn list_entries(dir: &Path, want_dirs: bool) -> Vec<PathBuf> {
 pub struct SchoolSyncResult {
     pub added: i64,
     pub moved: i64,
+    pub removed: i64,
     pub skipped: i64,
     pub errors: Vec<String>,
 }
@@ -99,6 +100,7 @@ pub async fn sync_school_folder(app: AppHandle) -> Result<SchoolSyncResult> {
     let mut result = SchoolSyncResult {
         added: 0,
         moved: 0,
+        removed: 0,
         skipped: 0,
         errors: Vec::new(),
     };
@@ -124,6 +126,7 @@ pub async fn sync_school_folder(app: AppHandle) -> Result<SchoolSyncResult> {
     let mut managed_ids: Vec<String> = legacy_id.iter().cloned().collect();
 
     let mut jobs: Vec<(PathBuf, String, String)> = Vec::new();
+    let mut present_topics: Vec<(String, Vec<String>)> = Vec::new();
     for subject_name in WEEKDAYS.iter().copied().chain([UNSORTED]) {
         let subject_dir = root.join(subject_name);
         if !subject_dir.is_dir() {
@@ -150,6 +153,7 @@ pub async fn sync_school_folder(app: AppHandle) -> Result<SchoolSyncResult> {
             }
         };
         managed_ids.push(subject_id.clone());
+        present_topics.push((subject_id.clone(), topics.iter().map(|(n, _)| n.clone()).collect()));
 
         for (topic_name, files) in topics {
             let topic_id = match find_topic_by_name(&c, &subject_id, &topic_name)? {
@@ -208,18 +212,44 @@ pub async fn sync_school_folder(app: AppHandle) -> Result<SchoolSyncResult> {
         }
     }
 
-    if let Some(legacy_id) = legacy_id {
+    {
         let c = state.db.lock().unwrap();
-        let stale: Vec<(String, Option<String>)> = c
-            .prepare("SELECT id, origin FROM sources WHERE subject_id=?1")?
-            .query_map(params![legacy_id], |r| Ok((r.get(0)?, r.get(1)?)))?
-            .collect::<rusqlite::Result<_>>()?;
-        for (id, origin) in stale {
-            let under_root = origin.as_deref().is_some_and(|o| Path::new(o).starts_with(&root));
-            if under_root && !Path::new(origin.as_deref().unwrap_or("")).exists() {
-                repo::delete_source(&c, &id)?;
+        for subject_id in &managed_ids {
+            let sources: Vec<(String, Option<String>, Option<String>)> = c
+                .prepare("SELECT id, origin, stored_path FROM sources WHERE subject_id=?1")?
+                .query_map(params![subject_id], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))?
+                .collect::<rusqlite::Result<_>>()?;
+            for (id, origin, stored_path) in sources {
+                let Some(origin) = origin.map(PathBuf::from) else { continue };
+                if origin.starts_with(&root) && !origin.exists() {
+                    repo::delete_source(&c, &id)?;
+                    if let Some(p) = stored_path {
+                        let _ = std::fs::remove_file(p);
+                    }
+                    result.removed += 1;
+                }
             }
         }
+        for (subject_id, names) in &present_topics {
+            let empty: Vec<(String, String)> = c
+                .prepare(
+                    "SELECT t.id, t.name FROM topics t WHERE t.subject_id=?1 \
+                     AND NOT EXISTS (SELECT 1 FROM sources s WHERE s.topic_id=t.id) \
+                     AND NOT EXISTS (SELECT 1 FROM cheatsheets ch WHERE ch.topic_id=t.id)",
+                )?
+                .query_map(params![subject_id], |r| Ok((r.get(0)?, r.get(1)?)))?
+                .collect::<rusqlite::Result<_>>()?;
+            for (id, name) in empty {
+                if !names.contains(&name) {
+                    repo::delete_topic(&c, &id)?;
+                    result.removed += 1;
+                }
+            }
+        }
+    }
+
+    if let Some(legacy_id) = legacy_id {
+        let c = state.db.lock().unwrap();
         let remaining: i64 = c.query_row(
             "SELECT COUNT(*) FROM sources WHERE subject_id=?1",
             params![legacy_id],
