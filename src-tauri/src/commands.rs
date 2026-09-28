@@ -3385,6 +3385,7 @@ pub struct FolderFile {
 pub fn list_folder_sources(dir: String) -> Result<Vec<FolderFile>> {
     const EXTS: &[&str] = &[
         "pdf", "epub", "docx", "pptx", "doc", "ppt", "txt", "md", "png", "jpg", "jpeg", "webp",
+        "xlsx",
     ];
     fn walk(dir: &Path, out: &mut Vec<FolderFile>, depth: usize) {
         if depth > 8 || out.len() >= 500 {
