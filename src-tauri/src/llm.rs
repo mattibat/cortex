@@ -453,6 +453,30 @@ pub struct Keys {
     pub ollama_url: Option<String>,
 }
 
+const GERMAN_OUTPUT: &str = "
+
+Write all natural-language output in German (Deutsch), whatever the language of these instructions or the sources, unless the user explicitly asks for another language. Keep JSON keys, code, identifiers and LaTeX unchanged.";
+
+struct German(Box<dyn Llm>);
+
+impl Llm for German {
+    fn complete(&self, system: &str, user: &str) -> Result<String> {
+        self.0.complete(&format!("{system}{GERMAN_OUTPUT}"), user)
+    }
+    fn name(&self) -> String {
+        self.0.name()
+    }
+    fn set_max_tokens(&mut self, max: u32) {
+        self.0.set_max_tokens(max)
+    }
+    fn ocr(&self, images: &[(String, String)]) -> Result<String> {
+        self.0.ocr(images)
+    }
+    fn gen_image(&self, prompt: &str) -> Result<String> {
+        self.0.gen_image(prompt)
+    }
+}
+
 fn nonempty(o: &Option<String>) -> Option<&str> {
     o.as_deref().filter(|s| !s.is_empty())
 }
@@ -466,7 +490,7 @@ pub fn from_spec(spec: &str, keys: &Keys) -> Option<Box<dyn Llm>> {
     let spec = spec.trim();
     let (provider, model) = spec.split_once(':').unwrap_or(("gemini", spec));
     let model = model.trim().to_string();
-    match provider {
+    let llm: Option<Box<dyn Llm>> = match provider {
         "gemini" => nonempty(&keys.gemini).map(|k| {
             Box::new(GeminiLlm { api_key: k.to_string(), model, max_tokens: None }) as Box<dyn Llm>
         }),
@@ -513,7 +537,8 @@ pub fn from_spec(spec: &str, keys: &Keys) -> Option<Box<dyn Llm>> {
             }) as Box<dyn Llm>)
         }
         _ => None,
-    }
+    };
+    llm.map(|m| Box::new(German(m)) as Box<dyn Llm>)
 }
 
 /// Like `from_spec`, but if the configured spec's provider has no key, fall back
