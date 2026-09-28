@@ -4,6 +4,7 @@ use crate::models::AddSourceInput;
 use crate::repo;
 use rusqlite::{params, Connection, OptionalExtension};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::{AppHandle, Manager};
 
 const LEGACY_SUBJECT: &str = "Schule";
@@ -143,8 +144,26 @@ pub struct SchoolSyncResult {
     pub errors: Vec<String>,
 }
 
+static SYNC_RUNNING: AtomicBool = AtomicBool::new(false);
+
+struct RunningGuard;
+
+impl Drop for RunningGuard {
+    fn drop(&mut self) {
+        SYNC_RUNNING.store(false, Ordering::SeqCst);
+    }
+}
+
 #[tauri::command]
 pub async fn sync_school_folder(app: AppHandle) -> Result<SchoolSyncResult> {
+    if SYNC_RUNNING.swap(true, Ordering::SeqCst) {
+        return Err(Error::Other("school folder sync is already running".into()));
+    }
+    let _guard = RunningGuard;
+    run_sync(&app).await
+}
+
+async fn run_sync(app: &AppHandle) -> Result<SchoolSyncResult> {
     let state = app.state::<AppState>();
     let mut result = SchoolSyncResult {
         added: 0,
