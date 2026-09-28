@@ -862,7 +862,9 @@ pub async fn reingest_source(app: AppHandle, id: String) -> Result<IngestResult>
             } else {
                 format!("{chunk_count} chunks · {} chars", text.chars().count())
             };
-            repo::finalize_source(&c, &id, status, Some(&meta), Some(&text), warning.as_deref())?;
+            let has_original = matches!(src.kind.as_str(), "pdf" | "image");
+            let error = if has_original { None } else { warning.as_deref() };
+            repo::finalize_source(&c, &id, status, Some(&meta), Some(&text), error)?;
         }
         auto_rename_source(&state, &id, &src.name, &text);
         emit_progress(&app, &id, "done", "re-ingested", 100);
@@ -1167,13 +1169,14 @@ pub async fn add_source(
         } else {
             format!("{chunk_count} chunks · {chars} chars")
         };
+        let error = if copies_original { None } else { warning.as_deref() };
         repo::finalize_source(
             &tx,
             &source_id,
             status,
             Some(&meta),
             Some(&text),
-            warning.as_deref(),
+            error,
         )?;
         tx.commit()?;
     }
