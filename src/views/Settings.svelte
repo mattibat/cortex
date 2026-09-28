@@ -714,6 +714,34 @@
     api.setSetting("searxng_url", searxng).catch(() => {});
   }
 
+  let schoolFolderPath = $state("");
+  let schoolSyncing = $state(false);
+  let schoolSyncResult = $state<api.SchoolSyncResult | null>(null);
+  async function chooseSchoolFolder() {
+    try {
+      const { open } = await import("@tauri-apps/plugin-dialog");
+      const dir = await open({ directory: true, multiple: false });
+      if (!dir || typeof dir !== "string") return;
+      schoolFolderPath = dir;
+      await api.setSetting("school_folder_path", dir);
+      await runSchoolSync();
+    } catch (e) {
+      app.pushToast({ kind: "error", title: "Ordnerauswahl fehlgeschlagen", body: String(e) });
+    }
+  }
+  async function runSchoolSync() {
+    if (!schoolFolderPath.trim()) return;
+    schoolSyncing = true;
+    try {
+      schoolSyncResult = await api.syncSchoolFolder();
+      await app.refresh();
+    } catch (e) {
+      app.pushToast({ kind: "error", title: "Schule-Sync fehlgeschlagen", body: String(e) });
+    } finally {
+      schoolSyncing = false;
+    }
+  }
+
   // ---- Google Calendar ----
   let gClientId = $state("");
   let gClientSecret = $state("");
@@ -1028,6 +1056,7 @@
       // Local models + web search + remote whisper
       if (s.ollama_url)                    endpoint = s.ollama_url;
       if (s.searxng_url)                   searxng  = s.searxng_url;
+      if (s.school_folder_path)            schoolFolderPath = s.school_folder_path;
       if (s.whisper_url)                   whisperUrl = s.whisper_url;
       if (s.whisper_model)                 whisperModel = s.whisper_model;
       // Transcription mode + cloud provider. Unset mode = legacy auto: homelab
@@ -2568,6 +2597,41 @@ Notes: {about}</pre>
                 <button type="button" class={"st-toggle" + (offlineMode ? " on" : "")} onclick={toggleOffline} role="switch" aria-checked={offlineMode} aria-label="offline"><span class="st-knob"></span></button>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section class="set-group">
+          <div class="set-group-h">
+            <h3 class="set-group-t">Schule</h3>
+            <p class="set-group-d">Ein Ordner mit Montag…Freitag → Stunde-Unterordnern. Jeder Tag wird ein eigenes Fach, jede Stunde ein Thema darin.</p>
+          </div>
+          <div class="set-card">
+            <div class="set-row">
+              <div class="set-row-l">
+                <div class="set-row-t">Schulordner</div>
+                <div class="set-row-d mono faint">{schoolFolderPath || "nicht gesetzt"}</div>
+              </div>
+              <div class="set-row-r">
+                <button type="button" class="btn" onclick={chooseSchoolFolder}>Ordner wählen…</button>
+              </div>
+            </div>
+            {#if schoolFolderPath}
+              <div class="set-row">
+                <div class="set-row-l">
+                  <div class="set-row-t">Synchronisieren</div>
+                  <div class="set-row-d">
+                    {#if schoolSyncResult}
+                      Zuletzt: {schoolSyncResult.added} neu · {schoolSyncResult.moved} verschoben · {schoolSyncResult.skipped} übersprungen{schoolSyncResult.errors.length ? ` · ${schoolSyncResult.errors.length} Fehler` : ""}
+                    {:else}
+                      Läuft auch automatisch beim App-Start.
+                    {/if}
+                  </div>
+                </div>
+                <div class="set-row-r">
+                  <button type="button" class="btn" onclick={runSchoolSync} disabled={schoolSyncing}>{schoolSyncing ? "…" : "Jetzt synchronisieren"}</button>
+                </div>
+              </div>
+            {/if}
           </div>
         </section>
 
