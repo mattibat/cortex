@@ -34,6 +34,7 @@ pub fn detect_kind(input: &AddSourceInput) -> String {
             "pptx" | "ppt" => "pptx",
             "epub" => "epub",
             "md" | "markdown" => "md",
+            "xlsx" => "xlsx",
             "txt" | "text" | "" => "txt",
             "py" | "c" | "cpp" | "cc" | "h" | "hpp" | "java" | "js" | "ts" | "json" | "csv"
             | "html" | "htm" | "css" | "sh" | "yaml" | "yml" | "xml" | "log" | "rs" | "go" => {
@@ -75,6 +76,13 @@ pub fn parse(kind: &str, input: &AddSourceInput) -> Result<(String, Option<Strin
                 .as_deref()
                 .ok_or_else(|| Error::Other("pdf source needs a file path".into()))?;
             pdf_to_text(p)
+        }
+        "xlsx" => {
+            let p = input
+                .path
+                .as_deref()
+                .ok_or_else(|| Error::Other("xlsx source needs a file path".into()))?;
+            xlsx_to_text(p)
         }
         "docx" | "pptx" => {
             let p = input
@@ -489,6 +497,185 @@ pub fn ooxml_to_text(path: &str) -> Result<String> {
         out.push_str("\n\n"); // blank line between slides / the document body
     }
     Ok(out.trim().to_string())
+}
+
+fn xlsx_col_index(cell_ref: &str) -> usize {
+    let mut idx: usize = 0;
+    for ch in cell_ref.chars().take_while(|c| c.is_ascii_alphabetic()) {
+        idx = idx * 26 + (ch.to_ascii_uppercase() as usize - 'A' as usize + 1);
+    }
+    idx.saturating_sub(1)
+}
+
+fn xlsx_shared_strings(xml: &str) -> Vec<String> {
+    static SI_RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+    static T_RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+    let si_re = SI_RE.get_or_init(|| regex::Regex::new(r"(?s)<si\b[^>]*>(.*?)</si>").unwrap());
+    let t_re = T_RE.get_or_init(|| regex::Regex::new(r"(?s)<t\b[^>]*>(.*?)</t>").unwrap());
+    si_re
+        .captures_iter(xml)
+        .map(|c| {
+            t_re.captures_iter(&c[1])
+                .map(|tc| decode_entities(&tc[1]))
+                .collect::<String>()
+        })
+        .collect()
+}
+
+fn xlsx_sheet_rows(xml: &str, shared: &[String]) -> Vec<Vec<String>> {
+    static ROW_RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+    static CELL_RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+    static V_RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+    static IS_T_RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+    static REF_RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+    static TYPE_RE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
+
+    let row_re = ROW_RE.get_or_init(|| regex::Regex::new(r"(?s)<row\b[^>]*>(.*?)</row>").unwrap());
+    let cell_re = CELL_RE
+        .get_or_init(|| regex::Regex::new(r"(?s)<c\b([^>]*?)(?:/>|>(.*?)</c>)").unwrap());
+    let v_re = V_RE.get_or_init(|| regex::Regex::new(r"(?s)<v>(.*?)</v>").unwrap());
+    let is_t_re =
+        IS_T_RE.get_or_init(|| regex::Regex::new(r"(?s)<is>.*?<t\b[^>]*>(.*?)</t>").unwrap());
+    let ref_re = REF_RE.get_or_init(|| regex::Regex::new(r#"r="([A-Za-z]+)\d+""#).unwrap());
+    let type_re = TYPE_RE.get_or_init(|| regex::Regex::new(r#"t="([a-zA-Z]+)""#).unwrap());
+
+    let mut rows = Vec::new();
+    for rcap in row_re.captures_iter(xml).take(500) {
+        let row_xml = &rcap[1];
+        let mut cells: Vec<(usize, String)> = Vec::new();
+        for ccap in cell_re.captures_iter(row_xml) {
+            let attrs = ccap.get(1).map(|m| m.as_str()).unwrap_or("");
+            let body = ccap.get(2).map(|m| m.as_str()).unwrap_or("");
+            let col = ref_re
+                .captures(attrs)
+                .map(|c| xlsx_col_index(&c[1]))
+                .unwrap_or(cells.len());
+            if col >= 200 {
+                continue;
+            }
+            let ctype = type_re.captures(attrs).map(|c| c[1].to_string());
+            let value = match ctype.as_deref() {
+                Some("s") => v_re
+                    .captures(body)
+                    .and_then(|c| c[1].parse::<usize>().ok())
+                    .and_then(|i| shared.get(i))
+                    .cloned()
+                    .unwrap_or_default(),
+                Some("inlineStr") => is_t_re
+                    .captures(body)
+                    .map(|c| decode_entities(&c[1]))
+                    .unwrap_or_default(),
+                Some("b") => v_re
+                    .captures(body)
+                    .map(|c| if &c[1] == "1" { "TRUE".into() } else { "FALSE".into() })
+                    .unwrap_or_default(),
+                _ => v_re
+                    .captures(body)
+                    .map(|c| decode_entities(&c[1]))
+                    .unwrap_or_default(),
+            };
+            cells.push((col, value));
+        }
+        if cells.is_empty() {
+            continue;
+        }
+        let width = cells.iter().map(|(c, _)| c + 1).max().unwrap_or(0);
+        let mut row = vec![String::new(); width];
+        for (c, v) in cells {
+            row[c] = v;
+        }
+        rows.push(row);
+    }
+    rows
+}
+
+pub fn xlsx_to_text(path: &str) -> Result<(String, Option<String>)> {
+    use std::io::Read;
+    let file = std::fs::File::open(path)?;
+    let mut zip = zip::ZipArchive::new(file)
+        .map_err(|e| Error::Other(format!("{path} is not a valid XLSX (zip) file: {e}")))?;
+
+    fn read_entry(zip: &mut zip::ZipArchive<std::fs::File>, name: &str) -> Option<String> {
+        let mut s = String::new();
+        zip.by_name(name).ok()?.read_to_string(&mut s).ok()?;
+        Some(s)
+    }
+
+    let shared = read_entry(&mut zip, "xl/sharedStrings.xml")
+        .map(|xml| xlsx_shared_strings(&xml))
+        .unwrap_or_default();
+
+    let workbook = read_entry(&mut zip, "xl/workbook.xml").unwrap_or_default();
+    let rels = read_entry(&mut zip, "xl/_rels/workbook.xml.rels").unwrap_or_default();
+    let rid_to_target: std::collections::HashMap<String, String> =
+        regex::Regex::new(r#"(?is)<Relationship\b[^>]*\bId="([^"]+)"[^>]*\bTarget="([^"]+)""#)
+            .unwrap()
+            .captures_iter(&rels)
+            .map(|c| (c[1].to_string(), c[2].to_string()))
+            .collect();
+    let mut sheets: Vec<(String, String)> =
+        regex::Regex::new(r#"(?is)<sheet\b[^>]*\bname="([^"]+)"[^>]*\br:id="([^"]+)""#)
+            .unwrap()
+            .captures_iter(&workbook)
+            .filter_map(|c| {
+                let name = decode_entities(&c[1]);
+                let target = rid_to_target.get(&c[2])?;
+                let path = if target.starts_with("worksheets") {
+                    format!("xl/{target}")
+                } else {
+                    target.clone()
+                };
+                Some((name, path))
+            })
+            .collect();
+
+    if sheets.is_empty() {
+        let mut names: Vec<String> = (0..zip.len())
+            .filter_map(|i| zip.by_index(i).ok().map(|f| f.name().to_string()))
+            .filter(|n| n.starts_with("xl/worksheets/sheet") && n.ends_with(".xml"))
+            .collect();
+        names.sort_by_key(|n| {
+            n.trim_start_matches("xl/worksheets/sheet")
+                .trim_end_matches(".xml")
+                .parse::<u32>()
+                .unwrap_or(u32::MAX)
+        });
+        sheets = names
+            .into_iter()
+            .enumerate()
+            .map(|(i, path)| (format!("Sheet{}", i + 1), path))
+            .collect();
+    }
+
+    let mut out = String::new();
+    for (name, sheet_path) in sheets.iter().take(20) {
+        let Some(xml) = read_entry(&mut zip, sheet_path) else {
+            continue;
+        };
+        let rows = xlsx_sheet_rows(&xml, &shared);
+        if rows.is_empty() {
+            continue;
+        }
+        let width = rows.iter().map(|r| r.len()).max().unwrap_or(0).max(1);
+        let cell = |row: &[String], i: usize| row.get(i).cloned().unwrap_or_default();
+
+        out.push_str(&format!("## {name}\n\n"));
+        let header: Vec<String> = (0..width).map(|i| cell(&rows[0], i)).collect();
+        out.push_str(&format!("| {} |\n", header.join(" | ")));
+        out.push_str(&format!("|{}\n", "---|".repeat(width)));
+        for row in rows.iter().skip(1) {
+            let line: Vec<String> = (0..width)
+                .map(|i| cell(row, i).replace('|', "\\|"))
+                .collect();
+            out.push_str(&format!("| {} |\n", line.join(" | ")));
+        }
+        out.push('\n');
+    }
+
+    if out.trim().is_empty() {
+        return Ok((String::new(), Some("no readable cells found".into())));
+    }
+    Ok((out.trim().to_string(), None))
 }
 
 /// Extract reading-order text from an EPUB natively — it's a zip of XHTML
@@ -1097,6 +1284,51 @@ mod tests {
         let doc = dir.join("legacy.doc");
         std::fs::write(&doc, b"\xD0\xCF\x11\xE0 not a zip").unwrap();
         assert!(ooxml_to_text(doc.to_str().unwrap()).is_err());
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn xlsx_text_extraction_no_tools() {
+        use std::io::Write;
+        use zip::write::SimpleFileOptions;
+
+        let dir = std::env::temp_dir().join(format!("cortex-xlsx-test-{}", crate::db::new_id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("book.xlsx");
+        {
+            let mut zw = zip::ZipWriter::new(std::fs::File::create(&path).unwrap());
+            let opts = SimpleFileOptions::default();
+
+            zw.start_file("xl/sharedStrings.xml", opts).unwrap();
+            zw.write_all(br#"<sst><si><t>Name</t></si><si><t>Alice</t></si></sst>"#).unwrap();
+
+            zw.start_file("xl/workbook.xml", opts).unwrap();
+            zw.write_all(
+                br#"<workbook><sheets><sheet name="Blatt1" sheetId="1" r:id="rId1"/></sheets></workbook>"#,
+            ).unwrap();
+
+            zw.start_file("xl/_rels/workbook.xml.rels", opts).unwrap();
+            zw.write_all(
+                br#"<Relationships><Relationship Id="rId1" Type="worksheet" Target="worksheets/sheet1.xml"/></Relationships>"#,
+            ).unwrap();
+
+            zw.start_file("xl/worksheets/sheet1.xml", opts).unwrap();
+            zw.write_all(
+                br#"<worksheet><sheetData>
+                <row r="1"><c r="A1" t="s"><v>0</v></c></row>
+                <row r="2"><c r="A2" t="s"><v>1</v></c><c r="B2"><v>42</v></c></row>
+                </sheetData></worksheet>"#,
+            ).unwrap();
+            zw.finish().unwrap();
+        }
+
+        let (text, warning) = xlsx_to_text(path.to_str().unwrap()).unwrap();
+        assert!(warning.is_none(), "unexpected warning: {warning:?}");
+        assert!(text.contains("## Blatt1"), "sheet heading: {text:?}");
+        assert!(text.contains("| Name"), "header cell: {text:?}");
+        assert!(text.contains("Alice"), "shared string cell: {text:?}");
+        assert!(text.contains("42"), "numeric cell: {text:?}");
 
         let _ = std::fs::remove_dir_all(&dir);
     }
