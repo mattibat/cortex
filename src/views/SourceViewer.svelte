@@ -80,6 +80,44 @@
   );
   // Anything with a dedicated preview skips the chunk-list fallback.
   const hasPreview = $derived(isPdfDoc || isImage || isAudio || isText);
+  const LOGO_WORD = "M23.004 1.5q.41 0 .703.293t.293.703v19.008q0 .41-.293.703t-.703.293H6.996q-.41 0-.703-.293T6 21.504V18H.996q-.41 0-.703-.293T0 17.004V6.996q0-.41.293-.703T.996 6H6V2.496q0-.41.293-.703t.703-.293zM6.035 11.203l1.442 4.735h1.64l1.57-7.876H9.036l-.937 4.653-1.325-4.5H5.38l-1.406 4.523-.938-4.675H1.312l1.57 7.874h1.641zM22.5 21v-3h-15v3zm0-4.5v-3.75H12v3.75zm0-5.25V7.5H12v3.75zm0-5.25V3h-15v3Z";
+  const LOGO_EXCEL = "M23 1.5q.41 0 .7.3.3.29.3.7v19q0 .41-.3.7-.29.3-.7.3H7q-.41 0-.7-.3-.3-.29-.3-.7V18H1q-.41 0-.7-.3-.3-.29-.3-.7V7q0-.41.3-.7Q.58 6 1 6h5V2.5q0-.41.3-.7.29-.3.7-.3zM6 13.28l1.42 2.66h2.14l-2.38-3.87 2.34-3.8H7.46l-1.3 2.4-.05.08-.04.09-.64-1.28-.66-1.29H2.59l2.27 3.82-2.48 3.85h2.16zM14.25 21v-3H7.5v3zm0-4.5v-3.75H12v3.75zm0-5.25V7.5H12v3.75zm0-5.25V3H7.5v3zm8.25 15v-3h-6.75v3zm0-4.5v-3.75h-6.75v3.75zm0-5.25V7.5h-6.75v3.75zm0-5.25V3h-6.75v3Z";
+  const LOGO_POWERPOINT = "M13.5 1.5q1.453 0 2.795.375 1.342.375 2.508 1.06 1.166.686 2.12 1.641.956.955 1.641 2.121.686 1.166 1.061 2.508Q24 10.547 24 12q0 1.453-.375 2.795-.375 1.342-1.06 2.508-.686 1.166-1.641 2.12-.955.956-2.121 1.641-1.166.686-2.508 1.061-1.342.375-2.795.375-1.29 0-2.52-.305-1.23-.304-2.337-.884-1.108-.58-2.063-1.418-.955-.838-1.693-1.893H.997q-.411 0-.704-.293T0 17.004V6.996q0-.41.293-.703T.996 6h3.89q.739-1.055 1.694-1.893.955-.837 2.063-1.418 1.107-.58 2.337-.884Q12.21 1.5 13.5 1.5zm.75 1.535v8.215h8.215q-.14-1.64-.826-3.076-.686-1.436-1.782-2.531-1.095-1.096-2.537-1.782-1.441-.685-3.07-.826zm-5.262 7.57q0-.68-.228-1.166-.229-.486-.627-.79-.399-.305-.938-.446-.539-.14-1.172-.14H2.848v7.863h1.84v-2.742H5.93q.574 0 1.119-.17t.978-.493q.434-.322.698-.802.263-.48.263-1.114zM13.5 21q1.172 0 2.262-.287t2.056-.82q.967-.534 1.776-1.278.808-.744 1.418-1.664.61-.92.984-1.986.375-1.067.469-2.227h-9.703V3.035q-1.735.14-3.27.908T6.797 6h4.207q.41 0 .703.293t.293.703v10.008q0 .41-.293.703t-.703.293H6.797q.644.715 1.412 1.271.768.557 1.623.944.855.387 1.781.586Q12.54 21 13.5 21zM5.812 9.598q.575 0 .915.228.34.229.34.838 0 .27-.124.44-.123.17-.31.275-.188.105-.422.146-.234.041-.445.041H4.687V9.598Z";
+  const LOGO_VSCODE = "M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 20.06V3.939a1.5 1.5 0 0 0-.85-1.352zm-5.146 14.861L10.826 12l7.178-5.448v10.896z";
+  const LOGO_CURSOR = "M11.503.131 1.891 5.678a.84.84 0 0 0-.42.726v11.188c0 .3.162.575.42.724l9.609 5.55a1 1 0 0 0 .998 0l9.61-5.55a.84.84 0 0 0 .42-.724V6.404a.84.84 0 0 0-.42-.726L12.497.131a1.01 1.01 0 0 0-.996 0M2.657 6.338h18.55c.263 0 .43.287.297.515L12.23 22.918c-.062.107-.229.064-.229-.06V12.335a.59.59 0 0 0-.295-.51l-9.11-5.257c-.109-.063-.064-.23.061-.23";
+
+  type ExternalApp = { label: string; color: string; svgPath: string; with?: string };
+  function officeApp(kind: string): ExternalApp | null {
+    if (kind === "docx") return { label: "Word", color: "#2B579A", svgPath: LOGO_WORD };
+    if (kind === "pptx") return { label: "PowerPoint", color: "#D24726", svgPath: LOGO_POWERPOINT };
+    if (kind === "xlsx") return { label: "Excel", color: "#217346", svgPath: LOGO_EXCEL };
+    return null;
+  }
+  const officeAppInfo = $derived(app.activeSource ? officeApp(app.activeSource.kind) : null);
+  const isEditorKind = $derived(
+    app.activeSource?.kind === "txt" || app.activeSource?.kind === "md"
+  );
+  const EDITORS: ExternalApp[] = [
+    { label: "VS Code", color: "#007ACC", svgPath: LOGO_VSCODE, with: "code" },
+    { label: "Cursor", color: "#1a1a1a", svgPath: LOGO_CURSOR, with: "cursor" },
+  ];
+  let openWithMenu = $state(false);
+  async function openExternal(withApp?: string) {
+    openWithMenu = false;
+    const origin = app.activeSource?.origin;
+    if (!origin) return;
+    try {
+      await api.openSourceFile(origin, withApp);
+    } catch (e) {
+      app.pushToast({ kind: "error", title: "Öffnen fehlgeschlagen", body: String(e) });
+    }
+  }
+  $effect(() => {
+    if (!openWithMenu) return;
+    const close = () => (openWithMenu = false);
+    const id = setTimeout(() => window.addEventListener("mousedown", close), 0);
+    return () => { clearTimeout(id); window.removeEventListener("mousedown", close); };
+  });
 
   // ---- mobile PDF rendering ----
   // iOS WKWebView only renders the FIRST page of an <iframe> PDF and won't scroll,
@@ -255,6 +293,44 @@
         <div class="grow"></div>
         {#if src.meta}
           <div class="sv-tools mono faint">{src.meta}</div>
+        {/if}
+      {/if}
+
+      {#if src?.origin && !isMobile}
+        {#if officeAppInfo}
+          <button
+            class="btn btn--sm btn--ghost sv-extbtn"
+            onclick={() => openExternal(undefined)}
+            title="In {officeAppInfo.label} öffnen"
+          >
+            <span class="sv-applogo" style="background:{officeAppInfo.color}">
+              <svg viewBox="0 0 24 24" width="11" height="11"><path fill="#fff" d={officeAppInfo.svgPath} /></svg>
+            </span>
+            {officeAppInfo.label}
+          </button>
+        {:else if isEditorKind}
+          <div class="sv-openwith">
+            <button
+              class="btn btn--sm btn--ghost sv-extbtn"
+              onclick={(e) => { e.stopPropagation(); openWithMenu = !openWithMenu; }}
+              title="Öffnen mit…"
+            >
+              Öffnen mit
+              <Icon name="chevron" size={10} color="currentColor" />
+            </button>
+            {#if openWithMenu}
+              <div class="sv-openwith-menu" role="menu">
+                {#each EDITORS as ed (ed.with)}
+                  <button class="sv-menu-item" role="menuitem" onclick={() => openExternal(ed.with)}>
+                    <span class="sv-applogo sv-applogo--sm" style="background:{ed.color}">
+                      <svg viewBox="0 0 24 24" width="12" height="12"><path fill="#fff" d={ed.svgPath} /></svg>
+                    </span>
+                    <span>{ed.label}</span>
+                  </button>
+                {/each}
+              </div>
+            {/if}
+          </div>
         {/if}
       {/if}
 
@@ -442,6 +518,66 @@
   .sv-audio {
     width: 100%;
     display: block;
+  }
+  .sv-extbtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+  }
+  .sv-applogo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    flex: none;
+  }
+  .sv-applogo--sm {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    font-size: 11px;
+  }
+  .sv-openwith {
+    position: relative;
+  }
+  .sv-openwith-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 20;
+    min-width: 160px;
+    padding: 5px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--rad-3);
+    box-shadow: var(--shadow-pop);
+  }
+  .sv-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 30px;
+    padding: 0 9px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: var(--rad-2);
+    color: var(--fg-muted);
+    font-family: var(--font-sans);
+    font-size: var(--t-sm);
+    text-align: left;
+  }
+  .sv-menu-item:hover {
+    background: var(--surface-3);
+    color: var(--fg-bright);
   }
   /* Section header row with an inline action (Transcript · View/Hide button). */
   .sv-sec-head {
