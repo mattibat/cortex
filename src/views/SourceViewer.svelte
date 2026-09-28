@@ -102,6 +102,8 @@
       .catch((e) => { if (app.activeSource?.id === id) officeError = String(e); })
       .finally(() => { if (officeRenderingId === id) officeRenderingId = null; });
   });
+
+  const isMarkdown = $derived(isText && app.activeSource?.kind === "md");
   const codeLang = $derived.by(() => {
     const s = app.activeSource;
     if (!isText || s?.kind !== "txt") return null;
@@ -476,6 +478,10 @@
         <div class="sv-code hljs">
           <pre class="sv-code-gutter" aria-hidden="true">{Array.from({ length: codeLines }, (_, i) => i + 1).join("\n")}</pre>
           <pre class="sv-code-body"><code>{@html codeHtml}</code></pre>
+        </div>
+      {:else if isMarkdown && src?.content}
+        <div class="pdf-page" style="width:100%;max-width:780px">
+          <RichText text={src.content} />
         </div>
       {:else if isText && src?.content}
         <!-- Readable extracted text (txt / md / web / url, or content-only sources) -->
