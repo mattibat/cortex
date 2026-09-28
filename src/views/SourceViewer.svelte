@@ -61,7 +61,7 @@
   // A document renders as an embedded PDF when its kind is a PDF-previewable
   // document. pptx/docx are rendered to PDF by the backend (their stored_path
   // points at that PDF), so they preview as slides via the same iframe.
-  const PDF_KINDS = ["pdf", "pptx", "docx"];
+  const PDF_KINDS = ["pdf", "pptx", "docx", "xlsx"];
   const isPdfDoc = $derived(
     !!app.activeSource && PDF_KINDS.includes(app.activeSource.kind) && !!assetUrl
   );
@@ -82,6 +82,24 @@
   );
   // Anything with a dedicated preview skips the chunk-list fallback.
   const hasPreview = $derived(isPdfDoc || isImage || isAudio || isTable || isText);
+
+  const OFFICE_KINDS = ["docx", "pptx", "xlsx"];
+  let officeRenderingId = $state<string | null>(null);
+  let officeError = $state<string | null>(null);
+  let officeRequested: string | null = null;
+  $effect(() => {
+    const s = app.activeSource;
+    if (!s || s.id !== officeRequested) officeError = null;
+    if (!s || isMobile || !OFFICE_KINDS.includes(s.kind) || s.stored_path || !s.origin) return;
+    if (s.id === officeRequested) return;
+    const id = s.id;
+    officeRequested = id;
+    officeRenderingId = id;
+    api.renderSourcePreview(id)
+      .then((full) => { if (app.activeSource?.id === id) app.activeSource = full; })
+      .catch((e) => { if (app.activeSource?.id === id) officeError = String(e); })
+      .finally(() => { if (officeRenderingId === id) officeRenderingId = null; });
+  });
   const LOGO_WORD = "M23.004 1.5q.41 0 .703.293t.293.703v19.008q0 .41-.293.703t-.703.293H6.996q-.41 0-.703-.293T6 21.504V18H.996q-.41 0-.703-.293T0 17.004V6.996q0-.41.293-.703T.996 6H6V2.496q0-.41.293-.703t.703-.293zM6.035 11.203l1.442 4.735h1.64l1.57-7.876H9.036l-.937 4.653-1.325-4.5H5.38l-1.406 4.523-.938-4.675H1.312l1.57 7.874h1.641zM22.5 21v-3h-15v3zm0-4.5v-3.75H12v3.75zm0-5.25V7.5H12v3.75zm0-5.25V3h-15v3Z";
   const LOGO_EXCEL = "M23 1.5q.41 0 .7.3.3.29.3.7v19q0 .41-.3.7-.29.3-.7.3H7q-.41 0-.7-.3-.3-.29-.3-.7V18H1q-.41 0-.7-.3-.3-.29-.3-.7V7q0-.41.3-.7Q.58 6 1 6h5V2.5q0-.41.3-.7.29-.3.7-.3zM6 13.28l1.42 2.66h2.14l-2.38-3.87 2.34-3.8H7.46l-1.3 2.4-.05.08-.04.09-.64-1.28-.66-1.29H2.59l2.27 3.82-2.48 3.85h2.16zM14.25 21v-3H7.5v3zm0-4.5v-3.75H12v3.75zm0-5.25V7.5H12v3.75zm0-5.25V3H7.5v3zm8.25 15v-3h-6.75v3zm0-4.5v-3.75h-6.75v3.75zm0-5.25V7.5h-6.75v3.75zm0-5.25V3h-6.75v3Z";
   const LOGO_POWERPOINT = "M13.5 1.5q1.453 0 2.795.375 1.342.375 2.508 1.06 1.166.686 2.12 1.641.956.955 1.641 2.121.686 1.166 1.061 2.508Q24 10.547 24 12q0 1.453-.375 2.795-.375 1.342-1.06 2.508-.686 1.166-1.641 2.12-.955.956-2.121 1.641-1.166.686-2.508 1.061-1.342.375-2.795.375-1.29 0-2.52-.305-1.23-.304-2.337-.884-1.108-.58-2.063-1.418-.955-.838-1.693-1.893H.997q-.411 0-.704-.293T0 17.004V6.996q0-.41.293-.703T.996 6h3.89q.739-1.055 1.694-1.893.955-.837 2.063-1.418 1.107-.58 2.337-.884Q12.21 1.5 13.5 1.5zm.75 1.535v8.215h8.215q-.14-1.64-.826-3.076-.686-1.436-1.782-2.531-1.095-1.096-2.537-1.782-1.441-.685-3.07-.826zm-5.262 7.57q0-.68-.228-1.166-.229-.486-.627-.79-.399-.305-.938-.446-.539-.14-1.172-.14H2.848v7.863h1.84v-2.742H5.93q.574 0 1.119-.17t.978-.493q.434-.322.698-.802.263-.48.263-1.114zM13.5 21q1.172 0 2.262-.287t2.056-.82q.967-.534 1.776-1.278.808-.744 1.418-1.664.61-.92.984-1.986.375-1.067.469-2.227h-9.703V3.035q-1.735.14-3.27.908T6.797 6h4.207q.41 0 .703.293t.293.703v10.008q0 .41-.293.703t-.703.293H6.797q.644.715 1.412 1.271.768.557 1.623.944.855.387 1.781.586Q12.54 21 13.5 21zM5.812 9.598q.575 0 .915.228.34.229.34.838 0 .27-.124.44-.123.17-.31.275-.188.105-.422.146-.234.041-.445.041H4.687V9.598Z";
@@ -359,6 +377,9 @@
 
     <!-- Preview / embedding proof scrollable area -->
     <div class="sv-doc" class:sv-doc--flush={isPdfDoc || isImage}>
+      {#if officeError && !isPdfDoc}
+        <p class="pdf-note mono sv-office-note">Originalvorschau nicht verfügbar: {officeError}</p>
+      {/if}
       {#if src?.error}
         <!-- Failed ingest: surface the error prominently instead of an empty view -->
         <div class="pdf-page sv-error" style="width:100%;max-width:560px">
@@ -422,6 +443,15 @@
               </p>
             {/if}
           {/if}
+        </div>
+      {:else if src && officeRenderingId === src.id}
+        <div class="pdf-page" style="width:100%;max-width:560px">
+          <p class="pdf-note mono" style="font-size:var(--t-xs);color:var(--fg-muted)">
+            Vorschau wird mit {officeAppInfo?.label ?? "Office"} erstellt…
+          </p>
+          <div class="pdf-line sk" style="width:60%;height:14px;margin:14px 0 18px"></div>
+          <div class="pdf-line sk" style="width:90%"></div>
+          <div class="pdf-line sk" style="width:80%"></div>
         </div>
       {:else if isTable && src?.content}
         <div class="pdf-page" style="width:100%;max-width:900px">
@@ -524,6 +554,12 @@
   .sv-audio {
     width: 100%;
     display: block;
+  }
+  .sv-office-note {
+    font-size: var(--t-xs);
+    color: var(--warn);
+    padding: 8px 16px;
+    margin: 0;
   }
   .sv-extbtn {
     display: flex;
