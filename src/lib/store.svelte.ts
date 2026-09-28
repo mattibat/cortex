@@ -177,8 +177,8 @@ class PomoTimer {
     return `${String(m).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
   }
   get phaseLabel(): string {
-    if (this.phase === "work") return `Focus ${this.cycle} of ${this.sessionsBeforeLong}`;
-    return this.phase === "long" ? "Long break" : "Short break";
+    if (this.phase === "work") return `Fokus ${this.cycle} von ${this.sessionsBeforeLong}`;
+    return this.phase === "long" ? "Lange Pause" : "Kurze Pause";
   }
   /** Whether the live activity has anything worth showing. */
   get active(): boolean {
@@ -395,7 +395,7 @@ class AppStore {
       await this.loadMoodleData();
       this.notifyEventsChanged(); // sync mirrors deadlines into the calendar
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Moodle sync failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Moodle-Sync fehlgeschlagen", body: String(e) });
     } finally {
       this.moodleSyncing = false;
     }
@@ -667,7 +667,7 @@ class AppStore {
     // before the normal reveal below.
     setTimeout(() => void this.revealWindow(), 3000);
     // Surface stream/playback failures instead of swallowing them.
-    music.onError = (m) => this.pushToast({ kind: "warning", title: "Music", body: m });
+    music.onError = (m) => this.pushToast({ kind: "warning", title: "Musik", body: m });
     // The engine is the authority on playback state: a failed stream/mpv start
     // flips the icon back to paused, and buffering drives the panel spinner.
     music.onState = (s) => {
@@ -681,8 +681,8 @@ class AppStore {
     void api.onNoteCreated(() => {
       this.pushToast({
         kind: "success",
-        title: "Lecture summary ready",
-        body: "Key points + terms saved to Notes.",
+        title: "Zusammenfassung fertig",
+        body: "Kernpunkte und Begriffe wurden in den Notizen gespeichert.",
       });
     });
     // Live sync applied peers' changes — refresh so they show up instantly.
@@ -727,12 +727,12 @@ class AppStore {
     // Toast on every focus↔break transition.
     this.pomo.onPhaseChange((to) => {
       if (to === "work") {
-        this.pushToast({ kind: "info", title: "Back to focus", body: `Session ${this.pomo.cycle} — let's go.` });
+        this.pushToast({ kind: "info", title: "Zurück zum Fokus", body: `Einheit ${this.pomo.cycle} – los geht's.` });
       } else {
         this.pushToast({
           kind: "success",
-          title: to === "long" ? "Long break" : "Break time",
-          body: "Nice focus — step away for a bit.",
+          title: to === "long" ? "Lange Pause" : "Pause",
+          body: "Gut gemacht – gönn dir eine kurze Pause.",
         });
       }
     });
@@ -753,7 +753,7 @@ class AppStore {
       this.subjects = subs;
       if (subs.length && !this.activeSubjectId) this.activeSubjectId = subs[0].id;
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Failed to load", body: String(e) });
+      this.pushToast({ kind: "error", title: "Laden fehlgeschlagen", body: String(e) });
     } finally {
       this.loading = false;
     }
@@ -900,8 +900,8 @@ class AppStore {
     const batch = failed.slice(0, 12);
     this.pushToast({
       kind: "info",
-      title: "Retrying failed sources",
-      body: `${batch.length} source${batch.length === 1 ? "" : "s"} from a previous session…`,
+      title: "Fehlgeschlagene Quellen werden erneut versucht",
+      body: `${batch.length} ${batch.length === 1 ? "Quelle" : "Quellen"} aus einer früheren Sitzung…`,
     });
     let fixed = 0;
     for (const src of batch) {
@@ -914,7 +914,7 @@ class AppStore {
     }
     if (fixed > 0) {
       await this.refresh();
-      this.pushToast({ kind: "success", title: "Sources recovered", body: `${fixed} re-ingested successfully.` });
+      this.pushToast({ kind: "success", title: "Quellen wiederhergestellt", body: `${fixed} erfolgreich neu eingelesen.` });
     }
   }
 
@@ -932,7 +932,7 @@ class AppStore {
           this.pushToast({
             kind: "info",
             title: `⏰ ${e.title}`,
-            body: e.location ? `at ${e.location}` : "Reminder",
+            body: e.location ? `in ${e.location}` : "Erinnerung",
           });
         }
       } catch {
@@ -1105,7 +1105,7 @@ class AppStore {
       this.syncState = "synced";
     } catch (e) {
       this.syncState = "error";
-      this.pushToast({ kind: "error", title: "Sync failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Synchronisierung fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -1126,7 +1126,7 @@ class AppStore {
       this.syncState = "synced";
     } catch (e) {
       this.syncState = "error";
-      this.pushToast({ kind: "error", title: "Sync failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Synchronisierung fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -1141,7 +1141,7 @@ class AppStore {
       this.syncState = "synced";
     } catch (e) {
       this.syncState = "error";
-      this.pushToast({ kind: "error", title: "Sync failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Synchronisierung fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -1153,8 +1153,8 @@ class AppStore {
     if (this.subjects.length > 0 && !this.subjects.some((s) => s.id === id)) {
       this.pushToast({
         kind: "warning",
-        title: "Subject not found",
-        body: "It may have been deleted, or hasn't synced to this device yet.",
+        title: "Fach nicht gefunden",
+        body: "Es wurde möglicherweise gelöscht oder ist noch nicht auf dieses Gerät synchronisiert.",
       });
       this.view = "dashboard";
       return;
@@ -1252,7 +1252,7 @@ class AppStore {
         ? this.csLastSubject
         : (this.activeSubject?.id ?? null);
     if (!sid) {
-      this.pushToast({ kind: "warning", title: "No cheatsheet yet", body: "Open a subject first." });
+      this.pushToast({ kind: "warning", title: "Noch kein Lernzettel", body: "Öffne zuerst ein Fach." });
       return;
     }
     this.openTopicSheet(sid, this.csTopicMemory[sid] ?? null);
@@ -1269,7 +1269,7 @@ class AppStore {
   cheatsheetRegenNonce = $state(0);
   regenCheatsheet() {
     if (!this.activeSubject) {
-      this.pushToast({ kind: "warning", title: "Open a subject first" });
+      this.pushToast({ kind: "warning", title: "Öffne zuerst ein Fach" });
       return;
     }
     this.setView("subject");
@@ -1297,7 +1297,7 @@ class AppStore {
   mergeDiff() {
     this.diffOpen = false;
     this.pending = 0;
-    this.pushToast({ kind: "success", title: "Cheatsheet merged", body: "Approved sections are now part of the cheatsheet." });
+    this.pushToast({ kind: "success", title: "Lernzettel übernommen", body: "Die bestätigten Abschnitte sind jetzt Teil des Lernzettels." });
   }
 
   // ---- subject / source / topic CRUD ----
@@ -1311,9 +1311,9 @@ class AppStore {
         this.activeSource = null;
         this.view = this.subjects.length ? "subject" : "dashboard";
       }
-      this.pushToast({ kind: "success", title: "Subject deleted" });
+      this.pushToast({ kind: "success", title: "Fach gelöscht" });
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Delete failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Löschen fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -1331,12 +1331,12 @@ class AppStore {
       }
       this.pushToast({
         kind: "success",
-        title: archived ? "Subject archived" : "Subject restored",
+        title: archived ? "Fach archiviert" : "Fach wiederhergestellt",
       });
     } catch (e) {
       this.pushToast({
         kind: "error",
-        title: archived ? "Archive failed" : "Restore failed",
+        title: archived ? "Archivieren fehlgeschlagen" : "Wiederherstellen fehlgeschlagen",
         body: String(e),
       });
     }
@@ -1355,9 +1355,9 @@ class AppStore {
     try {
       await api.updateSubject(id, name, code, glyph, color);
       this.subjects = await api.listSubjects();
-      this.pushToast({ kind: "success", title: "Subject updated" });
+      this.pushToast({ kind: "success", title: "Fach aktualisiert" });
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Update failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Aktualisierung fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -1367,9 +1367,9 @@ class AppStore {
     try {
       await api.updateTopic(id, name.trim(), sid, glyph, tags);
       await this.refresh();
-      this.pushToast({ kind: "success", title: "Topic updated" });
+      this.pushToast({ kind: "success", title: "Thema aktualisiert" });
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Rename failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Umbenennen fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -1380,7 +1380,7 @@ class AppStore {
     try {
       await api.reorderSubjects(ids);
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Reorder failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Sortieren fehlgeschlagen", body: String(e) });
       await this.refresh();
     }
   }
@@ -1400,7 +1400,7 @@ class AppStore {
       // reorder above). Only matters for the currently-open subject.
       if (this.activeSubjectId === subjectId) this.cheatsheetReloadNonce++;
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Reorder failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Sortieren fehlgeschlagen", body: String(e) });
       await this.refresh();
     }
   }
@@ -1410,9 +1410,9 @@ class AppStore {
       const updated = await api.updateSource(id, name, topicId ?? null, tags);
       if (this.activeSource?.id === id) this.activeSource = updated;
       await this.refresh();
-      this.pushToast({ kind: "success", title: "Source updated" });
+      this.pushToast({ kind: "success", title: "Quelle aktualisiert" });
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Update failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Aktualisierung fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -1424,9 +1424,9 @@ class AppStore {
         this.view = "subject";
       }
       await this.refresh();
-      this.pushToast({ kind: "success", title: "Source deleted" });
+      this.pushToast({ kind: "success", title: "Quelle gelöscht" });
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Delete failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Löschen fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -1436,9 +1436,9 @@ class AppStore {
     try {
       await api.createTopic(sid, name.trim(), glyph, tags);
       await this.refresh();
-      this.pushToast({ kind: "success", title: "Topic added" });
+      this.pushToast({ kind: "success", title: "Thema hinzugefügt" });
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Add topic failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Thema konnte nicht hinzugefügt werden", body: String(e) });
     }
   }
 
@@ -1448,9 +1448,9 @@ class AppStore {
     try {
       await api.deleteTopic(id, sid);
       await this.refresh();
-      this.pushToast({ kind: "success", title: "Topic deleted" });
+      this.pushToast({ kind: "success", title: "Thema gelöscht" });
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Delete topic failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Thema konnte nicht gelöscht werden", body: String(e) });
     }
   }
 
@@ -1536,8 +1536,8 @@ class AppStore {
     this.setTheme(next);
     this.pushToast({
       kind: "info",
-      title: "Theme synced",
-      body: `Matched Omarchy palette → ${THEME_LABELS[next]}.`,
+      title: "Design synchronisiert",
+      body: `Omarchy-Farben übernommen → ${THEME_LABELS[next]}.`,
     });
   }
 
@@ -1572,7 +1572,7 @@ class AppStore {
       this.customStations = [...this.customStations, st];
       return st;
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Couldn't add station", body: String(e) });
+      this.pushToast({ kind: "error", title: "Sender konnte nicht hinzugefügt werden", body: String(e) });
       return null;
     }
   }
@@ -1588,7 +1588,7 @@ class AppStore {
         this.music = { ...this.music, current: "lofi", playing: false };
       }
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Couldn't remove station", body: String(e) });
+      this.pushToast({ kind: "error", title: "Sender konnte nicht entfernt werden", body: String(e) });
     }
   }
 
@@ -1609,7 +1609,7 @@ class AppStore {
     try {
       await api.reorderCustomStations(ids);
     } catch (e) {
-      this.pushToast({ kind: "error", title: "Reorder failed", body: String(e) });
+      this.pushToast({ kind: "error", title: "Sortieren fehlgeschlagen", body: String(e) });
       this.customStations = await api.listCustomStations().catch(() => this.customStations);
     }
   }
@@ -1644,7 +1644,7 @@ class AppStore {
       const { check } = await import("@tauri-apps/plugin-updater");
       const update = await check();
       if (!update) {
-        if (!silent) this.pushToast({ kind: "success", title: "You're up to date", body: "Cortex is running the latest version." });
+        if (!silent) this.pushToast({ kind: "success", title: "Alles aktuell", body: "Cortex ist auf dem neuesten Stand." });
         return;
       }
       // Linux package installs (deb/rpm/AUR) can't be self-updated — Tauri's updater only
@@ -1653,27 +1653,27 @@ class AppStore {
       if (kind === "linux-package") {
         this.pushToast({
           kind: "info",
-          title: `Cortex ${update.version} is available`,
-          body: "You installed Cortex with your package manager — update it there (e.g. yay -Syu cortex-bin, sudo apt upgrade, or brew upgrade --cask cortex).",
+          title: `Cortex ${update.version} ist verfügbar`,
+          body: "Cortex wurde über einen Paketmanager installiert – bitte dort aktualisieren (z. B. yay -Syu cortex-bin, sudo apt upgrade oder brew upgrade --cask cortex).",
         });
         return;
       }
       const ok = await this.confirm({
-        title: `Update to ${update.version}?`,
-        body: update.body?.trim() || "A new version of Cortex is available.",
-        okLabel: "Update & restart",
+        title: `Auf ${update.version} aktualisieren?`,
+        body: update.body?.trim() || "Eine neue Version von Cortex ist verfügbar.",
+        okLabel: "Aktualisieren & neu starten",
       });
       if (!ok) return;
-      this.pushToast({ kind: "info", title: "Downloading update…", body: "Cortex will restart when it's ready." });
+      this.pushToast({ kind: "info", title: "Update wird heruntergeladen…", body: "Cortex startet danach automatisch neu." });
       try {
         await update.downloadAndInstall();
         const { relaunch } = await import("@tauri-apps/plugin-process");
         await relaunch();
       } catch (e) {
-        this.pushToast({ kind: "error", title: "Update failed to install", body: `Couldn't apply the update automatically: ${String(e)}. You can download the latest release manually from GitHub.` });
+        this.pushToast({ kind: "error", title: "Update konnte nicht installiert werden", body: `Das Update ließ sich nicht automatisch installieren: ${String(e)}. Du kannst die neueste Version manuell von GitHub herunterladen.` });
       }
     } catch (e) {
-      if (!silent) this.pushToast({ kind: "error", title: "Update check failed", body: String(e) });
+      if (!silent) this.pushToast({ kind: "error", title: "Update-Prüfung fehlgeschlagen", body: String(e) });
     } finally {
       this.updateChecking = false;
     }
@@ -1684,7 +1684,7 @@ class AppStore {
   confirm(opts: { title: string; body?: string; danger?: boolean; okLabel?: string }): Promise<boolean> {
     return new Promise((resolve) => {
       this.#dialogResolve = resolve;
-      this.dialog = { kind: "confirm", okLabel: "Confirm", ...opts };
+      this.dialog = { kind: "confirm", okLabel: "Bestätigen", ...opts };
     });
   }
   /** Themed replacement for window.prompt. Resolves the trimmed string, or null if cancelled. */

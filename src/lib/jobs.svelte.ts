@@ -41,14 +41,14 @@ function uid() {
 const MAX_KEPT = 20; // cap settled (done/error) jobs so the list can't grow unbounded
 
 const KIND_LABEL: Record<JobKind, string> = {
-  cheatsheet: "cheatsheet",
-  quiz: "quiz",
-  flashcards: "flashcards",
-  audio: "audio overview",
-  infographic: "infographic",
-  slideshow: "slideshow",
-  mindmap: "mind map",
-  source: "source",
+  cheatsheet: "Lernzettel",
+  quiz: "Quiz",
+  flashcards: "Karteikarten",
+  audio: "Audio-Überblick",
+  infographic: "Infografik",
+  slideshow: "Präsentation",
+  mindmap: "Mindmap",
+  source: "Quelle",
 };
 
 export function jobKindLabel(kind: JobKind): string {
@@ -110,8 +110,8 @@ class Jobs {
         this.#settle(id, (j) => ({ ...j, status: "done", result }));
         app.pushToast({
           kind: "success",
-          title: opts.kind === "source" ? "Source added" : "Generated",
-          body: `${opts.label} is ready.`,
+          title: opts.kind === "source" ? "Quelle hinzugefügt" : "Erstellt",
+          body: `${opts.label} ist fertig.`,
         });
         try {
           opts.onDone?.(result);
@@ -126,7 +126,7 @@ class Jobs {
         if (this.#cancelled.delete(id)) return; // user cancelled — ignore error too
         const msg = e instanceof Error ? e.message : String(e);
         this.#settle(id, (j) => ({ ...j, status: "error", error: msg }));
-        app.pushToast({ kind: "error", title: "Generation failed", body: msg });
+        app.pushToast({ kind: "error", title: "Erstellen fehlgeschlagen", body: msg });
       });
 
     return id;

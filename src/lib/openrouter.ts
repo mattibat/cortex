@@ -84,13 +84,13 @@ function dollarsPerM(perToken: number): string {
 }
 function ctxLabel(c: number | null): string | null {
   if (!c) return null;
-  return c >= 1000 ? `${Math.round(c / 1000)}K ctx` : `${c} ctx`;
+  return c >= 1000 ? `${Math.round(c / 1000)}K Kontext` : `${c} Kontext`;
 }
 function subLine(pin: number, pout: number, ctx: number | null): string {
   const c = ctxLabel(ctx);
   let price: string;
-  if (pin < 0 || pout < 0) price = "variable price";
+  if (pin < 0 || pout < 0) price = "variabler Preis";
   else if (pin === 0 && pout === 0) price = "free";
-  else price = `${dollarsPerM(pin)}/M in · ${dollarsPerM(pout)}/M out`;
+  else price = `${dollarsPerM(pin)}/M Eingabe · ${dollarsPerM(pout)}/M Ausgabe`;
   return c ? `${price} · ${c}` : price;
 }

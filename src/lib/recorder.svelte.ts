@@ -161,7 +161,7 @@ class RecorderStore {
     // saved/transcribed — a fresh session would trample the in-flight state.
     if (this.recording || this.status === "transcribing") return;
     if (!app.activeSubject) {
-      app.pushToast({ kind: "error", title: "Open a subject first", body: "Select a subject before recording." });
+      app.pushToast({ kind: "error", title: "Öffne zuerst ein Fach", body: "Wähle vor der Aufnahme ein Fach aus." });
       return;
     }
     this.errorMsg = null;
@@ -213,7 +213,7 @@ class RecorderStore {
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch (e) {
-      this.errorMsg = "Microphone access was denied or unavailable: " + String(e);
+      this.errorMsg = "Kein Zugriff auf das Mikrofon oder Mikrofon nicht verfügbar: " + String(e);
       return;
     }
     this.native = false;
@@ -367,7 +367,7 @@ class RecorderStore {
     }
     if (!res.path) {
       this.native = false;
-      this.errorMsg = "Nothing was captured — the microphone produced no audio.";
+      this.errorMsg = "Nichts aufgenommen – das Mikrofon hat keinen Ton geliefert.";
       this.status = "ready";
       return;
     }
@@ -386,7 +386,7 @@ class RecorderStore {
     this.reviewBytes = new Uint8Array(0);
     this.reviewPath = res.path;
     this.reviewExt = "m4a";
-    this.enterReview(`Lecture ${this.stamp()}`, dur, "captured", "");
+    this.enterReview(`Unterricht ${this.stamp()}`, dur, "captured", "");
   }
 
   private async finalizeWeb(): Promise<void> {
@@ -406,7 +406,7 @@ class RecorderStore {
       this.reviewExt = "webm";
     }
     if (bytes.length === 0) {
-      this.errorMsg = "Nothing was captured — the microphone produced no audio. Check the input device in your system sound settings, then try again.";
+      this.errorMsg = "Nichts aufgenommen – das Mikrofon hat keinen Ton geliefert. Prüfe das Eingabegerät in den Soundeinstellungen des Systems und versuche es erneut.";
       this.status = "ready";
       return;
     }
@@ -414,7 +414,7 @@ class RecorderStore {
     const transcript = (this.liveFinal.trim() || this.liveBackendText.trim());
     this.reviewBytes = bytes;
     this.reviewPath = "";
-    this.enterReview(`Lecture ${this.stamp()}`, `${this.mm}:${this.ss}`, "captured", transcript);
+    this.enterReview(`Unterricht ${this.stamp()}`, `${this.mm}:${this.ss}`, "captured", transcript);
   }
 
   private stamp(): string {
@@ -462,9 +462,9 @@ class RecorderStore {
   async confirmSave(): Promise<void> {
     const subjId = this.reviewSubjectId || app.activeSubject?.id;
     if (!subjId) { this.status = "ready"; return; }
-    const name = this.reviewName.trim() || "Untitled recording";
+    const name = this.reviewName.trim() || "Unbenannte Aufnahme";
     const topicId = this.reviewTopicId || undefined;
-    const capturedLabel = `${this.reviewDuration} ${this.reviewSourceLabel}`;
+    const capturedLabel = this.reviewSourceLabel === "uploaded" ? "Audiodatei" : `${this.reviewDuration} aufgenommen`;
 
     // The save itself is quick now — it persists the audio and queues the
     // transcription on the BACKGROUND worker (homelab/cloud/local per
@@ -486,8 +486,8 @@ class RecorderStore {
       try { await app.refresh(); } catch { /* stale list until next refresh */ }
       app.pushToast({
         kind: "success",
-        title: "Recording saved",
-        body: `${capturedLabel} · transcribing in the background — you'll get a notification when it's ready.`,
+        title: "Aufnahme gespeichert",
+        body: `${capturedLabel} · wird im Hintergrund transkribiert – du bekommst eine Benachrichtigung, sobald es fertig ist.`,
       });
       // Reset to a clean slate — reopening the Recorder should read READY, not
       // the finished take's leftover clock and tags.
@@ -539,7 +539,7 @@ class RecorderStore {
       this.recognition = new SR();
       this.recognition.continuous = true;
       this.recognition.interimResults = true;
-      this.recognition.lang = navigator.language || "en-US";
+      this.recognition.lang = "de-DE";
       this.recognition.onresult = (ev: any) => {
         let interim = "";
         let finalAdd = "";
