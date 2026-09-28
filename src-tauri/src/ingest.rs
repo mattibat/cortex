@@ -465,7 +465,7 @@ pub fn ooxml_to_text(path: &str) -> Result<String> {
 
     // A run of text is <w:t>…</w:t> (Word) or <a:t>…</a:t> (PowerPoint); a
     // paragraph end (</w:p> / </a:p>) becomes a newline.
-    let re = regex::Regex::new(r"(?s)<(?:w|a):t[^>]*>(.*?)</(?:w|a):t>|</(?:w|a):p>").unwrap();
+    let re = regex::Regex::new(r"(?s)<(?:w|a):t\b[^>]*>(.*?)</(?:w|a):t>|</(?:w|a):p>").unwrap();
     let mut out = String::new();
     for part in &parts {
         let mut xml = String::new();
@@ -1060,6 +1060,20 @@ mod tests {
         let dtext = ooxml_to_text(docx.to_str().unwrap()).unwrap();
         assert!(dtext.contains("Hello world"), "docx text: {dtext:?}");
         assert!(dtext.contains("Cats & dogs"), "entity decode: {dtext:?}");
+
+        let docx2 = dir.join("doc2.docx");
+        {
+            let mut zw = zip::ZipWriter::new(std::fs::File::create(&docx2).unwrap());
+            zw.start_file("word/document.xml", SimpleFileOptions::default()).unwrap();
+            zw.write_all(
+                br#"<?xml version="1.0"?><w:document><w:body>
+                <w:p><w:r><a:ln><a:tailEnd type="triangle"/></a:ln><w:t>Real text</w:t></w:r></w:p>
+                </w:body></w:document>"#,
+            ).unwrap();
+            zw.finish().unwrap();
+        }
+        let d2text = ooxml_to_text(docx2.to_str().unwrap()).unwrap();
+        assert_eq!(d2text, "Real text", "tailEnd leaked into extraction: {d2text:?}");
 
         // Minimal .pptx: two slides, slide10 must sort after slide2.
         let pptx = dir.join("deck.pptx");
