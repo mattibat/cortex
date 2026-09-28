@@ -53,9 +53,9 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEFBNUMwMkRCRThCNDBBMDkKUldRSkNyVG8yd0pjcXFoSUlTcUNGdk1IMlFMdElZZXRrQnp5cndpSWtVYy9RZlpuS1lBTUpOOUEK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEREMThDRUM5NjI3NkI2QzkKUldUSnRuWml5YzRZM2Q1bjZtWVhEeURtaXlBZGUyeTJocWVLL2lhNHRRcVl1ankvQnM2UG1ST1oK",
       "endpoints": [
-        "https://github.com/PndaMan/cortex/releases/latest/download/latest.json"
+        "https://github.com/mattibat/cortex/releases/latest/download/latest.json"
       ]
     }
   }
