@@ -455,6 +455,14 @@ pub fn open_external(app: AppHandle, url: String) -> Result<()> {
         .map_err(|e| Error::Other(format!("couldn't open the link: {e}")))
 }
 
+#[tauri::command]
+pub fn open_source_file(app: AppHandle, path: String, with: Option<String>) -> Result<()> {
+    use tauri_plugin_opener::OpenerExt;
+    app.opener()
+        .open_path(&path, with.as_deref())
+        .map_err(|e| Error::Other(format!("couldn't open {path}: {e}")))
+}
+
 // ---- topics ------------------------------------------------------------
 
 #[tauri::command]

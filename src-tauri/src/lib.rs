@@ -308,6 +308,7 @@ pub fn run() {
             commands::archive_subject,
             commands::list_archived_subjects,
             commands::open_external,
+            commands::open_source_file,
             commands::create_topic,
             commands::update_topic,
             commands::delete_topic,
