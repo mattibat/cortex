@@ -49,7 +49,7 @@
             id: tp.id,
             label: tp.name,
           })),
-          { id: "", label: "— no topic —" },
+          { id: "", label: "– kein Thema –" },
         ]
       : []
   );
@@ -71,10 +71,10 @@
         try {
           await api.moveSource(t.id, selectedSubjectId, topicId || null);
           await app.refresh();
-          app.pushToast({ kind: "success", title: "Source moved" });
+          app.pushToast({ kind: "success", title: "Quelle verschoben" });
           app.closeEdit();
         } catch (e) {
-          app.pushToast({ kind: "error", title: "Move failed", body: String(e) });
+          app.pushToast({ kind: "error", title: "Verschieben fehlgeschlagen", body: String(e) });
         }
       } else {
         // Same subject → use normal update path (name/topic/tags).
@@ -87,7 +87,7 @@
   async function del() {
     const t = app.editing;
     if (!t) return;
-    const ok = await app.confirm({ title: `Delete this ${t.kind}?`, danger: true, okLabel: "Delete" });
+    const ok = await app.confirm({ title: `${t.kind === "subject" ? "Dieses Fach" : t.kind === "topic" ? "Dieses Thema" : "Diese Quelle"} löschen?`, danger: true, okLabel: "Löschen" });
     if (!ok) return;
     if (t.kind === "subject") app.deleteSubject(t.id);
     else if (t.kind === "topic") app.deleteTopic(t.id, t.subjectId);
@@ -99,9 +99,9 @@
     const t = app.editing;
     if (!t || t.kind !== "subject") return;
     const ok = await app.confirm({
-      title: `Archive "${t.name}"?`,
-      body: "It's hidden everywhere but its data is kept. Restore it any time from Settings → Data.",
-      okLabel: "Archive",
+      title: `„${t.name}“ archivieren?`,
+      body: "Wird überall ausgeblendet, die Daten bleiben erhalten. Jederzeit wiederherstellbar unter Einstellungen → Daten.",
+      okLabel: "Archivieren",
     });
     if (!ok) return;
     await app.setSubjectArchived(t.id, true);
@@ -116,9 +116,9 @@
   }
 
   const title = $derived(
-    app.editing?.kind === "subject" ? "Edit subject"
-      : app.editing?.kind === "topic" ? "Rename topic"
-      : "Edit source"
+    app.editing?.kind === "subject" ? "Fach bearbeiten"
+      : app.editing?.kind === "topic" ? "Thema umbenennen"
+      : "Quelle bearbeiten"
   );
 </script>
 
@@ -137,26 +137,26 @@
 
       {#if t.kind === "topic"}
         <div class="edit-field">
-          <span class="edit-lbl">Icon</span>
+          <span class="edit-lbl">Symbol</span>
           <EmojiPicker value={glyph} onPick={(e) => (glyph = e)} />
         </div>
         <label class="edit-field">
           <span class="edit-lbl">Tags <span class="faint">e.g. A2 · chat &amp; deadlines group by tag</span></span>
-          <input bind:value={tagsText} class="input" placeholder="comma, separated, tags" />
+          <input bind:value={tagsText} class="input" placeholder="Tags, durch Komma getrennt" />
         </label>
       {/if}
 
       {#if t.kind === "subject"}
         <label class="edit-field">
-          <span class="edit-lbl">Code</span>
-          <input bind:value={code} class="input" placeholder="e.g. PHIL-101" />
+          <span class="edit-lbl">Kürzel</span>
+          <input bind:value={code} class="input" placeholder="z. B. MATHE-11" />
         </label>
         <div class="edit-field">
-          <span class="edit-lbl">Glyph</span>
+          <span class="edit-lbl">Symbol</span>
           <EmojiPicker value={glyph} onPick={(e) => (glyph = e)} />
         </div>
         <div class="edit-field">
-          <span class="edit-lbl">Color</span>
+          <span class="edit-lbl">Farbe</span>
           <div class="edit-colors">
             {#each SUBJECT_COLORS as c}
               <button
@@ -167,43 +167,43 @@
                 onclick={() => (color = c)}
               ></button>
             {/each}
-            <input type="color" bind:value={color} class="swatch-custom" aria-label="Custom color" />
+            <input type="color" bind:value={color} class="swatch-custom" aria-label="Eigene Farbe" />
           </div>
         </div>
       {/if}
 
       {#if t.kind === "source"}
         <div class="edit-field">
-          <span class="edit-lbl">Subject</span>
+          <span class="edit-lbl">Fach</span>
           <Picker
             value={selectedSubjectId}
             onChange={(id) => { selectedSubjectId = id; topicId = ""; }}
             options={subjectOptions}
-            placeholder="— select subject —"
+            placeholder="– Fach wählen –"
           />
         </div>
         <div class="edit-field">
-          <span class="edit-lbl">Topic</span>
+          <span class="edit-lbl">Thema</span>
           <Picker
             value={topicId}
             onChange={(id) => (topicId = id)}
             options={topicOptions}
-            placeholder="— no topic —"
+            placeholder="– kein Thema –"
           />
         </div>
         <label class="edit-field">
           <span class="edit-lbl">Tags</span>
-          <input bind:value={tagsText} class="input" placeholder="comma, separated, tags" />
+          <input bind:value={tagsText} class="input" placeholder="Tags, durch Komma getrennt" />
         </label>
       {/if}
 
       <div class="edit-actions">
-        <button class="btn btn--danger btn--sm" type="button" style="margin-right:auto" onclick={del}>Delete</button>
+        <button class="btn btn--danger btn--sm" type="button" style="margin-right:auto" onclick={del}>Löschen</button>
         {#if t.kind === "subject"}
-          <button class="btn btn--ghost btn--sm" type="button" onclick={archive}>Archive</button>
+          <button class="btn btn--ghost btn--sm" type="button" onclick={archive}>Archivieren</button>
         {/if}
-        <button class="btn btn--ghost btn--sm" type="button" onclick={() => app.closeEdit()}>Cancel</button>
-        <button class="btn btn--primary btn--sm" type="button" onclick={save}>Save</button>
+        <button class="btn btn--ghost btn--sm" type="button" onclick={() => app.closeEdit()}>Abbrechen</button>
+        <button class="btn btn--primary btn--sm" type="button" onclick={save}>Speichern</button>
       </div>
     </div>
   </div>

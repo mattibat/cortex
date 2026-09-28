@@ -21,11 +21,11 @@
     const abs = Math.abs(diff);
     const day = 86400000;
     const fut = diff > 0;
-    if (abs < 3600000) { const m = Math.max(1, Math.round(abs / 60000)); return fut ? `in ${m}m` : `${m}m ago`; }
-    if (abs < day) { const h = Math.round(abs / 3600000); return fut ? `in ${h}h` : `${h}h ago`; }
+    if (abs < 3600000) { const m = Math.max(1, Math.round(abs / 60000)); return fut ? `in ${m} Min.` : `vor ${m} Min.`; }
+    if (abs < day) { const h = Math.round(abs / 3600000); return fut ? `in ${h} Std.` : `vor ${h} Std.`; }
     const d = Math.round(abs / day);
-    if (fut) return d === 1 ? "tomorrow" : `in ${d}d`;
-    return d === 1 ? "yesterday" : `${d}d ago`;
+    if (fut) return d === 1 ? "morgen" : `in ${d} Tagen`;
+    return d === 1 ? "gestern" : `vor ${d} Tagen`;
   }
   const iconFor = (k: NotifItem["kind"]) => (k === "announcement" ? "chat" : k === "exam" ? "star" : "calendar");
 
@@ -44,16 +44,16 @@
 
 {#if app.notifOpen}
   <div class="nc-back" role="presentation" onmousedown={() => (app.notifOpen = false)}>
-    <div class="nc" role="dialog" aria-modal="true" aria-label="Notifications" tabindex="-1" onmousedown={(e) => e.stopPropagation()}>
+    <div class="nc" role="dialog" aria-modal="true" aria-label="Benachrichtigungen" tabindex="-1" onmousedown={(e) => e.stopPropagation()}>
       <header class="nc-head">
         <Icon name="bell" size={15} />
-        <span class="nc-title">Notifications</span>
+        <span class="nc-title">Benachrichtigungen</span>
         {#if app.unreadCount > 0}<span class="nc-count">{app.unreadCount}</span>{/if}
         <div class="grow"></div>
-        <button class="btn btn--icon btn--sm btn--ghost" title="Sync now" aria-label="Sync now" onclick={() => app.syncMoodle()} disabled={app.moodleSyncing}>
+        <button class="btn btn--icon btn--sm btn--ghost" title="Jetzt synchronisieren" aria-label="Jetzt synchronisieren" onclick={() => app.syncMoodle()} disabled={app.moodleSyncing}>
           <Icon name="refresh" size={13} />
         </button>
-        <button class="btn btn--icon btn--sm btn--ghost" title="Close" aria-label="Close" onclick={() => (app.notifOpen = false)}>
+        <button class="btn btn--icon btn--sm btn--ghost" title="Schließen" aria-label="Schließen" onclick={() => (app.notifOpen = false)}>
           <Icon name="x" size={14} />
         </button>
       </header>
@@ -61,7 +61,7 @@
       {#if app.unreadCount > 0}
         <div class="nc-actions">
           <button class="nc-markall" onclick={() => app.markAllNotificationsRead()}>
-            <Icon name="check" size={11} /> Mark all as read
+            <Icon name="check" size={11} /> Alle als gelesen markieren
           </button>
         </div>
       {/if}
@@ -70,18 +70,18 @@
         {#if app.notifications.length === 0}
           <div class="nc-empty">
             <Icon name="bell" size={26} color="var(--fg-faint)" />
-            <p>You're all caught up.</p>
+            <p>Alles erledigt.</p>
             <span class="nc-empty-sub mono">{app.moodleData.courses.length ? "No announcements or deadlines." : "Connect your portal in Settings → Experimental."}</span>
           </div>
         {:else}
           {#if upcoming.length}
-            <div class="nc-group mono">Due soon</div>
+            <div class="nc-group mono">Bald fällig</div>
             {#each upcoming as n (n.id)}
               {@render item(n)}
             {/each}
           {/if}
           {#if announcements.length}
-            <div class="nc-group mono">Announcements</div>
+            <div class="nc-group mono">Ankündigungen</div>
             {#each announcements as n (n.id)}
               {@render item(n)}
             {/each}

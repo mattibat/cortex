@@ -35,18 +35,18 @@
       bind:this={inputEl}
       bind:value={q}
       class="input findbar-input"
-      placeholder="Find on page…"
+      placeholder="Auf der Seite suchen…"
       oninput={() => (notFound = false)}
       onkeydown={onKey}
     />
-    {#if notFound}<span class="findbar-stat mono">no matches</span>{/if}
-    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => find(true)} title="Previous (Shift+Enter)">
+    {#if notFound}<span class="findbar-stat mono">keine Treffer</span>{/if}
+    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => find(true)} title="Vorheriger (Umschalt+Enter)">
       <span style="display:inline-flex;transform:rotate(-90deg)"><Icon name="chevron" size={12} /></span>
     </button>
-    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => find(false)} title="Next (Enter)">
+    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => find(false)} title="Nächster (Enter)">
       <span style="display:inline-flex;transform:rotate(90deg)"><Icon name="chevron" size={12} /></span>
     </button>
-    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => (app.findOpen = false)} title="Close (Esc)">
+    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => (app.findOpen = false)} title="Schließen (Esc)">
       <Icon name="x" size={12} />
     </button>
   </div>

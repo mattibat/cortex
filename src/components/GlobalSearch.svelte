@@ -16,11 +16,11 @@
   let runId = 0; // drop stale responses when the user keeps typing
 
   const GROUPS: Record<string, { label: string; icon: string }> = {
-    chunk: { label: "Related content", icon: "search" },
-    source: { label: "Sources", icon: "doc" },
-    note: { label: "Notes", icon: "pencil" },
-    event: { label: "Calendar", icon: "calendar" },
-    material: { label: "Materials", icon: "grid" },
+    chunk: { label: "Passende Inhalte", icon: "search" },
+    source: { label: "Quellen", icon: "doc" },
+    note: { label: "Notizen", icon: "pencil" },
+    event: { label: "Kalender", icon: "calendar" },
+    material: { label: "Materialien", icon: "grid" },
   };
   // Exact matches first — Enter must land on a predictable target; semantic
   // "related content" chunks trail at the bottom.
@@ -114,7 +114,7 @@
           bind:value={q}
           onkeydown={onKey}
           autofocus
-          placeholder="Search everything — notes, sources, transcripts, events…"
+          placeholder="Alles durchsuchen – Notizen, Quellen, Transkripte, Termine…"
         />
         <span class="kbd">esc</span>
       </div>
@@ -122,11 +122,11 @@
       <div style:max-height="46vh" style:overflow-y="auto" style:overflow-x="hidden">
         {#if q.trim() && !searching && flat.length === 0}
           <div style:padding="22px" style:text-align="center" style:color="var(--fg-faint)" style:font-size="var(--t-sm)">
-            No matches
+            Keine Treffer
           </div>
         {:else if searching && flat.length === 0}
           <div style:padding="22px" style:text-align="center" style:color="var(--fg-faint)" style:font-size="var(--t-sm)">
-            Searching…
+            Suche läuft…
           </div>
         {/if}
 

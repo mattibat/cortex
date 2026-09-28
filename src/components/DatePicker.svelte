@@ -9,7 +9,7 @@
   let {
     value,
     onChange,
-    placeholder = "Pick a date",
+    placeholder = "Datum wählen",
     withTime = false,
   }: {
     value: string;
@@ -18,7 +18,7 @@
     withTime?: boolean;
   } = $props();
 
-  const DOW = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+  const DOW = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
   let open = $state(false);
@@ -100,13 +100,13 @@
 
   {#if open}
     <div class="dp-back" role="presentation" onclick={() => (open = false)}></div>
-    <div class="dp-pop" role="dialog" aria-label="Choose a date">
+    <div class="dp-pop" role="dialog" aria-label="Datum wählen">
       <div class="dp-head">
-        <button type="button" class="dp-nav" aria-label="Previous month" onclick={prevMonth}>
+        <button type="button" class="dp-nav" aria-label="Vorheriger Monat" onclick={prevMonth}>
           <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={12} /></span>
         </button>
         <span class="dp-title">{MONTHS[viewM]} {viewY}</span>
-        <button type="button" class="dp-nav" aria-label="Next month" onclick={nextMonth}>
+        <button type="button" class="dp-nav" aria-label="Nächster Monat" onclick={nextMonth}>
           <Icon name="chevron" size={12} />
         </button>
       </div>
@@ -124,15 +124,15 @@
       </div>
       {#if withTime}
         <div class="dp-time">
-          <span class="dp-time-lbl">Time</span>
-          <input class="input dp-tnum" type="number" min="0" max="23" bind:value={hh} onchange={commitTime} aria-label="Hour" />
+          <span class="dp-time-lbl">Uhrzeit</span>
+          <input class="input dp-tnum" type="number" min="0" max="23" bind:value={hh} onchange={commitTime} aria-label="Stunde" />
           <span class="dp-colon">:</span>
           <input class="input dp-tnum" type="number" min="0" max="59" bind:value={mi} onchange={commitTime} aria-label="Minute" />
-          <button type="button" class="dp-done" onclick={() => (open = false)}>Done</button>
+          <button type="button" class="dp-done" onclick={() => (open = false)}>Fertig</button>
         </div>
       {:else}
         <div class="dp-foot">
-          <button type="button" class="dp-quick" onclick={() => pickDay(new Date())}>Today</button>
+          <button type="button" class="dp-quick" onclick={() => pickDay(new Date())}>Heute</button>
         </div>
       {/if}
     </div>

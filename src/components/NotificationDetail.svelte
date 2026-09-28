@@ -23,11 +23,11 @@
   function rel(ms: number): string {
     const diff = ms - Date.now();
     const abs = Math.abs(diff), day = 86400000, fut = diff > 0;
-    if (abs < 3600000) { const m = Math.max(1, Math.round(abs / 60000)); return fut ? `in ${m}m` : `${m}m ago`; }
-    if (abs < day) { const h = Math.round(abs / 3600000); return fut ? `in ${h}h` : `${h}h ago`; }
+    if (abs < 3600000) { const m = Math.max(1, Math.round(abs / 60000)); return fut ? `in ${m} Min.` : `vor ${m} Min.`; }
+    if (abs < day) { const h = Math.round(abs / 3600000); return fut ? `in ${h} Std.` : `vor ${h} Std.`; }
     const dd = Math.round(abs / day);
-    if (fut) return dd === 1 ? "tomorrow" : `in ${dd} days`;
-    return dd === 1 ? "yesterday" : `${dd} days ago`;
+    if (fut) return dd === 1 ? "morgen" : `in ${dd} Tagen`;
+    return dd === 1 ? "gestern" : `vor ${dd} Tagen`;
   }
   // Readable plain text from Moodle's HTML (safer than rendering arbitrary HTML).
   function htmlToText(html: string): string {
@@ -69,7 +69,7 @@
           <div class="nd-kind mono">{kindLabel(d.kind)}</div>
           <h2 class="nd-title">{d.title}</h2>
         </div>
-        <button class="btn btn--icon btn--sm btn--ghost" title="Close" aria-label="Close" onclick={() => app.closeDetail()}>
+        <button class="btn btn--icon btn--sm btn--ghost" title="Schließen" aria-label="Schließen" onclick={() => app.closeDetail()}>
           <Icon name="x" size={15} />
         </button>
       </header>
@@ -84,7 +84,7 @@
           {#if d.message.trim()}
             <p class="nd-text read">{htmlToText(d.message)}</p>
           {:else}
-            <p class="nd-empty">No content — open it in Moodle for the full post.</p>
+            <p class="nd-empty">Kein Inhalt – öffne den Beitrag in Moodle, um ihn vollständig zu sehen.</p>
           {/if}
         {:else}
           <p class="nd-text read">{kindLabel(d.kind)} {d.ts ? `due ${fmtFull(d.ts)}` : ""}{d.course ? ` for ${d.course}` : ""}.</p>
@@ -102,9 +102,9 @@
             onclick={() =>
               d.url &&
               api.openExternal(d.url).catch((e) =>
-                app.pushToast({ kind: "error", title: "Couldn't open the link", body: String(e) })
+                app.pushToast({ kind: "error", title: "Link konnte nicht geöffnet werden", body: String(e) })
               )}
-          ><Icon name="external" size={12} /> Open in Moodle</button>
+          ><Icon name="external" size={12} /> In Moodle öffnen</button>
         {/if}
       </footer>
     </div>

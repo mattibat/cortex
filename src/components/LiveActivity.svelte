@@ -117,8 +117,8 @@
       class:dragging
       class:break={isBreak}
       style={positionStyle}
-      title="Expand focus timer"
-      aria-label="Pomodoro timer, {pomo.mmss} remaining. Expand."
+      title="Fokus-Timer öffnen"
+      aria-label="Pomodoro-Timer, noch {pomo.mmss}. Öffnen."
       onpointerdown={onPointerDown}
       onpointermove={onPointerMove}
       onpointerup={onPointerUp}
@@ -146,7 +146,7 @@
       style={positionStyle}
       role="button"
       tabindex="0"
-      aria-label="Pomodoro live activity. {pomo.phaseLabel}, {pomo.mmss} remaining. Click to open the full timer."
+      aria-label="Pomodoro. {pomo.phaseLabel}, noch {pomo.mmss}. Klicken, um den Timer zu öffnen."
       onpointerdown={onPointerDown}
       onpointermove={onPointerMove}
       onpointerup={onPointerUp}
@@ -173,10 +173,10 @@
       </div>
 
       <div class="la-actions">
-        <button class="la-btn" title={pomo.running ? "Pause" : "Start"} onclick={togglePlay}>
+        <button class="la-btn" title={pomo.running ? "Pause" : "Starten"} onclick={togglePlay}>
           <Icon name={pomo.running ? "pause" : "play"} size={11} />
         </button>
-        <button class="la-btn" title="Minimise" aria-label="Minimise" onclick={toggleMin}>
+        <button class="la-btn" title="Minimieren" aria-label="Minimieren" onclick={toggleMin}>
           <Icon name="x" size={10} />
         </button>
       </div>

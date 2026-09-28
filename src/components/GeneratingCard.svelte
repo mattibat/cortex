@@ -7,10 +7,10 @@
 
   async function cancel() {
     const ok = await app.confirm({
-      title: `Stop generating ${jobKindLabel(job.kind)}?`,
-      body: "It stops being tracked and the result is discarded.",
+      title: `Erstellen von ${jobKindLabel(job.kind)} abbrechen?`,
+      body: "Der Vorgang wird nicht weiter verfolgt und das Ergebnis verworfen.",
       danger: true,
-      okLabel: "Stop",
+      okLabel: "Abbrechen",
     });
     if (ok) jobs.cancel(job.id);
   }
@@ -19,7 +19,7 @@
 {#if job.status === "running"}
   <div class="gen-card">
     <span class="is-spin"></span>
-    <span class="gen-card-label mono">Generating {jobKindLabel(job.kind)}…</span>
+    <span class="gen-card-label mono">{jobKindLabel(job.kind)} wird erstellt…</span>
     {#if job.label}
       <span class="gen-card-sub mono">{job.label}</span>
     {/if}
@@ -27,8 +27,8 @@
       class="gen-card-x"
       style="margin-left:auto"
       type="button"
-      aria-label="Stop generating"
-      title="Stop generating"
+      aria-label="Erstellen abbrechen"
+      title="Erstellen abbrechen"
       onclick={cancel}
     >
       <Icon name="x" size={13} />
@@ -38,14 +38,14 @@
   <div class="gen-card gen-card--err">
     <span class="gen-card-ico"><Icon name="bolt" size={14} color="var(--err)" /></span>
     <div class="gen-card-body">
-      <span class="gen-card-label mono">Couldn't generate {jobKindLabel(job.kind)}</span>
+      <span class="gen-card-label mono">{jobKindLabel(job.kind)} konnte nicht erstellt werden</span>
       <span class="gen-card-sub mono">{job.error ?? "Unknown error"}</span>
     </div>
     <button
       class="gen-card-x"
       type="button"
-      aria-label="Dismiss"
-      title="Dismiss"
+      aria-label="Schließen"
+      title="Schließen"
       onclick={() => jobs.dismiss(job.id)}
     >
       <Icon name="x" size={13} />

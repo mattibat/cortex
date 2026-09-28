@@ -69,19 +69,19 @@
         const topicId = (m?.topicId ?? app.activeSubject?.topics[0]?.id) || undefined;
         const res = await api.saveRecording(
           subjectId,
-          name || "Untitled recording",
+          name || "Unbenannte Aufnahme",
           audio,
           topicId,
         );
         await app.refresh();
         app.pushToast({
           kind: res.warning ? "warning" : "success",
-          title: "Recording saved",
-          body: res.warning ?? `${name || "Untitled recording"} · ${res.chunk_count} chunks embedded.`,
+          title: "Aufnahme gespeichert",
+          body: res.warning ?? `${name || "Unbenannte Aufnahme"} · ${res.chunk_count} Abschnitte eingebettet.`,
         });
         app.metaModal = null;
       } catch (e) {
-        app.pushToast({ kind: "error", title: "Couldn't save recording", body: String(e) });
+        app.pushToast({ kind: "error", title: "Aufnahme konnte nicht gespeichert werden", body: String(e) });
       } finally {
         saving = false;
       }
@@ -92,8 +92,8 @@
     // persist. Rather than emit a false "updated" success, acknowledge and close.
     app.pushToast({
       kind: "info",
-      title: isRecord ? "Nothing to save" : "Details noted",
-      body: name || (isRecord ? "No recording attached" : "No backing source to update"),
+      title: isRecord ? "Nichts zu speichern" : "Details übernommen",
+      body: name || (isRecord ? "Keine Aufnahme vorhanden" : "Keine Quelle zum Aktualisieren"),
     });
     app.metaModal = null;
   }
@@ -128,14 +128,14 @@
         {#if isRecord}
           <div class="meta-rec-note mono">
             <Icon name="check" size={13} color="var(--ok)" />
-            Recorded {app.metaModal?.meta ?? ""} · transcribed. Confirm where it lives before saving.
+            Aufgenommen {app.metaModal?.meta ?? ""} · transkribiert. Lege vor dem Speichern fest, wo die Aufnahme abgelegt wird.
           </div>
         {/if}
 
         <!-- Title field -->
         <div class="field">
           <!-- svelte-ignore a11y_label_has_associated_control -->
-          <label class="onb-label mono">SOURCE TITLE</label>
+          <label class="onb-label mono">TITEL DER QUELLE</label>
           <div class="meta-title-row">
             <span class={"badge badge--" + (type === "audio" ? "audio" : type)}>
               <span class="dot"></span>{typeLabel}
@@ -145,7 +145,7 @@
               class="input"
               autofocus
               bind:value={title}
-              placeholder="Give this source a clear name…"
+              placeholder="Gib der Quelle einen eindeutigen Namen…"
             />
           </div>
         </div>
@@ -154,7 +154,7 @@
         <div class="meta-grid">
           <div class="field">
             <!-- svelte-ignore a11y_label_has_associated_control -->
-            <label class="onb-label mono">SUBJECT</label>
+            <label class="onb-label mono">FACH</label>
             <div class="picker">
               <button type="button" class="picker-btn">
                 <Icon name="diamond" size={12} color="var(--fg-faint)" />
@@ -165,7 +165,7 @@
           </div>
           <div class="field">
             <!-- svelte-ignore a11y_label_has_associated_control -->
-            <label class="onb-label mono">TOPIC</label>
+            <label class="onb-label mono">THEMA</label>
             <div class="picker">
               <button type="button" class="picker-btn">
                 <Icon name="chevron" size={12} color="var(--fg-faint)" />
@@ -192,7 +192,7 @@
             <input
               class="tag-input mono"
               bind:value={tagDraft}
-              placeholder={tags.length ? "add…" : "type a tag, press Enter…"}
+              placeholder={tags.length ? "hinzufügen…" : "Tag eingeben, Enter drücken…"}
               onkeydown={handleTagKeyDown}
             />
           </div>
@@ -207,9 +207,9 @@
       </div>
 
       <footer class="meta-foot">
-        <button class="btn btn--ghost" onclick={close}>Cancel</button>
+        <button class="btn btn--ghost" onclick={close}>Abbrechen</button>
         <button class="btn btn--primary" onclick={save} disabled={saving}>
-          <Icon name="check" size={13} /> {isRecord ? "Save source" : "Save changes"}
+          <Icon name="check" size={13} /> {isRecord ? "Quelle speichern" : "Änderungen speichern"}
         </button>
       </footer>
     </div>

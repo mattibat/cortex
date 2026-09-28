@@ -102,7 +102,7 @@
     style={positionStyle}
     role="button"
     tabindex="0"
-    aria-label="Lecture recording, {rec.mm}:{rec.ss} elapsed. Click to open the recorder."
+    aria-label="Aufnahme läuft, {rec.mm}:{rec.ss} vergangen. Klicken, um die Aufnahme zu öffnen."
     onpointerdown={onPointerDown}
     onpointermove={onPointerMove}
     onpointerup={onPointerUp}
@@ -112,14 +112,14 @@
     {#if rec.status === "transcribing"}
       <span class="ra-dot ra-dot--busy"></span>
       <div class="ra-body">
-        <div class="ra-phase mono">TRANSCRIBING</div>
+        <div class="ra-phase mono">WIRD TRANSKRIBIERT</div>
         <div class="ra-time mono">{rec.note || "Whisper…"}</div>
       </div>
     {:else if rec.status === "review"}
       <span class="ra-dot ra-dot--review"></span>
       <div class="ra-body">
-        <div class="ra-phase mono">UNSAVED TAKE</div>
-        <div class="ra-time mono">{rec.reviewDuration} · tap to save</div>
+        <div class="ra-phase mono">NICHT GESPEICHERT</div>
+        <div class="ra-time mono">{rec.reviewDuration} · zum Speichern tippen</div>
       </div>
     {:else}
       <span class="ra-dot" class:live={!rec.paused}></span>
@@ -128,10 +128,10 @@
         <div class="ra-time mono">{rec.mm}:{rec.ss}</div>
       </div>
       <div class="ra-actions">
-        <button class="ra-btn" title={rec.paused ? "Resume" : "Pause"} onclick={togglePause}>
+        <button class="ra-btn" title={rec.paused ? "Fortsetzen" : "Pause"} onclick={togglePause}>
           <Icon name={rec.paused ? "play" : "pause"} size={11} />
         </button>
-        <button class="ra-btn ra-btn--stop" title="Stop & review" onclick={stop}>
+        <button class="ra-btn ra-btn--stop" title="Stoppen & prüfen" onclick={stop}>
           <span class="ra-stop-sq"></span>
         </button>
       </div>

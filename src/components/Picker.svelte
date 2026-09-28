@@ -54,7 +54,7 @@
       <Icon name={icon} size={12} color="var(--fg-faint)" />
     {/if}
     <span class={"picker-val" + (cur ? "" : " ph")}>
-      {cur ? cur.label : (placeholder ?? "Select…")}
+      {cur ? cur.label : (placeholder ?? "Auswählen…")}
     </span>
     <Icon name="chevron" size={11} style="transform:rotate(90deg);color:var(--fg-faint)" />
   </button>
