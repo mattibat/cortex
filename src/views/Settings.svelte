@@ -2621,9 +2621,9 @@ Notes: {about}</pre>
                   <div class="set-row-t">Synchronisieren</div>
                   <div class="set-row-d">
                     {#if schoolSyncResult}
-                      Zuletzt: {schoolSyncResult.added} neu · {schoolSyncResult.moved} verschoben · {schoolSyncResult.skipped} übersprungen{schoolSyncResult.errors.length ? ` · ${schoolSyncResult.errors.length} Fehler` : ""}
+                      Zuletzt: {schoolSyncResult.added} neu · {schoolSyncResult.updated} aktualisiert · {schoolSyncResult.moved} verschoben · {schoolSyncResult.removed} entfernt · {schoolSyncResult.skipped} übersprungen{schoolSyncResult.errors.length ? ` · ${schoolSyncResult.errors.length} Fehler` : ""}
                     {:else}
-                      Läuft auch automatisch beim App-Start.
+                      Läuft automatisch beim Start, beim Wechsel zurück in die App und alle 2 Minuten.
                     {/if}
                   </div>
                 </div>
