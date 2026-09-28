@@ -829,6 +829,9 @@ pub async fn reingest_source(app: AppHandle, id: String) -> Result<IngestResult>
                 input.text = src.content.clone();
                 input.path = src.origin.clone();
             }
+            "docx" | "pptx" | "xlsx" => {
+                input.path = src.origin.clone().or_else(|| src.stored_path.clone())
+            }
             _ => input.path = src.stored_path.clone().or_else(|| src.origin.clone()),
         }
 
