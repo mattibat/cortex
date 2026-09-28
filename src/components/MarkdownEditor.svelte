@@ -60,7 +60,7 @@
 
   function link() {
     applySelection((sel) => {
-      const label = sel || "text";
+      const label = sel || "Text";
       const text = "[" + label + "](url)";
       // Select the "url" portion so it's easy to replace.
       const urlStart = label.length + 3;
@@ -83,7 +83,7 @@
     reader.onload = () => {
       const url = reader.result as string;
       applySelection((sel) => {
-        const alt = sel || "image";
+        const alt = sel || "Bild";
         const text = `\n![${alt}](${url})\n`;
         return { text, selStart: 3, selEnd: 3 + alt.length };
       });
@@ -91,11 +91,11 @@
     reader.readAsDataURL(f);
   }
 
-  function bold()   { wrap("**", "bold"); }
-  function italic() { wrap("*", "italic"); }
+  function bold()   { wrap("**", "fett"); }
+  function italic() { wrap("*", "kursiv"); }
   function code()   { wrap("`", "code"); }
-  function h1()     { prefixLines((l) => "# " + l, "Heading 1"); }
-  function h2()     { prefixLines((l) => "## " + l, "Heading 2"); }
+  function h1()     { prefixLines((l) => "# " + l, "Überschrift 1"); }
+  function h2()     { prefixLines((l) => "## " + l, "Überschrift 2"); }
 
   // Keyboard shortcut handler for the textarea.
   function handleKeydown(e: KeyboardEvent) {
@@ -113,17 +113,17 @@
 
   type Tool = { id: string; label: string; icon?: string; glyph?: string; run: () => void };
   const tools: Tool[] = [
-    { id: "bold",      label: "Bold (⌘B)",         glyph: "B",   run: bold },
-    { id: "italic",    label: "Italic (⌘I)",        glyph: "I",   run: italic },
-    { id: "h1",        label: "Heading 1 (⌘1)",     glyph: "H1",  run: h1 },
-    { id: "h2",        label: "Heading 2 (⌘2)",     glyph: "H2",  run: h2 },
-    { id: "ul",        label: "Bullet list",         glyph: "•",   run: () => prefixLines((l) => "- " + l, "List item") },
-    { id: "ol",        label: "Numbered list",       glyph: "1.",  run: () => prefixLines((l, i) => `${i + 1}. ` + l, "List item") },
-    { id: "code",      label: "Inline code (⌘E)",   glyph: "`",   run: code },
-    { id: "codeblock", label: "Code block",          glyph: "{ }", run: codeBlock },
+    { id: "bold",      label: "Fett (⌘B)",         glyph: "B",   run: bold },
+    { id: "italic",    label: "Kursiv (⌘I)",       glyph: "I",   run: italic },
+    { id: "h1",        label: "Überschrift 1 (⌘1)", glyph: "H1",  run: h1 },
+    { id: "h2",        label: "Überschrift 2 (⌘2)", glyph: "H2",  run: h2 },
+    { id: "ul",        label: "Aufzählung",          glyph: "•",   run: () => prefixLines((l) => "- " + l, "Listenpunkt") },
+    { id: "ol",        label: "Nummerierte Liste",   glyph: "1.",  run: () => prefixLines((l, i) => `${i + 1}. ` + l, "Listenpunkt") },
+    { id: "code",      label: "Code (⌘E)",          glyph: "`",   run: code },
+    { id: "codeblock", label: "Codeblock",           glyph: "{ }", run: codeBlock },
     { id: "link",      label: "Link (⌘K)",           icon: "link", run: link },
-    { id: "image",     label: "Insert image",        icon: "camera", run: pickImage },
-    { id: "quote",     label: "Quote",               glyph: "❝",  run: () => prefixLines((l) => "> " + l, "Quote") },
+    { id: "image",     label: "Bild einfügen",       icon: "camera", run: pickImage },
+    { id: "quote",     label: "Zitat",               glyph: "❝",  run: () => prefixLines((l) => "> " + l, "Zitat") },
   ];
 </script>
 
@@ -136,7 +136,7 @@
     onchange={onImageFile}
   />
   <div class="md-bar">
-    <div class="md-tools" role="toolbar" aria-label="Formatting">
+    <div class="md-tools" role="toolbar" aria-label="Formatierung">
       {#each tools as t}
         <button
           type="button"
@@ -150,21 +150,21 @@
         </button>
       {/each}
     </div>
-    <div class="md-seg" role="tablist" aria-label="Editor view">
+    <div class="md-seg" role="tablist" aria-label="Editor-Ansicht">
       <button
         type="button"
         role="tab"
         aria-selected={tab === "write"}
         class={"md-segbtn" + (tab === "write" ? " on" : "")}
         onclick={() => (tab = "write")}
-      >Write</button>
+      >Schreiben</button>
       <button
         type="button"
         role="tab"
         aria-selected={tab === "preview"}
         class={"md-segbtn" + (tab === "preview" ? " on" : "")}
         onclick={() => (tab = "preview")}
-      >Preview</button>
+      >Vorschau</button>
     </div>
   </div>
 
@@ -173,7 +173,7 @@
       bind:this={ta}
       class="md-area"
       spellcheck="true"
-      placeholder="Write your notes in Markdown…"
+      placeholder="Schreibe deine Notizen in Markdown…"
       value={value}
       oninput={(e) => onChange((e.target as HTMLTextAreaElement).value)}
       onkeydown={handleKeydown}
@@ -184,7 +184,7 @@
         {#if value.trim()}
           <RichText text={value} />
         {:else}
-          <div class="md-empty">Nothing to preview yet.</div>
+          <div class="md-empty">Noch nichts zum Anzeigen.</div>
         {/if}
       </div>
     </div>

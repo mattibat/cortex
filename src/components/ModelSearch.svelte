@@ -52,10 +52,10 @@
   });
   const searchPlaceholder = $derived(
     loading
-      ? "Loading models…"
+      ? "Modelle werden geladen…"
       : allowCustom
-        ? "Search models or type your own name…"
-        : "Search models…"
+        ? "Modelle suchen oder eigenen Namen eingeben…"
+        : "Modelle suchen…"
   );
 
   function toggle() {
@@ -131,7 +131,7 @@
         {#if loading && options.length === 0}
           <div class="ms-empty">Loading models…</div>
         {:else if shown.length === 0}
-          <div class="ms-empty">No models match “{q}”</div>
+          <div class="ms-empty">Keine Modelle passend zu „{q}“</div>
         {:else}
           {#if customCandidate}
             <button

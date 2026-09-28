@@ -40,7 +40,7 @@
   <!-- ── Header bar ── -->
   <div class="ss-bar">
     {#if onExit}
-      <button class="btn btn--icon btn--sm btn--ghost" onclick={onExit} title="Back to materials">
+      <button class="btn btn--icon btn--sm btn--ghost" onclick={onExit} title="Zurück zu den Materialien">
         <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={14} /></span>
       </button>
     {/if}
@@ -49,9 +49,9 @@
       <button
         class="btn btn--sm btn--ghost{showNotes ? ' on' : ''}"
         onclick={() => (showNotes = !showNotes)}
-        title="Toggle speaker notes"
+        title="Sprechernotizen ein-/ausblenden"
       >
-        <Icon name="grid" size={12} /> Notes
+        <Icon name="grid" size={12} /> Notizen
       </button>
     {/if}
     <span class="mono faint" style="font-size: var(--t-xs);">{idx + 1} / {slides.length}</span>
@@ -60,7 +60,7 @@
   {#if slides.length === 0}
     <div class="ss-empty">
       <Icon name="play" size={26} color="var(--fg-faint)" />
-      <p class="mono faint" style="margin-top: 12px;">No slides available.</p>
+      <p class="mono faint" style="margin-top: 12px;">Keine Folien vorhanden.</p>
     </div>
   {:else if current}
     <!-- ── Slide content ── -->
@@ -79,7 +79,7 @@
 
       {#if showNotes && current.notes}
         <div class="ss-notes">
-          <div class="ss-notes-h mono">Speaker notes</div>
+          <div class="ss-notes-h mono">Sprechernotizen</div>
           <p class="ss-notes-body read">{current.notes}</p>
         </div>
       {/if}
@@ -93,7 +93,7 @@
         disabled={!hasPrev}
       >
         <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={13} /></span>
-        Prev
+        Zurück
       </button>
 
       <!-- Slide pips -->
@@ -102,7 +102,7 @@
           <button
             class="ss-pip{n === idx ? ' on' : ''}"
             onclick={() => (idx = n)}
-            title="Slide {n + 1}"
+            title="Folie {n + 1}"
           ></button>
         {/each}
       </div>
@@ -112,7 +112,7 @@
         onclick={next}
         disabled={!hasNext}
       >
-        Next
+        Weiter
         <Icon name="chevron" size={13} />
       </button>
     </div>

@@ -13,7 +13,7 @@
   let { data, onExit }: { data?: MindData; onExit?: () => void } = $props();
 
   const central = $derived(
-    (data?.central ?? data?.title ?? "Mind map").toString()
+    (data?.central ?? data?.title ?? "Mindmap").toString()
   );
   const branches = $derived(
     Array.isArray(data?.branches) ? data!.branches!.filter((b) => b && b.label) : []
@@ -60,22 +60,22 @@
   <div class="mm-page">
     {#if onExit}
       <div class="mm-toolbar">
-        <button class="btn btn--icon btn--sm btn--ghost" onclick={onExit} title="Back to materials">
+        <button class="btn btn--icon btn--sm btn--ghost" onclick={onExit} title="Zurück zu den Materialien">
           <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={14} /></span>
         </button>
-        <span class="mono faint" style="font-size: var(--t-xs);">Mind map</span>
+        <span class="mono faint" style="font-size: var(--t-xs);">Mindmap</span>
       </div>
     {/if}
 
     {#if branches.length === 0}
       <div class="mm-empty">
         <Icon name="link" size={26} color="var(--fg-faint)" />
-        <p class="mono faint" style="margin-top: 12px;">No mind-map content.</p>
+        <p class="mono faint" style="margin-top: 12px;">Kein Mindmap-Inhalt.</p>
       </div>
     {:else}
       <div class="mm-controls">
-        <button class="btn btn--sm btn--ghost" onclick={expandAll}>Expand all</button>
-        <button class="btn btn--sm btn--ghost" onclick={collapseAll}>Collapse all</button>
+        <button class="btn btn--sm btn--ghost" onclick={expandAll}>Alle aufklappen</button>
+        <button class="btn btn--sm btn--ghost" onclick={collapseAll}>Alle zuklappen</button>
       </div>
 
       <div class="mm-canvas">

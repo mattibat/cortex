@@ -225,7 +225,7 @@
       app.activeSources().find((s) => s.name.toLowerCase() === name) ??
       app.activeSources().find((s) => s.name.toLowerCase().includes(name) || name.includes(s.name.toLowerCase()));
     if (src) app.openSource(src, loc);
-    else app.pushToast({ kind: "info", title: "Source", body: v });
+    else app.pushToast({ kind: "info", title: "Quelle", body: v });
   }
 </script>
 

@@ -393,19 +393,19 @@
     <div class="pom-modal" role="presentation" onmousedown={(e) => e.stopPropagation()}>
       <header class="pom-head">
         <div>
-          <div class="eyebrow">Focus ritual</div>
+          <div class="eyebrow">Fokus-Ritual</div>
           <div class="pom-title">Pomodoro</div>
         </div>
         <div class="pom-head-actions">
           <button
             class="btn btn--icon btn--sm btn--ghost"
             class:on={showSettings}
-            title="Settings"
+            title="Einstellungen"
             onclick={() => (showSettings = !showSettings)}
           >
             <Icon name="settings" size={13} />
           </button>
-          <button class="btn btn--icon btn--sm btn--ghost" title="Close" onclick={close}>
+          <button class="btn btn--icon btn--sm btn--ghost" title="Schließen" onclick={close}>
             <Icon name="x" size={12} />
           </button>
         </div>
@@ -439,14 +439,14 @@
           </button>
         {:else}
           <button class="btn btn--sm btn--primary" onclick={() => pomo.pomoStart()}>
-            <Icon name="play" size={12} /> {pomo.progress > 0 ? "Resume" : "Start"}
+            <Icon name="play" size={12} /> {pomo.progress > 0 ? "Fortsetzen" : "Starten"}
           </button>
         {/if}
-        <button class="btn btn--sm btn--ghost" onclick={() => pomo.pomoReset()} title="Reset phase">
-          <Icon name="refresh" size={12} /> Reset
+        <button class="btn btn--sm btn--ghost" onclick={() => pomo.pomoReset()} title="Phase zurücksetzen">
+          <Icon name="refresh" size={12} /> Zurücksetzen
         </button>
-        <button class="btn btn--sm btn--ghost" onclick={() => pomo.pomoSkip()} title="Skip to next phase">
-          <Icon name="arrowR" size={12} /> Skip
+        <button class="btn btn--sm btn--ghost" onclick={() => pomo.pomoSkip()} title="Zur nächsten Phase springen">
+          <Icon name="arrowR" size={12} /> Überspringen
         </button>
       </div>
 
@@ -454,7 +454,7 @@
       {#if showSettings}
         <div class="pom-settings">
           <div class="pom-set-row">
-            <label class="mono" for="pm-work">Focus</label>
+            <label class="mono" for="pm-work">Fokus</label>
             <input
               id="pm-work" type="number" min="1" max="180" value={pomo.workMin}
               onchange={(e) => commitSettings(+(e.target as HTMLInputElement).value, pomo.breakMin, pomo.longBreakMin)}
@@ -462,7 +462,7 @@
             <span class="pom-set-unit mono">min</span>
           </div>
           <div class="pom-set-row">
-            <label class="mono" for="pm-short">Short break</label>
+            <label class="mono" for="pm-short">Kurze Pause</label>
             <input
               id="pm-short" type="number" min="1" max="180" value={pomo.breakMin}
               onchange={(e) => commitSettings(pomo.workMin, +(e.target as HTMLInputElement).value, pomo.longBreakMin)}
@@ -470,14 +470,14 @@
             <span class="pom-set-unit mono">min</span>
           </div>
           <div class="pom-set-row">
-            <label class="mono" for="pm-long">Long break</label>
+            <label class="mono" for="pm-long">Lange Pause</label>
             <input
               id="pm-long" type="number" min="1" max="180" value={pomo.longBreakMin}
               onchange={(e) => commitSettings(pomo.workMin, pomo.breakMin, +(e.target as HTMLInputElement).value)}
             />
             <span class="pom-set-unit mono">min</span>
           </div>
-          <div class="pom-set-note mono">Long break every {pomo.sessionsBeforeLong}th focus session · {pomo.completedSessions} done today.</div>
+          <div class="pom-set-note mono">Lange Pause nach jeder {pomo.sessionsBeforeLong}. Fokus-Einheit · heute {pomo.completedSessions} geschafft.</div>
         </div>
       {/if}
     </div>

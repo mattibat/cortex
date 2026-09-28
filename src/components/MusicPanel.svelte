@@ -36,7 +36,7 @@
     if (!looksLikeUrl(url) || busy) return;
     busy = true;
     // Default a friendly name from the URL if none given.
-    const name = newName.trim() || "YouTube station";
+    const name = newName.trim() || "YouTube-Sender";
     const kind = /[?&]list=|\/live\b|live$/i.test(url) ? "live" : "youtube";
     const st = await app.addCustomStation(name, url, kind);
     busy = false;
@@ -57,8 +57,8 @@
     <div class="music-modal" role="presentation" onmousedown={e => e.stopPropagation()}>
       <header class="music-head">
         <div>
-          <div class="eyebrow">Study sound</div>
-          <div class="mh-title">Now playing</div>
+          <div class="eyebrow">Lernmusik</div>
+          <div class="mh-title">Läuft gerade</div>
         </div>
         <button class="btn btn--icon btn--sm btn--ghost" onclick={() => (app.musicOpen = false)}>
           <Icon name="x" size={12} />
@@ -77,10 +77,10 @@
         <div class="mn-info">
           <div class="mn-name">{cur.name}</div>
           <div class="mn-sub mono">
-            {#if app.musicBuffering}buffering…{:else}{cur.kind} · ad-free{/if}
+            {#if app.musicBuffering}lädt…{:else}{cur.kind} · werbefrei{/if}
           </div>
         </div>
-        <button class="mn-play" onclick={() => app.toggleMusic()} title="Play / pause">
+        <button class="mn-play" onclick={() => app.toggleMusic()} title="Abspielen / Pause">
           <Icon name={app.music.playing ? "pause" : "play"} size={16} />
         </button>
       </div>
@@ -104,7 +104,7 @@
       {#snippet favBtn(id: string)}
         <button
           class={"st-fav btn btn--icon btn--sm btn--ghost" + (app.stationFavs.includes(id) ? " on" : "")}
-          title={app.stationFavs.includes(id) ? "Unfavourite" : "Favourite"}
+          title={app.stationFavs.includes(id) ? "Aus Favoriten entfernen" : "Zu Favoriten hinzufügen"}
           onclick={(e) => { e.stopPropagation(); app.toggleStationFav(id); }}
         >
           <Icon name="star" size={12} color={app.stationFavs.includes(id) ? "var(--accent)" : "var(--fg-faint)"} />
@@ -115,7 +115,7 @@
       <div class="music-list">
         <!-- Favourites (built-in or custom), pinned to the top -->
         {#if favStations.length}
-          <div class="music-cat">★ Favourites</div>
+          <div class="music-cat">★ Favoriten</div>
           {#each favStations as s (s.id)}
             <div
               class={"station" + (s.id === app.music.current ? " on" : "")}
@@ -140,7 +140,7 @@
 
         <!-- User-added YouTube / URL stations FIRST — drag to reorder -->
         {#if app.customStations.length}
-          <div class="music-cat">Your stations</div>
+          <div class="music-cat">Deine Sender</div>
         {/if}
         {#each app.customStations as s, i (s.id)}
           <div
@@ -163,7 +163,7 @@
             {@render favBtn(s.id)}
             <button
               class="st-del btn btn--icon btn--sm btn--ghost"
-              title="Remove station"
+              title="Sender entfernen"
               onclick={(e) => { e.stopPropagation(); app.removeCustomStation(s.id); }}
             >
               <Icon name="x" size={11} />
@@ -172,7 +172,7 @@
         {/each}
 
         <!-- Built-in stations — songs first, then noises (mock.ts order) -->
-        <div class="music-cat">Stations</div>
+        <div class="music-cat">Sender</div>
         {#each stations as s (s.id)}
           <div
             class={"station" + (s.id === app.music.current ? " on" : "")}
@@ -200,23 +200,23 @@
 
         {#if adding}
           <div class="music-add">
-            <input class="input" bind:value={newName} placeholder="Name (e.g. Lofi 2hr mix)" />
+            <input class="input" bind:value={newName} placeholder="Name (z. B. Lofi-Mix 2 Std.)" />
             <input
               class="input mono"
               bind:value={newUrl}
-              placeholder="Paste a YouTube video or live URL…"
+              placeholder="YouTube-Video- oder Livestream-Link einfügen…"
               onkeydown={(e) => { if (e.key === "Enter") { e.preventDefault(); submitStation(); } }}
             />
             <div class="music-add-actions">
               <button class="btn btn--sm btn--ghost" onclick={() => { adding = false; newName = ""; newUrl = ""; }}>Cancel</button>
               <button class="btn btn--sm btn--primary" disabled={!looksLikeUrl(newUrl) || busy} onclick={submitStation}>
-                {busy ? "Adding…" : "Add station"}
+                {busy ? "Wird hinzugefügt…" : "Sender hinzufügen"}
               </button>
             </div>
           </div>
         {:else}
           <button class="music-add-btn" onclick={() => (adding = true)}>
-            <Icon name="plus" size={12} /> Add a YouTube station
+            <Icon name="plus" size={12} /> YouTube-Sender hinzufügen
           </button>
         {/if}
       </div>

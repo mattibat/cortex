@@ -10,7 +10,7 @@
   }
 
   let {
-    title = "Audio overview",
+    title = "Audio-Überblick",
     script: scriptProp = [],
     materialId,
     onExit,
@@ -95,11 +95,11 @@
       audioSrc = convertFileSrc(path);
       playing = false;
       t = 0;
-      app.pushToast({ kind: "success", title: "Audio ready", body: "Generated a real audio overview." });
+      app.pushToast({ kind: "success", title: "Audio fertig", body: "Der Audio-Überblick wurde erstellt." });
     } catch (e) {
       app.pushToast({
         kind: "error",
-        title: "Couldn't generate audio",
+        title: "Audio konnte nicht erstellt werden",
         body: String(e instanceof Error ? e.message : e),
       });
     } finally {
@@ -235,7 +235,7 @@
   <!-- ── Left: player chrome ── -->
   <div class="ao-main">
     {#if onExit}
-      <button class="btn btn--icon btn--sm btn--ghost ao-back" onclick={onExit} title="Back to materials">
+      <button class="btn btn--icon btn--sm btn--ghost ao-back" onclick={onExit} title="Zurück zu den Materialien">
         <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={14} /></span>
       </button>
     {/if}
@@ -259,7 +259,7 @@
 
     <!-- Title / hosts -->
     <div class="ao-meta">
-      <div class="eyebrow">Audio overview</div>
+      <div class="eyebrow">Audio-Überblick</div>
       <h1 class="ao-title read">{title}</h1>
       {#if speakers.length > 0}
         <div class="ao-hosts">
@@ -275,7 +275,7 @@
     </div>
 
     {#if segments.length === 0}
-      <p class="mono faint" style="font-size: var(--t-sm);">No audio script.</p>
+      <p class="mono faint" style="font-size: var(--t-sm);">Kein Audio-Skript.</p>
     {:else}
       {#if realMode}
         <!-- The real generated audio file; drives the timeline + transcript sync. -->
@@ -290,19 +290,19 @@
           onended={() => (playing = false)}
         ></audio>
         <p class="mono faint" style="font-size: var(--t-xs); margin: 0 0 6px; color: var(--ok);">
-          ● Real audio — narrated by your cloud voices.
+          ● Echtes Audio – gesprochen von deinen Cloud-Stimmen.
         </p>
       {:else}
         <!-- Offline / not-yet-generated: real audio button + on-device fallback. -->
         {#if materialId}
           <button class="btn btn--sm btn--primary ao-gen" onclick={generateRealAudio} disabled={generating}>
-            <Icon name="bolt" size={13} /> {generating ? "Generating audio…" : "Generate real audio"}
+            <Icon name="bolt" size={13} /> {generating ? "Audio wird erstellt…" : "Echtes Audio erstellen"}
           </button>
         {/if}
         {#if !voicesAvailable}
           <p class="mono faint" style="font-size: var(--t-xs); margin: 6px 0 6px;">
-            Offline preview uses on-device voices — install <span class="kbd">espeak-ng</span> or
-            <span class="kbd">speech-dispatcher</span> for spoken playback, or generate real audio above.
+            Die Offline-Vorschau nutzt Stimmen auf dem Gerät – installiere <span class="kbd">espeak-ng</span> oder
+            <span class="kbd">speech-dispatcher</span> für die Sprachausgabe oder erstelle oben echtes Audio.
           </p>
         {/if}
       {/if}
@@ -320,7 +320,7 @@
 
       <!-- Controls -->
       <div class="ao-controls">
-        <button class="btn btn--icon btn--ghost" onclick={() => seekTo(t - 15)} title="Back 15s">
+        <button class="btn btn--icon btn--ghost" onclick={() => seekTo(t - 15)} title="15 s zurück">
           <span style="display:inline-flex;transform:scaleX(-1)"><Icon name="refresh" size={15} /></span>
         </button>
         <button class="ao-play" onclick={togglePlay}>
@@ -330,7 +330,7 @@
             <Icon name="play"  size={22} color="var(--accent-fg)" />
           {/if}
         </button>
-        <button class="btn btn--icon btn--ghost" onclick={() => seekTo(t + 15)} title="Forward 15s">
+        <button class="btn btn--icon btn--ghost" onclick={() => seekTo(t + 15)} title="15 s vor">
           <Icon name="refresh" size={15} />
         </button>
         <button class="ao-speed mono" onclick={nextSpeed}>{speed}×</button>
@@ -341,16 +341,16 @@
   <!-- ── Right: transcript ── -->
   <aside class="ao-transcript">
     <div class="ao-tr-head">
-      <span class="label">Transcript</span>
+      <span class="label">Transkript</span>
       {#if segments.length > 0}
-        <span class="mono faint">{segments.length} turns · synced</span>
+        <span class="mono faint">{segments.length} Beiträge · synchron</span>
       {:else}
-        <span class="mono faint">no script</span>
+        <span class="mono faint">kein Skript</span>
       {/if}
     </div>
     <div class="ao-tr-body" bind:this={bodyEl}>
       {#if segments.length === 0}
-        <p class="mono faint" style="padding: 16px; font-size: var(--t-sm);">No audio script.</p>
+        <p class="mono faint" style="padding: 16px; font-size: var(--t-sm);">Kein Audio-Skript.</p>
       {:else}
         {#each segments as seg, idx (idx)}
           {@const col = speakerColor(seg.speaker)}
