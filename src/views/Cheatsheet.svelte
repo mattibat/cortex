@@ -197,20 +197,20 @@
       const n = bucketCount;
       if (n === 0) return;
       const ok = await app.confirm({
-        title: "Regenerate all topic cheatsheets?",
+        title: "Alle Themen-Lernzettel neu erstellen?",
         body:
-          `This generates a fresh cheatsheet for each of the ${n} ` +
-          `${n === 1 ? "topic" : "topics"} with sources` +
-          `${ungroupedCount > 0 ? " (including the ungrouped “General” sources)" : ""}, ` +
-          `running in parallel. It overwrites the existing cheatsheets and uses AI ` +
-          `tokens for every source.`,
-        okLabel: "Regenerate all",
+          `Für jedes der ${n} ` +
+          `${n === 1 ? "Thema" : "Themen"} mit Quellen` +
+          `${ungroupedCount > 0 ? " (einschließlich der Quellen ohne Thema)" : ""} ` +
+          `wird parallel ein neuer Lernzettel erstellt. Die bestehenden Lernzettel werden überschrieben, ` +
+          `und für jede Quelle werden KI-Tokens verbraucht.`,
+        okLabel: "Alle neu erstellen",
       });
       if (!ok) return;
     }
     jobs.start({
       kind: "cheatsheet",
-      label: topicId === null ? `${topicName} (all topics)` : topicName,
+      label: topicId === null ? `${topicName} (alle Themen)` : topicName,
       subjectId: sub.id,
       topicId,
       // Whole subject regenerates every topic's sheet then composes; a topic
@@ -278,10 +278,10 @@
     const el = document.querySelector(".cs-doc .cs-sections");
     const sub = app.activeSubject;
     if (!el || !sub || !hasCheatsheet) {
-      app.pushToast({ kind: "warning", title: "Nothing to export", body: "Generate a cheatsheet first." });
+      app.pushToast({ kind: "warning", title: "Nichts zu exportieren", body: "Erstelle zuerst einen Lernzettel." });
       return;
     }
-    const subtitle = `${sub.name}${sub.code ? " · " + sub.code : ""} · synthesized from ${sourceCount} source${sourceCount !== 1 ? "s" : ""} · ${sectionCount} enforced sections`;
+    const subtitle = `${sub.name}${sub.code ? " · " + sub.code : ""} · erstellt aus ${sourceCount} ${sourceCount !== 1 ? "Quellen" : "Quelle"} · ${sectionCount} Pflichtabschnitte`;
     const body =
       `<article class="cs-doc"><div class="cs-doc-head"><div>` +
       `<div class="eyebrow">Cheatsheet · ${selectedTopicId === null ? "Whole subject" : "Topic"}</div>` +
@@ -353,7 +353,7 @@
     draft = [];
   }
   function addItem(si: number) {
-    draft[si].items = [...draft[si].items, { t: "New term", d: "" }];
+    draft[si].items = [...draft[si].items, { t: "Neuer Begriff", d: "" }];
   }
   function removeItem(si: number, ii: number) {
     draft[si].items = draft[si].items.filter((_, i) => i !== ii);
@@ -361,7 +361,7 @@
   function addSection() {
     draft = [
       ...draft,
-      { id: "sec-" + Math.random().toString(36).slice(2), title: "New section", state: "approved", items: [], image: null },
+      { id: "sec-" + Math.random().toString(36).slice(2), title: "Neuer Abschnitt", state: "approved", items: [], image: null },
     ];
   }
   function removeSection(si: number) {
@@ -403,9 +403,9 @@
       if (data) applyCheatsheet(data);
       mode = "preview";
       draft = [];
-      app.pushToast({ kind: "success", title: "Cheatsheet saved", body: "A new version was recorded." });
+      app.pushToast({ kind: "success", title: "Lernzettel gespeichert", body: "Eine neue Version wurde angelegt." });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Save failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Speichern fehlgeschlagen", body: String(e) });
     } finally {
       saving = false;
     }
@@ -488,7 +488,7 @@
       await api.updateCheatsheet(sub.id, selectedTopicId ?? undefined, clean as ApiCsSection[], snapshot);
       inlineDirty = false;
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Autosave failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Automatisches Speichern fehlgeschlagen", body: String(e) });
     }
   }
   async function exitInsert() {
@@ -561,7 +561,7 @@
     const out: string[] = [];
     for (const s of secs) {
       out.push("# " + s.title);
-      if (s.image) out.push("[image attached]");
+      if (s.image) out.push("[Bild angehängt]");
       for (const it of s.items) {
         out.push("## " + it.t);
         for (const ln of (it.d ?? "").split("\n")) out.push(ln);
@@ -602,7 +602,7 @@
       // Default: diff the previous version (index 1, since 0 is the current save).
       if (versions.length >= 2) selectCompare(versions[1].id);
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Couldn't load history", body: String(e) });
+      app.pushToast({ kind: "error", title: "Verlauf konnte nicht geladen werden", body: String(e) });
     } finally {
       histLoading = false;
     }
@@ -614,7 +614,7 @@
       const old = await api.getCheatsheetVersion(versionId);
       diffRows = lineDiff(sheetLines(old), sheetLines(sections));
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Couldn't load version", body: String(e) });
+      app.pushToast({ kind: "error", title: "Version konnte nicht geladen werden", body: String(e) });
     }
   }
   const diffAdds = $derived(diffRows.filter((r) => r.type === "add").length);
@@ -631,14 +631,14 @@
       <!-- No subject open -->
       <div class="cs-empty-state">
         <Icon name="diamond" size={28} color="var(--fg3)" />
-        <div class="ces-title">No subject open</div>
-        <div class="ces-sub">Open a subject from the sidebar to view its cheatsheet.</div>
+        <div class="ces-title">Kein Fach geöffnet</div>
+        <div class="ces-sub">Öffne links ein Fach, um seinen Lernzettel zu sehen.</div>
       </div>
     {:else}
       {@const sub = app.activeSubject}
 
       <!-- ── TOPIC TAB BAR ──────────────────────────────────── -->
-      <div class="cs-tabs" role="tablist" aria-label="Cheatsheet scope">
+      <div class="cs-tabs" role="tablist" aria-label="Bereich des Lernzettels">
         <button
           class="cs-tab{selectedTopicId === null ? ' is-active' : ''}"
           role="tab"
@@ -646,7 +646,7 @@
           style={selectedTopicId === null ? `--tab-accent:${accent}` : ""}
           onclick={() => selectTopic(null)}
         >
-          <Icon name="grid" size={12} /> Whole subject
+          <Icon name="grid" size={12} /> Ganzes Fach
         </button>
         {#each topicTabs as t (t.id)}
           <button
@@ -674,7 +674,7 @@
           <div class="cs-working-ico">
             <Icon name="diamond" size={26} color="var(--fg3)" />
           </div>
-          <p class="cs-working-sub mono muted">Loading cheatsheet…</p>
+          <p class="cs-working-sub mono muted">Lernzettel wird geladen…</p>
         </div>
       {:else if !hasCheatsheet}
         <!-- Selection has no stored cheatsheet yet -->
@@ -687,25 +687,25 @@
           <div class="cs-working-ico">
             <Icon name="diamond" size={26} color="var(--fg3)" />
           </div>
-          <h1 class="cs-working-title read">No cheatsheet yet</h1>
+          <h1 class="cs-working-title read">Noch kein Lernzettel</h1>
           <p class="cs-working-sub mono muted">
             {#if noSources}
-              Add sources to {selectedTopicId === null
-                ? "this subject"
-                : "this topic"} first — your cheatsheet is synthesized from them.
+              Füge {selectedTopicId === null
+                ? "diesem Fach"
+                : "diesem Thema"} zuerst Quellen hinzu – daraus wird dein Lernzettel erstellt.
             {:else}
-              A completeness-checked cheatsheet will be generated from
-              {selectedTopicId === null ? "this subject's" : "this topic's"}
-              {scopeSources} source{scopeSources !== 1 ? "s" : ""}.
+              Aus {scopeSources} {scopeSources !== 1 ? "Quellen" : "Quelle"}
+              {selectedTopicId === null ? "dieses Fachs" : "dieses Themas"}
+              wird ein auf Vollständigkeit geprüfter Lernzettel erstellt.
             {/if}
           </p>
           {#if !noSources && app.webImagesEnabled}
             <p class="cs-imgopt mono faint">
-              <Icon name="globe" size={11} /> Diagrams on · via your homelab SearXNG
+              <Icon name="globe" size={11} /> Diagramme an · über dein Homelab-SearXNG
             </p>
           {/if}
           <button class="btn btn--primary btn--sm" onclick={generate} disabled={csGenerating || noSources}>
-            <Icon name="refresh" size={13} /> {csGenerating ? "Synthesizing…" : "Generate cheatsheet"}
+            <Icon name="refresh" size={13} /> {csGenerating ? "Wird erstellt…" : "Lernzettel erstellen"}
           </button>
         </div>
       {:else}
@@ -713,51 +713,51 @@
         <div class="cs-doc-head">
           <div>
             <div class="eyebrow">
-              Cheatsheet · {selectedTopicId === null ? "Whole subject" : "Topic"}
+              Lernzettel · {selectedTopicId === null ? "Ganzes Fach" : "Thema"}
             </div>
             <h1 class="cs-title">{cheatTopic}</h1>
             <div class="cs-sub mono">
               {sub.name}{sub.code ? " · " + sub.code : ""} ·
               {#if sourcesUsed < sourceCount}
-                <span class="cs-cov-warn" title="Some sources could not be synthesized — regenerate to retry">⚠ synthesized from {sourcesUsed}/{sourceCount} sources</span>
+                <span class="cs-cov-warn" title="Einige Quellen konnten nicht verarbeitet werden – neu erstellen, um es erneut zu versuchen">⚠ erstellt aus {sourcesUsed}/{sourceCount} Quellen</span>
               {:else}
-                synthesized from {sourceCount} source{sourceCount !== 1 ? "s" : ""}
+                erstellt aus {sourceCount} {sourceCount !== 1 ? "Quellen" : "Quelle"}
               {/if} ·
-              {selectedTopicId === null ? "composed from topics" : `${sectionCount} enforced sections`}
+              {selectedTopicId === null ? "aus den Themen zusammengesetzt" : `${sectionCount} Pflichtabschnitte`}
             </div>
           </div>
           <div class="cs-doc-actions">
             {#if insertMode}
-              <span class="cs-insert-badge mono">— INSERT —</span>
-              <span class="cs-insert-hint faint">click any block to edit</span>
+              <span class="cs-insert-badge mono">— BEARBEITEN —</span>
+              <span class="cs-insert-hint faint">zum Bearbeiten auf einen Block klicken</span>
               <span class="cs-insert-status mono faint">{inlineDirty ? "saving…" : "saved ✓"}</span>
               <button class="btn btn--sm btn--primary" onclick={exitInsert}>
-                <Icon name="check" size={13} /> Done <span class="kbd">Esc</span>
+                <Icon name="check" size={13} /> Fertig <span class="kbd">Esc</span>
               </button>
             {:else if mode === "edit"}
               <button class="btn btn--sm btn--ghost" onclick={cancelEdit} disabled={saving}>
-                <Icon name="x" size={13} /> Cancel
+                <Icon name="x" size={13} /> Abbrechen
               </button>
               <button class="btn btn--sm btn--primary" onclick={saveEdit} disabled={saving}>
-                <Icon name="check" size={13} /> {saving ? "Saving…" : "Save"}
+                <Icon name="check" size={13} /> {saving ? "Wird gespeichert…" : "Speichern"}
               </button>
             {:else}
-              <button class="btn btn--sm" onclick={exportCurrent} title="Opens the print dialog — choose “Save as PDF”">
-                <Icon name="doc" size={13} /> Save as PDF
+              <button class="btn btn--sm" onclick={exportCurrent} title="Öffnet den Druckdialog – „Als PDF speichern“ wählen">
+                <Icon name="doc" size={13} /> Als PDF speichern
               </button>
-              <button class="btn btn--sm" onclick={openHistory} title="Browse versions and diff changes">
-                <Icon name="refresh" size={13} /> History
+              <button class="btn btn--sm" onclick={openHistory} title="Versionen durchsuchen und Änderungen vergleichen">
+                <Icon name="refresh" size={13} /> Verlauf
               </button>
               {#if !isMobile}
-                <button class="btn btn--sm" onclick={enterInsert} title="Edit inline — just type, it autosaves; Esc to finish (i)">
-                  <Icon name="pencil" size={13} /> Inline edit <span class="kbd">i</span>
+                <button class="btn btn--sm" onclick={enterInsert} title="Direkt bearbeiten – einfach tippen, wird automatisch gespeichert; Esc zum Beenden (i)">
+                  <Icon name="pencil" size={13} /> Bearbeiten <span class="kbd">i</span>
                 </button>
               {/if}
-              <button class="btn btn--sm" onclick={enterEdit} title="Structured editor — add/remove sections + images">
-                <Icon name="grid" size={13} /> Restructure
+              <button class="btn btn--sm" onclick={enterEdit} title="Struktur-Editor – Abschnitte und Bilder hinzufügen/entfernen">
+                <Icon name="grid" size={13} /> Umstrukturieren
               </button>
               <button class="btn btn--sm" onclick={generate} disabled={csGenerating}>
-                <Icon name="refresh" size={13} /> {csGenerating ? "Synthesizing…" : "Regenerate"}
+                <Icon name="refresh" size={13} /> {csGenerating ? "Wird erstellt…" : "Neu erstellen"}
               </button>
             {/if}
           </div>
@@ -776,21 +776,21 @@
             {#each draft as sec, si (sec.id)}
               <section class="cs-edit-sec" id={"cs-sec-" + sec.id}>
                 <div class="cs-edit-sechead">
-                  <input class="cs-edit-title mono" bind:value={sec.title} placeholder="Section title" />
+                  <input class="cs-edit-title mono" bind:value={sec.title} placeholder="Titel des Abschnitts" />
                   <div class="grow"></div>
                   {#if sec.image}
-                    <button class="btn btn--sm btn--ghost" onclick={() => pickImage(si)} title="Replace image">
-                      <Icon name="refresh" size={12} /> Image
+                    <button class="btn btn--sm btn--ghost" onclick={() => pickImage(si)} title="Bild ersetzen">
+                      <Icon name="refresh" size={12} /> Bild
                     </button>
-                    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => clearImage(si)} title="Remove image">
+                    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => clearImage(si)} title="Bild entfernen">
                       <Icon name="x" size={12} />
                     </button>
                   {:else}
-                    <button class="btn btn--sm btn--ghost" onclick={() => pickImage(si)} title="Attach an image">
-                      <Icon name="plus" size={12} /> Image
+                    <button class="btn btn--sm btn--ghost" onclick={() => pickImage(si)} title="Bild anhängen">
+                      <Icon name="plus" size={12} /> Bild
                     </button>
                   {/if}
-                  <button class="btn btn--icon btn--sm btn--ghost" onclick={() => removeSection(si)} title="Remove section">
+                  <button class="btn btn--icon btn--sm btn--ghost" onclick={() => removeSection(si)} title="Abschnitt entfernen">
                     <Icon name="x" size={13} />
                   </button>
                 </div>
@@ -802,8 +802,8 @@
                 {#each sec.items as item, ii (ii)}
                   <div class="cs-edit-item" id={"cs-it-" + sec.id + "-" + ii}>
                     <div class="cs-edit-itemhead">
-                      <input class="cs-edit-term" bind:value={item.t} placeholder="Term / concept" />
-                      <button class="btn btn--icon btn--sm btn--ghost" onclick={() => removeItem(si, ii)} title="Remove item">
+                      <input class="cs-edit-term" bind:value={item.t} placeholder="Begriff / Konzept" />
+                      <button class="btn btn--icon btn--sm btn--ghost" onclick={() => removeItem(si, ii)} title="Eintrag entfernen">
                         <Icon name="x" size={12} />
                       </button>
                     </div>
@@ -814,12 +814,12 @@
                 {/each}
 
                 <button class="btn btn--sm btn--ghost cs-edit-add" onclick={() => addItem(si)}>
-                  <Icon name="plus" size={12} /> Add item
+                  <Icon name="plus" size={12} /> Eintrag hinzufügen
                 </button>
               </section>
             {/each}
             <button class="btn btn--sm cs-edit-addsec" onclick={addSection}>
-              <Icon name="plus" size={13} /> Add section
+              <Icon name="plus" size={13} /> Abschnitt hinzufügen
             </button>
           </div>
         {:else}
@@ -851,7 +851,7 @@
                 </header>
 
                 {#if sec.image}
-                  <a class="cs-sec-img" href={safeUrl(sec.image)} target="_blank" rel="noreferrer" title="Open image">
+                  <a class="cs-sec-img" href={safeUrl(sec.image)} target="_blank" rel="noreferrer" title="Bild öffnen">
                     <img src={safeImgSrc(sec.image)} alt={sec.title} loading="lazy" />
                   </a>
                 {/if}
@@ -887,11 +887,11 @@
                               class="cs-ce-rich"
                               role="button"
                               tabindex="0"
-                              title="Click to edit"
+                              title="Zum Bearbeiten klicken"
                               onclickcapture={(e) => { e.preventDefault(); e.stopPropagation(); openBodyEdit(bk); }}
                               onkeydown={(e) => { if (e.key === "Enter") { e.preventDefault(); openBodyEdit(bk); } }}
                             >
-                              {#if item.d.trim()}<RichText text={item.d} />{:else}<span class="cs-ce-empty">Empty — click to write…</span>{/if}
+                              {#if item.d.trim()}<RichText text={item.d} />{:else}<span class="cs-ce-empty">Leer – zum Schreiben klicken…</span>{/if}
                             </div>
                           {/if}
                         {:else}<RichText text={item.d} />{/if}
@@ -913,12 +913,12 @@
           class="cs-index"
           class:is-pinned={indexPinned}
           style:right={chatDockOpen ? "calc(var(--chat-w, 396px) + 14px)" : "16px"}
-          aria-label="Cheatsheet index"
+          aria-label="Inhaltsverzeichnis"
         >
           <button
             class="cs-index-tab"
             onclick={() => (indexPinned = !indexPinned)}
-            title={indexPinned ? "Unpin index" : "Pin index"}
+            title={indexPinned ? "Verzeichnis lösen" : "Verzeichnis anheften"}
           >
             <Icon name="grid" size={13} />
           </button>
@@ -928,7 +928,7 @@
                 <button
                   class="cs-idx-caret"
                   onclick={() => toggleIdxSec(sec.id)}
-                  title={idxExpanded[sec.id] ? "Collapse" : "Expand"}
+                  title={idxExpanded[sec.id] ? "Zuklappen" : "Aufklappen"}
                   aria-expanded={!!idxExpanded[sec.id]}
                 >{idxExpanded[sec.id] ? "▾" : "▸"}</button>
                 <button class="cs-idx-sec" onclick={() => jumpTo("cs-sec-" + sec.id)}>{sec.title}</button>
@@ -953,22 +953,22 @@
        "Inline edit" button, which is hidden on mobile. -->
   {#if isMobile && hasCheatsheet && mode === "preview"}
     {#if insertMode}
-      <button class="cs-fab-edit" onclick={exitInsert} aria-label="Done editing" title="Finish editing (Esc)"><Icon name="check" size={16} /> Done</button>
+      <button class="cs-fab-edit" onclick={exitInsert} aria-label="Bearbeiten beenden" title="Bearbeiten beenden (Esc)"><Icon name="check" size={16} /> Fertig</button>
     {:else}
-      <button class="cs-fab-edit" onclick={enterInsert} aria-label="Edit cheatsheet" title="Edit inline"><Icon name="pencil" size={16} /> Edit</button>
+      <button class="cs-fab-edit" onclick={enterInsert} aria-label="Lernzettel bearbeiten" title="Direkt bearbeiten"><Icon name="pencil" size={16} /> Bearbeiten</button>
     {/if}
     <!-- Mobile section jump (desktop's top-right index, as a bottom-left button → sheet). -->
-    <button class="cs-fab-sections" onclick={() => (sectionsOpen = true)} aria-label="Jump to a section" title="Sections">
+    <button class="cs-fab-sections" onclick={() => (sectionsOpen = true)} aria-label="Zu einem Abschnitt springen" title="Abschnitte">
       <Icon name="grid" size={16} />
     </button>
   {/if}
 
   {#if isMobile && sectionsOpen}
-    <button class="cs-sheet-back" aria-label="Close" onclick={() => (sectionsOpen = false)}></button>
-    <nav class="cs-sheet" aria-label="Jump to section">
+    <button class="cs-sheet-back" aria-label="Schließen" onclick={() => (sectionsOpen = false)}></button>
+    <nav class="cs-sheet" aria-label="Zu Abschnitt springen">
       <div class="cs-sheet-head">
-        <span class="page-title">Sections</span>
-        <button class="btn btn--icon btn--sm btn--ghost" aria-label="Close" onclick={() => (sectionsOpen = false)}><Icon name="x" size={15} /></button>
+        <span class="page-title">Abschnitte</span>
+        <button class="btn btn--icon btn--sm btn--ghost" aria-label="Schließen" onclick={() => (sectionsOpen = false)}><Icon name="x" size={15} /></button>
       </div>
       <div class="cs-sheet-list">
         {#each indexSections as sec (sec.id)}
@@ -989,15 +989,15 @@
     onmousedown={() => (historyOpen = false)}
     role="dialog"
     aria-modal="true"
-    aria-label="Cheatsheet version history"
+    aria-label="Versionsverlauf des Lernzettels"
     tabindex="-1"
   >
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="cs-hist" onmousedown={(e) => e.stopPropagation()}>
       <header class="cs-hist-head">
         <div>
-          <div class="eyebrow">Version history</div>
-          <div class="cs-hist-title mono">{cheatTopic} · diff vs current</div>
+          <div class="eyebrow">Versionsverlauf</div>
+          <div class="cs-hist-title mono">{cheatTopic} · Vergleich mit aktuell</div>
         </div>
         <div class="cs-hist-stats mono">
           <span class="st-add">+{diffAdds}</span>
@@ -1010,19 +1010,19 @@
       <div class="cs-hist-body">
         <aside class="cs-hist-list">
           {#if histLoading}
-            <div class="mono faint" style="padding:12px">Loading…</div>
+            <div class="mono faint" style="padding:12px">Wird geladen…</div>
           {:else if versions.length === 0}
-            <div class="mono faint" style="padding:12px">No versions yet.</div>
+            <div class="mono faint" style="padding:12px">Noch keine Versionen.</div>
           {:else}
             {#each versions as v, i (v.id)}
               <button
                 class="cs-hist-ver{compareId === v.id ? ' on' : ''}"
                 onclick={() => selectCompare(v.id)}
                 disabled={i === 0}
-                title={i === 0 ? "Current version" : "Diff this version against current"}
+                title={i === 0 ? "Aktuelle Version" : "Diese Version mit der aktuellen vergleichen"}
               >
                 <span class="cs-hist-when mono">{fmtTime(v.created_at)}</span>
-                <span class="cs-hist-note">{i === 0 ? "current" : v.note} · {v.section_count} sec</span>
+                <span class="cs-hist-note">{i === 0 ? "aktuell" : v.note} · {v.section_count} Abschn.</span>
               </button>
             {/each}
           {/if}
@@ -1030,7 +1030,7 @@
         <div class="cs-hist-diff">
           {#if compareId === null}
             <div class="mono faint" style="padding:16px">
-              {versions.length < 2 ? "Only one version so far — edits and regenerations will appear here." : "Pick a version on the left to see what changed."}
+              {versions.length < 2 ? "Bisher nur eine Version – Änderungen und Neuerstellungen erscheinen hier." : "Wähle links eine Version, um die Änderungen zu sehen."}
             </div>
           {:else}
             <div class="diff-inline">
