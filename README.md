@@ -21,7 +21,7 @@ Local-first and bring-your-own-keys: your sources, embeddings, and generated stu
 
 [Why Cortex?](#why-cortex) · [Preview](#preview) · [Features](#features) · [Download](#download--install) · [Build from source](#build-from-source) · [Configuration](#configuration) · [How it works](#how-it-works) · [Roadmap](#roadmap) · [Contributing](#contributing)
 
-**🌐 [Website](https://pndaman.github.io/cortex-website/) · 📖 [Docs](https://pndaman.github.io/cortex-website/Docs.html) · 🔒 [Privacy Policy](https://pndaman.github.io/cortex/privacy.html) · 💬 [Support](https://pndaman.github.io/cortex/support.html)**
+**🌐 [Website](https://github.com/mattibat/cortex) · 📖 [Docs](https://github.com/mattibat/cortex#readme) · 🔒 [Privacy Policy](https://github.com/mattibat/cortex/blob/main/docs/privacy.html) · 💬 [Support](https://github.com/mattibat/cortex/issues)**
 
 </div>
 
@@ -125,7 +125,7 @@ NotebookLM is great, but it's a web product: your sources live on someone else's
 ## Download & install
 
 Grab the latest build for your operating system from the
-**[Releases page](https://github.com/PndaMan/cortex/releases/latest)** — no
+**[Releases page](https://github.com/mattibat/cortex/releases/latest)** — no
 toolchain required.
 
 ### macOS
@@ -158,7 +158,7 @@ toolchain required.
 - **Node 18+** or **[Bun](https://bun.sh)** for the frontend.
 
 ```bash
-git clone https://github.com/PndaMan/cortex.git
+git clone https://github.com/mattibat/cortex.git
 cd cortex
 bun install          # or: npm install
 bun run tauri dev    # launches the desktop app with hot reload
@@ -272,6 +272,9 @@ Please keep changes scoped, match the surrounding style, and add a test when you
 ## License
 
 [Apache License 2.0](LICENSE).
+
+# Source
+Originaly forked from [PndaMan/cortex](https://github.com/PndaMan/cortex) until [This Commit](https://github.com/mattibat/cortex/commit/6d205c6b00f1a26660395a8789841aad462577ed)
 
 ---
 

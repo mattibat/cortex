@@ -7,7 +7,7 @@ pkgver=1.0.7
 pkgrel=1
 pkgdesc="Local-first, open-source NotebookLM alternative — a desktop study OS"
 arch=('x86_64')
-url="https://github.com/PndaMan/cortex"
+url="https://github.com/mattibat/cortex"
 license=('Apache-2.0')
 # poppler (pdftotext/pdftoppm) + ffmpeg are VITAL to core ingestion (PDF text/page
 # images, audio), so they're hard deps — the app must not launch without them.
@@ -23,7 +23,7 @@ optdepends=(
 )
 provides=('cortex')
 conflicts=('cortex')
-source=("https://github.com/PndaMan/cortex/releases/download/v${pkgver}/Cortex_${pkgver}_amd64.deb")
+source=("https://github.com/mattibat/cortex/releases/download/v${pkgver}/Cortex_${pkgver}_amd64.deb")
 sha256sums=('520c5628804dd91c93b9a960bd14a6e055e4e189917bd9876bdc01277a129424')
 
 package() {

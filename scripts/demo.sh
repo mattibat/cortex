@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Launch Cortex against a THROWAWAY, demo-populated database — for screenshots.
 #
-# Your real library (~/.local/share/study.cortex.app/cortex.db on Linux) is
+# Your real library (~/.local/share/batstudy.cortex.app/cortex.db on Linux) is
 # NEVER opened or modified: CORTEX_DATA_DIR points the app at a separate folder,
 # and CORTEX_DEMO seeds that fresh DB with rich showcase data (subjects, topics,
 # sources, cheatsheets, flashcards/quizzes, a full assignment board, and weeks of

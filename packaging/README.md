@@ -37,7 +37,7 @@ git add PKGBUILD .SRCINFO && git commit -m "cortex-bin 1.0.1" && git push
 # create a repo named `homebrew-cortex`, then:
 mkdir Casks && cp /path/to/cortex/packaging/homebrew/cortex.rb Casks/
 # fill in both sha256 (shasum -a 256 *.dmg), commit, push
-# users install with:  brew install --cask pndaman/cortex/cortex
+# users install with:  brew install --cask mattibat/cortex/cortex
 ```
 
 ## Scoop (Windows) — your own bucket
@@ -48,11 +48,11 @@ Create a repo `scoop-cortex` with `bucket/cortex.json`:
 {
   "version": "1.0.1",
   "description": "Local-first NotebookLM alternative — a desktop study OS",
-  "homepage": "https://github.com/PndaMan/cortex",
+  "homepage": "https://github.com/mattibat/cortex",
   "license": "Apache-2.0",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/PndaMan/cortex/releases/download/v1.0.1/Cortex_1.0.1_x64-setup.exe",
+      "url": "https://github.com/mattibat/cortex/releases/download/v1.0.1/Cortex_1.0.1_x64-setup.exe",
       "hash": "REPLACE_WITH_EXE_SHA256"
     }
   },
@@ -60,17 +60,17 @@ Create a repo `scoop-cortex` with `bucket/cortex.json`:
   "shortcuts": [["Cortex.exe", "Cortex"]]
 }
 ```
-Users: `scoop bucket add cortex https://github.com/PndaMan/scoop-cortex && scoop install cortex`.
+Users: `scoop bucket add cortex https://github.com/mattibat/scoop-cortex && scoop install cortex`.
 
 ## winget
 
 Easiest with [`wingetcreate`](https://github.com/microsoft/winget-create):
 
 ```sh
-wingetcreate new https://github.com/PndaMan/cortex/releases/download/v1.0.1/Cortex_1.0.1_x64-setup.exe
+wingetcreate new https://github.com/mattibat/cortex/releases/download/v1.0.1/Cortex_1.0.1_x64-setup.exe
 # it fills the installer hash + walks you through the manifest, then:
 wingetcreate submit   # opens a PR to microsoft/winget-pkgs
 ```
-Package id suggestion: `PndaMan.Cortex`. Unsigned is accepted, but SmartScreen warns users until the `.exe` is code-signed.
+Package id suggestion: `mattibat.Cortex`. Unsigned is accepted, but SmartScreen warns users until the `.exe` is code-signed.
 
 > **Checksums** in `aur/PKGBUILD` and `homebrew/cortex.rb` are placeholders — fill them from the actual v1.0.1 release assets once the build finishes.
