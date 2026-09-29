@@ -208,7 +208,7 @@
               onkeydown={(e) => { if (e.key === "Enter") { e.preventDefault(); submitStation(); } }}
             />
             <div class="music-add-actions">
-              <button class="btn btn--sm btn--ghost" onclick={() => { adding = false; newName = ""; newUrl = ""; }}>Cancel</button>
+              <button class="btn btn--sm btn--ghost" onclick={() => { adding = false; newName = ""; newUrl = ""; }}>Abbrechen</button>
               <button class="btn btn--sm btn--primary" disabled={!looksLikeUrl(newUrl) || busy} onclick={submitStation}>
                 {busy ? "Wird hinzugefügt…" : "Sender hinzufügen"}
               </button>

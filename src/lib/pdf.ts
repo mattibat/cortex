@@ -169,10 +169,10 @@ export async function savePdf(bodyHtml: string, defaultName: string): Promise<bo
   if (!dest) return false; // user cancelled
   try {
     await api.exportPdf(docHtml(bodyHtml), dest);
-    app.pushToast({ kind: "success", title: "Saved PDF", body: dest });
+    app.pushToast({ kind: "success", title: "PDF gespeichert", body: dest });
     return true;
   } catch (e) {
-    app.pushToast({ kind: "error", title: "PDF export failed", body: String(e) });
+    app.pushToast({ kind: "error", title: "PDF-Export fehlgeschlagen", body: String(e) });
     return false;
   }
 }
