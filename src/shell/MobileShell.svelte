@@ -154,32 +154,32 @@
   );
 
   const NAV = [
-    { id: "dashboard",   icon: "home",     label: "Home" },
-    { id: "add-source",  icon: "doc",      label: "Add source" },
-    { id: "recorder",    icon: "record",   label: "Record lecture" },
-    { id: "calendar",    icon: "calendar", label: "Calendar" },
-    { id: "notes",       icon: "reader",   label: "Notes" },
-    { id: "analytics",   icon: "chart",    label: "Insights" },
-    { id: "add-subject", icon: "plus",     label: "New subject" },
-    { id: "settings",    icon: "settings", label: "Settings" },
+    { id: "dashboard",   icon: "home",     label: "Start" },
+    { id: "add-source",  icon: "doc",      label: "Quelle hinzufügen" },
+    { id: "recorder",    icon: "record",   label: "Unterricht aufnehmen" },
+    { id: "calendar",    icon: "calendar", label: "Kalender" },
+    { id: "notes",       icon: "reader",   label: "Notizen" },
+    { id: "analytics",   icon: "chart",    label: "Statistik" },
+    { id: "add-subject", icon: "plus",     label: "Neues Fach" },
+    { id: "settings",    icon: "settings", label: "Einstellungen" },
   ] as const;
 </script>
 
 <div class="m-shell">
   <header class="m-header">
     {#if isDeep}
-      <button class="m-iconbtn" onclick={back} aria-label="Back">
+      <button class="m-iconbtn" onclick={back} aria-label="Zurück">
         <Icon name="chevron" size={18} style="transform:rotate(180deg)" />
       </button>
     {:else}
-      <button class="m-iconbtn" onclick={() => (drawerOpen = true)} aria-label="Menu">
+      <button class="m-iconbtn" onclick={() => (drawerOpen = true)} aria-label="Menü">
         <Icon name="menu" size={18} />
       </button>
     {/if}
     <!-- Static brand: the user knows which screen they're on, so we don't repeat it. -->
     <h1 class="page-title m-title"><img class="m-logo" src={logo} alt="" />Cortex</h1>
     <span class="m-spacer"></span>
-    <button class="m-iconbtn m-bell" onclick={() => app.toggleNotifications()} aria-label="Notifications">
+    <button class="m-iconbtn m-bell" onclick={() => app.toggleNotifications()} aria-label="Benachrichtigungen">
       <Icon name="bell" size={18} />
       {#if app.unreadCount > 0}
         <span class="m-badge">{app.unreadCount > 99 ? "99+" : app.unreadCount}</span>
@@ -219,25 +219,25 @@
   </main>
 
   {#if showAsk}
-    <button class="m-ask" onclick={() => (app.chatOpen = true)} aria-label="Ask Cortex">
-      <Icon name="chat" size={18} /> Ask
+    <button class="m-ask" onclick={() => (app.chatOpen = true)} aria-label="Cortex fragen">
+      <Icon name="chat" size={18} /> Fragen
     </button>
   {/if}
 </div>
 
 <!-- Nav drawer: every destination (formerly split across the bottom bar + More). -->
 {#if drawerOpen}
-  <button class="m-drawer-back" aria-label="Close menu" onclick={() => (drawerOpen = false)}></button>
-  <nav class="m-drawer" aria-label="Menu">
+  <button class="m-drawer-back" aria-label="Menü schließen" onclick={() => (drawerOpen = false)}></button>
+  <nav class="m-drawer" aria-label="Menü">
     <div class="m-drawer-head">
       <span class="page-title m-drawer-brand"><img class="m-logo" src={logo} alt="" />Cortex</span>
-      <button class="m-iconbtn" onclick={() => (drawerOpen = false)} aria-label="Close menu"><Icon name="x" size={16} /></button>
+      <button class="m-iconbtn" onclick={() => (drawerOpen = false)} aria-label="Menü schließen"><Icon name="x" size={16} /></button>
     </div>
     <button class="m-row m-nav{activeNav === 'home' ? ' on' : ''}" onclick={() => go("dashboard")}>
-      <Icon name="home" size={18} /><span class="m-row-l">Home</span>
+      <Icon name="home" size={18} /><span class="m-row-l">Start</span>
     </button>
     <button class="m-row m-nav" onclick={openSearch}>
-      <Icon name="search" size={18} /><span class="m-row-l">Search</span>
+      <Icon name="search" size={18} /><span class="m-row-l">Suche</span>
     </button>
     {#each NAV.slice(1) as n (n.id)}
       <button class="m-row m-nav{activeNav === n.id ? ' on' : ''}" onclick={() => go(n.id)}>

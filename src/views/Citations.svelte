@@ -18,10 +18,10 @@
   let editing = $state<string | null>(null); // ref id being edited, or "new"
 
   const CTYPES = [
-    { id: "article", label: "Article" },
-    { id: "book", label: "Book" },
-    { id: "web", label: "Website" },
-    { id: "other", label: "Other" },
+    { id: "article", label: "Artikel" },
+    { id: "book", label: "Buch" },
+    { id: "web", label: "Webseite" },
+    { id: "other", label: "Sonstiges" },
   ] as const;
 
   // form state
@@ -32,7 +32,7 @@
 
   async function load() {
     if (!subjectId) { refs = []; return; }
-    try { refs = await api.listCitations(subjectId); } catch (e) { app.pushToast({ kind: "error", title: "Load failed", body: String(e) }); }
+    try { refs = await api.listCitations(subjectId); } catch (e) { app.pushToast({ kind: "error", title: "Laden fehlgeschlagen", body: String(e) }); }
   }
   $effect(() => { void subjectId; load(); });
 
@@ -48,7 +48,7 @@
 
   async function saveForm() {
     if (!subjectId) return;
-    if (!f.title.trim()) { app.pushToast({ kind: "warning", title: "Title required" }); return; }
+    if (!f.title.trim()) { app.pushToast({ kind: "warning", title: "Titel erforderlich" }); return; }
     const fields = {
       ctype: f.ctype, title: f.title.trim(),
       authors: f.authors.trim() || null, year: f.year.trim() || null,
@@ -61,14 +61,14 @@
       cancel();
       await load();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Save failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Speichern fehlgeschlagen", body: String(e) });
     }
   }
 
   async function remove(r: Reference) {
-    if (!(await app.confirm({ title: `Delete "${r.title}"?`, danger: true, okLabel: "Delete" }))) return;
+    if (!(await app.confirm({ title: `„${r.title}“ löschen?`, danger: true, okLabel: "Löschen" }))) return;
     try { await api.deleteCitation(r.id); await load(); }
-    catch (e) { app.pushToast({ kind: "error", title: "Delete failed", body: String(e) }); }
+    catch (e) { app.pushToast({ kind: "error", title: "Löschen fehlgeschlagen", body: String(e) }); }
   }
 
   // ── formatting (lightweight APA / MLA) ────────────────────────
@@ -76,7 +76,7 @@
   function formatApa(r: Reference): string {
     const parts: string[] = [];
     if (r.authors) parts.push(dotted(r.authors));
-    parts.push(`(${r.year?.trim() || "n.d."}).`);
+    parts.push(`(${r.year?.trim() || "o. J."}).`);
     parts.push(dotted(r.title));
     if (r.container) parts.push(dotted(r.container));
     if (r.doi) parts.push(`https://doi.org/${r.doi.replace(/^https?:\/\/doi\.org\//, "").trim()}`);
@@ -97,24 +97,24 @@
   function formatHarvard(r: Reference): string {
     const parts: string[] = [];
     if (r.authors) parts.push(r.authors.trim());
-    parts.push(`(${r.year?.trim() || "no date"})`);
+    parts.push(`(${r.year?.trim() || "o. J."})`);
     parts.push(dotted(r.title));
     if (r.container) parts.push(dotted(r.container));
-    if (r.doi) parts.push(`Available at: https://doi.org/${r.doi.replace(/^https?:\/\/doi\.org\//, "").trim()}.`);
-    else if (r.url) parts.push(`Available at: ${r.url.trim()}.`);
+    if (r.doi) parts.push(`Verfügbar unter: https://doi.org/${r.doi.replace(/^https?:\/\/doi\.org\//, "").trim()}.`);
+    else if (r.url) parts.push(`Verfügbar unter: ${r.url.trim()}.`);
     return parts.join(" ").replace(/\s+/g, " ").trim();
   }
   const fmt = $derived(style === "harvard" ? formatHarvard : style === "apa" ? formatApa : formatMla);
 
   async function copyOne(r: Reference) {
-    try { await navigator.clipboard.writeText(fmt(r)); app.pushToast({ kind: "success", title: "Citation copied" }); }
-    catch { app.pushToast({ kind: "error", title: "Copy failed" }); }
+    try { await navigator.clipboard.writeText(fmt(r)); app.pushToast({ kind: "success", title: "Quellenangabe kopiert" }); }
+    catch { app.pushToast({ kind: "error", title: "Kopieren fehlgeschlagen" }); }
   }
   async function copyAll() {
     if (refs.length === 0) return;
     const list = [...refs].sort((a, b) => (a.authors ?? a.title).localeCompare(b.authors ?? b.title)).map(fmt).join("\n");
-    try { await navigator.clipboard.writeText(list); app.pushToast({ kind: "success", title: `Copied ${refs.length} references` }); }
-    catch { app.pushToast({ kind: "error", title: "Copy failed" }); }
+    try { await navigator.clipboard.writeText(list); app.pushToast({ kind: "success", title: `${refs.length} Quellenangaben kopiert` }); }
+    catch { app.pushToast({ kind: "error", title: "Kopieren fehlgeschlagen" }); }
   }
 
   // ── assignments (calendar events: assignment | project | exam | deadline) ──
@@ -124,10 +124,10 @@
   // Priority is a real event field now (migration 0015); the colour is only a
   // calendar display hint derived from it — never parsed back.
   const PRIORITIES = [
-    { id: "none", label: "None", color: null as string | null },
-    { id: "low", label: "Low", color: "#3b9eff" },
-    { id: "med", label: "Med", color: "#f5a623" },
-    { id: "high", label: "High", color: "#e5484d" },
+    { id: "none", label: "Keine", color: null as string | null },
+    { id: "low", label: "Niedrig", color: "#3b9eff" },
+    { id: "med", label: "Mittel", color: "#f5a623" },
+    { id: "high", label: "Hoch", color: "#e5484d" },
   ] as const;
   function colorForPriority(id: string): string | null {
     return PRIORITIES.find((p) => p.id === id)?.color ?? null;
@@ -188,7 +188,7 @@
       assignments = assignments.map((d) => (d.id === updated.id ? updated : d));
       app.notifyEventsChanged();
     } catch (err) {
-      app.pushToast({ kind: "error", title: "Update failed", body: String(err) });
+      app.pushToast({ kind: "error", title: "Aktualisierung fehlgeschlagen", body: String(err) });
     }
   }
 
@@ -207,14 +207,14 @@
       resetAssignmentForm();
       app.notifyEventsChanged();
       await loadAssignments();
-      app.pushToast({ kind: "success", title: "Added" });
+      app.pushToast({ kind: "success", title: "Hinzugefügt" });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Add failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Hinzufügen fehlgeschlagen", body: String(e) });
     }
   }
   async function completeAssignment(e: CalEvent) {
     try { await api.setEventDone(e.id, true); app.notifyEventsChanged(); await loadAssignments(); }
-    catch (err) { app.pushToast({ kind: "error", title: "Update failed", body: String(err) }); }
+    catch (err) { app.pushToast({ kind: "error", title: "Aktualisierung fehlgeschlagen", body: String(err) }); }
   }
   function openInCalendar(e: CalEvent) {
     // Jump to the Calendar and focus the assignment's day.
@@ -225,10 +225,10 @@
 
   function daysLeft(ms: number): string {
     const d = Math.ceil((ms - Date.now()) / 86_400_000);
-    if (d < 0) return "overdue";
-    if (d === 0) return "today";
-    if (d === 1) return "tomorrow";
-    return `${d} days`;
+    if (d < 0) return "überfällig";
+    if (d === 0) return "heute";
+    if (d === 1) return "morgen";
+    return `in ${d} Tagen`;
   }
   function fmtDate(ms: number): string {
     return new Date(ms).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
@@ -244,15 +244,15 @@
     <!-- Assignments -->
     <section class="cit-section">
       <div class="cit-head">
-        <h2 class="cit-h read"><Icon name="calendar" size={15} /> Assignments</h2>
+        <h2 class="cit-h read"><Icon name="calendar" size={15} /> Abgaben</h2>
         {#if assignments.length}
           <span class="faint mono cit-summary">
-            {assignments.length} {assignments.length === 1 ? "assignment" : "assignments"}{#if overdueCount} · {overdueCount} overdue{/if}
+            {assignments.length} {assignments.length === 1 ? "Abgabe" : "Abgaben"}{#if overdueCount} · {overdueCount} überfällig{/if}
           </span>
         {/if}
-        <div class="cit-view-seg mono" role="group" aria-label="Assignments view">
+        <div class="cit-view-seg mono" role="group" aria-label="Ansicht der Abgaben">
           <button class={aView === "board" ? "on" : ""} onclick={() => (aView = "board")}>Board</button>
-          <button class={aView === "list" ? "on" : ""} onclick={() => (aView = "list")}>List</button>
+          <button class={aView === "list" ? "on" : ""} onclick={() => (aView = "list")}>Liste</button>
         </div>
       </div>
 
@@ -263,29 +263,29 @@
               <button class={aKind === k ? "on" : ""} onclick={() => (aKind = k)}>{k}</button>
             {/each}
           </div>
-          <input class="input" placeholder="e.g. Essay 2, Capstone, Midterm…" bind:value={aTitle} />
-          <div class="cit-date"><DatePicker value={aDate} onChange={(v) => (aDate = v)} placeholder="Due date" /></div>
+          <input class="input" placeholder="z. B. Referat, Hausarbeit, Klausur…" bind:value={aTitle} />
+          <div class="cit-date"><DatePicker value={aDate} onChange={(v) => (aDate = v)} placeholder="Fällig am" /></div>
         </div>
         <div class="cit-assign-row2">
-          <div class="cit-prio-seg mono" role="group" aria-label="Priority">
+          <div class="cit-prio-seg mono" role="group" aria-label="Priorität">
             {#each PRIORITIES as p (p.id)}
               <button
                 class={aPriority === p.id ? "on" : ""}
-                title="Priority: {p.label}"
+                title="Priorität: {p.label}"
                 onclick={() => (aPriority = p.id)}
               >
                 <span class="cit-prio-dot" style={p.color ? `background:${p.color}` : ""}></span>{p.label}
               </button>
             {/each}
           </div>
-          <input class="input" placeholder="Notes (optional)" bind:value={aNotes} />
+          <input class="input" placeholder="Notizen (optional)" bind:value={aNotes} />
           <button class="btn btn--sm btn--primary" disabled={!aTitle.trim() || !aDate} onclick={addAssignment}>
-            <Icon name="plus" size={12} /> Add
+            <Icon name="plus" size={12} /> Hinzufügen
           </button>
         </div>
         {#if (app.activeSubject?.topics ?? []).length}
           <div class="cit-topic-pick">
-            <span class="onb-label mono">TOPICS COVERED</span>
+            <span class="onb-label mono">BEHANDELTE THEMEN</span>
             <div class="cit-topic-chips">
               {#each app.activeSubject?.topics ?? [] as t (t.id)}
                 {@const on = aTopics.includes(t.id)}
@@ -302,7 +302,7 @@
       {#if aView === "board"}
         <div class="cit-board-wrap"><BoardView /></div>
       {:else if assignments.length === 0}
-        <p class="mono faint cit-empty">No upcoming assignments.</p>
+        <p class="mono faint cit-empty">Keine anstehenden Abgaben.</p>
       {:else}
         <ul class="cit-deadlines">
           {#each assignments as e (e.id)}
@@ -317,19 +317,19 @@
                 <div class="cit-dl-bar" style="width:{pct * 100}%"></div>
               {/if}
               <div class="cit-dl-main">
-                <button class="cit-dl-check" title="Mark done" aria-label="Mark done" onclick={(ev) => { ev.stopPropagation(); completeAssignment(e); }}>
+                <button class="cit-dl-check" title="Als erledigt markieren" aria-label="Als erledigt markieren" onclick={(ev) => { ev.stopPropagation(); completeAssignment(e); }}>
                   <Icon name="check" size={11} />
                 </button>
                 {#if prio.color}
-                  <span class="cit-prio-dot" style="background:{prio.color}" title="Priority: {prio.label}"></span>
+                  <span class="cit-prio-dot" style="background:{prio.color}" title="Priorität: {prio.label}"></span>
                 {/if}
                 <span class="cit-dl-kind mono cit-dl-kind--{e.kind}">{e.kind === "deadline" ? "due" : e.kind}</span>
-                <button class="cit-dl-title" title="Open in calendar" onclick={() => openInCalendar(e)}>
+                <button class="cit-dl-title" title="Im Kalender öffnen" onclick={() => openInCalendar(e)}>
                   {e.title}<Icon name="external" size={11} />
                 </button>
                 {#if topics.length}
                   <span class="cit-dl-prog mono" class:complete={doneN === topics.length}>{doneN}/{topics.length}</span>
-                  <svg class="cit-ring" width="24" height="24" viewBox="0 0 24 24" aria-label="{Math.round(pct * 100)} percent complete">
+                  <svg class="cit-ring" width="24" height="24" viewBox="0 0 24 24" aria-label="{Math.round(pct * 100)} Prozent erledigt">
                     <circle class="cit-ring-track" cx="12" cy="12" r={RING_R} />
                     <circle
                       class="cit-ring-fill"
@@ -343,7 +343,7 @@
                 <span class="cit-dl-date mono">{fmtDate(e.start_ms)}</span>
                 <span class="cit-dl-left mono{overdue ? ' overdue' : ''}">{daysLeft(e.start_ms)}</span>
                 {#if topics.length}
-                  <button class="cit-dl-expand" class:open title="Topic checklist" aria-label="Toggle checklist" onclick={(ev) => { ev.stopPropagation(); toggleExpanded(e.id); }}>
+                  <button class="cit-dl-expand" class:open title="Themen-Checkliste" aria-label="Checkliste ein-/ausklappen" onclick={(ev) => { ev.stopPropagation(); toggleExpanded(e.id); }}>
                     <Icon name="chevron" size={13} />
                   </button>
                 {/if}
@@ -373,17 +373,17 @@
     <!-- References -->
     <section class="cit-section">
       <div class="cit-head">
-        <h2 class="cit-h read"><Icon name="book" size={15} /> References <span class="faint mono">{refs.length}</span></h2>
+        <h2 class="cit-h read"><Icon name="book" size={15} /> Quellenangaben <span class="faint mono">{refs.length}</span></h2>
         <div class="grow"></div>
         <div class="cit-style-toggle mono">
           <button class={style === "harvard" ? "on" : ""} onclick={() => (style = "harvard")}>Harvard</button>
           <button class={style === "apa" ? "on" : ""} onclick={() => (style = "apa")}>APA</button>
           <button class={style === "mla" ? "on" : ""} onclick={() => (style = "mla")}>MLA</button>
         </div>
-        <button class="btn btn--sm" disabled={refs.length === 0} onclick={copyAll} title="Copy the full bibliography">
-          <Icon name="doc" size={12} /> Copy all
+        <button class="btn btn--sm" disabled={refs.length === 0} onclick={copyAll} title="Gesamtes Literaturverzeichnis kopieren">
+          <Icon name="doc" size={12} /> Alle kopieren
         </button>
-        <button class="btn btn--sm btn--primary" onclick={startNew}><Icon name="plus" size={12} /> Add</button>
+        <button class="btn btn--sm btn--primary" onclick={startNew}><Icon name="plus" size={12} /> Hinzufügen</button>
       </div>
 
       {#if editing === "new"}
@@ -391,7 +391,7 @@
       {/if}
 
       {#if refs.length === 0 && editing !== "new"}
-        <p class="mono faint cit-empty">No references yet. Add your sources to build a bibliography.</p>
+        <p class="mono faint cit-empty">Noch keine Quellenangaben. Füge deine Quellen hinzu, um ein Literaturverzeichnis aufzubauen.</p>
       {:else}
         <ul class="cit-list">
           {#each refs as r (r.id)}
@@ -404,11 +404,11 @@
                   <div class="cit-formatted read">{fmt(r)}</div>
                   <div class="cit-acts">
                     {#if r.url}
-                      <a class="btn btn--icon btn--sm btn--ghost" href={r.url} target="_blank" rel="noreferrer" title="Open link"><Icon name="external" size={12} /></a>
+                      <a class="btn btn--icon btn--sm btn--ghost" href={r.url} target="_blank" rel="noreferrer" title="Link öffnen"><Icon name="external" size={12} /></a>
                     {/if}
-                    <button class="btn btn--icon btn--sm btn--ghost" title="Copy" aria-label="Copy citation" onclick={() => copyOne(r)}><Icon name="doc" size={12} /></button>
-                    <button class="btn btn--icon btn--sm btn--ghost" title="Edit" aria-label="Edit" onclick={() => startEdit(r)}><Icon name="pencil" size={12} /></button>
-                    <button class="btn btn--icon btn--sm btn--ghost" title="Delete" aria-label="Delete" onclick={() => remove(r)}><Icon name="x" size={12} /></button>
+                    <button class="btn btn--icon btn--sm btn--ghost" title="Kopieren" aria-label="Quellenangabe kopieren" onclick={() => copyOne(r)}><Icon name="doc" size={12} /></button>
+                    <button class="btn btn--icon btn--sm btn--ghost" title="Bearbeiten" aria-label="Bearbeiten" onclick={() => startEdit(r)}><Icon name="pencil" size={12} /></button>
+                    <button class="btn btn--icon btn--sm btn--ghost" title="Löschen" aria-label="Löschen" onclick={() => remove(r)}><Icon name="x" size={12} /></button>
                   </div>
                 </div>
                 {#if r.notes}<div class="cit-notes mono faint">{r.notes}</div>{/if}
@@ -425,29 +425,29 @@
   <div class="cit-form">
     <div class="cit-form-grid">
       <div class="cit-field cit-field--type">
-        <span class="onb-label mono">TYPE</span>
+        <span class="onb-label mono">ART</span>
         <Picker
           value={f.ctype}
           onChange={(id) => (f.ctype = id)}
           options={CTYPES.map((t) => ({ id: t.id, label: t.label }))}
-          placeholder="Type"
+          placeholder="Art"
         />
       </div>
       <label class="cit-field cit-field--wide">
-        <span class="onb-label mono">TITLE</span>
-        <input class="input" bind:value={f.title} placeholder="Title of the work" />
+        <span class="onb-label mono">TITEL</span>
+        <input class="input" bind:value={f.title} placeholder="Titel des Werks" />
       </label>
       <label class="cit-field">
-        <span class="onb-label mono">AUTHORS</span>
-        <input class="input" bind:value={f.authors} placeholder="Last, F.; Last, F." />
+        <span class="onb-label mono">AUTOREN</span>
+        <input class="input" bind:value={f.authors} placeholder="Nachname, V.; Nachname, V." />
       </label>
       <label class="cit-field">
-        <span class="onb-label mono">YEAR</span>
+        <span class="onb-label mono">JAHR</span>
         <input class="input" bind:value={f.year} placeholder="2024" />
       </label>
       <label class="cit-field">
-        <span class="onb-label mono">CONTAINER</span>
-        <input class="input" bind:value={f.container} placeholder="Journal / publisher / site" />
+        <span class="onb-label mono">ERSCHIENEN IN</span>
+        <input class="input" bind:value={f.container} placeholder="Zeitschrift / Verlag / Webseite" />
       </label>
       <label class="cit-field">
         <span class="onb-label mono">DOI</span>
@@ -458,13 +458,13 @@
         <input class="input" bind:value={f.url} placeholder="https://…" />
       </label>
       <label class="cit-field cit-field--wide">
-        <span class="onb-label mono">NOTES</span>
-        <input class="input" bind:value={f.notes} placeholder="Optional note" />
+        <span class="onb-label mono">NOTIZEN</span>
+        <input class="input" bind:value={f.notes} placeholder="Optionale Notiz" />
       </label>
     </div>
     <div class="cit-form-foot">
-      <button class="btn btn--ghost btn--sm" onclick={cancel}>Cancel</button>
-      <button class="btn btn--primary btn--sm" onclick={saveForm}><Icon name="check" size={12} /> Save</button>
+      <button class="btn btn--ghost btn--sm" onclick={cancel}>Abbrechen</button>
+      <button class="btn btn--primary btn--sm" onclick={saveForm}><Icon name="check" size={12} /> Speichern</button>
     </div>
   </div>
 {/snippet}
