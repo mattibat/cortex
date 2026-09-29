@@ -806,7 +806,7 @@ pub async fn reingest_source(app: AppHandle, id: String) -> Result<IngestResult>
                     &c, &id, "ingesting", src.meta.as_deref(), src.content.as_deref(), None,
                 )?;
             }
-            emit_progress(&app, &id, "queued", "queued for transcription", 10);
+            emit_progress(&app, &id, "queued", "zur Transkription eingereiht", 10);
             crate::asr::enqueue(&app, id.clone());
             let source = {
                 let c = state.db.lock().unwrap();
@@ -837,24 +837,24 @@ pub async fn reingest_source(app: AppHandle, id: String) -> Result<IngestResult>
             _ => input.path = src.stored_path.clone().or_else(|| src.origin.clone()),
         }
 
-        emit_progress(&app, &id, "parsing", "re-reading source", 15);
+        emit_progress(&app, &id, "parsing", "Quelle wird erneut gelesen", 15);
         let (mut text, mut warning) = ingest::parse(&src.kind, &input)?;
 
         // Same enrichment as add_source: OCR for images/scanned PDFs, Whisper for audio.
         let needs_ocr = src.kind == "image" || (src.kind == "pdf" && text.trim().is_empty());
         if needs_ocr {
-            emit_progress(&app, &id, "parsing", "running OCR (vision model)", 35);
+            emit_progress(&app, &id, "parsing", "OCR läuft (Vision-Modell)", 35);
             match ocr_via_vision(&state, &src.kind, input.path.as_deref()) {
                 Ok(t) if !t.trim().is_empty() => {
                     text = t;
                     warning = None;
                 }
                 Ok(_) => {}
-                Err(e) => warning = Some(format!("OCR failed: {e}")),
+                Err(e) => warning = Some(format!("OCR fehlgeschlagen: {e}")),
             }
         } else if src.kind == "audio" {
             if let Some(p) = input.path.as_deref() {
-                emit_progress(&app, &id, "parsing", "transcribing audio (Whisper)", 35);
+                emit_progress(&app, &id, "parsing", "Audio wird transkribiert (Whisper)", 35);
                 let remote = whisper_remote(&state);
                 let (t, w) = transcribe(Path::new(p), &app.path().app_data_dir().unwrap_or_else(|_| std::env::temp_dir()), true, remote.as_ref(), &whisper_model(&state));
                 if !t.trim().is_empty() {
@@ -866,7 +866,7 @@ pub async fn reingest_source(app: AppHandle, id: String) -> Result<IngestResult>
             }
         }
 
-        emit_progress(&app, &id, "chunking", "splitting text", 50);
+        emit_progress(&app, &id, "chunking", "Text wird aufgeteilt", 50);
         let chunks = ingest::chunk_text(&text, 900, 150);
         let (provider, gemini_key, ollama_url) = {
             let c = state.db.lock().unwrap();
@@ -877,11 +877,11 @@ pub async fn reingest_source(app: AppHandle, id: String) -> Result<IngestResult>
             )
         };
         let embedder = embed::from_settings(&provider, gemini_key.as_deref(), ollama_url.as_deref());
-        emit_progress(&app, &id, "embedding", &format!("{} chunks", chunks.len()), 70);
+        emit_progress(&app, &id, "embedding", &format!("{} Abschnitte", chunks.len()), 70);
         let vectors = ingest::embed_chunks(embedder.as_ref(), &chunks)
             .or_else(|_| ingest::embed_chunks(&embed::StubEmbedder, &chunks))?;
 
-        emit_progress(&app, &id, "storing", "writing vectors", 88);
+        emit_progress(&app, &id, "storing", "Vektoren werden geschrieben", 88);
         {
             let c = state.db.lock().unwrap();
             repo::clear_chunks(&c, &id)?;
@@ -901,16 +901,16 @@ pub async fn reingest_source(app: AppHandle, id: String) -> Result<IngestResult>
             let chunk_count = repo::count_chunks(&c, &id)?;
             let status = if chunks.is_empty() { "draft" } else { "ready" };
             let meta = if chunks.is_empty() {
-                warning.clone().unwrap_or_else(|| "no extractable text".into())
+                warning.clone().unwrap_or_else(|| "Kein extrahierbarer Text".into())
             } else {
-                format!("{chunk_count} chunks · {} chars", text.chars().count())
+                format!("{chunk_count} Abschnitte · {} Zeichen", text.chars().count())
             };
             let has_original = matches!(src.kind.as_str(), "pdf" | "image");
             let error = if has_original { None } else { warning.as_deref() };
             repo::finalize_source(&c, &id, status, Some(&meta), Some(&text), error)?;
         }
         auto_rename_source(&state, &id, &src.name, &text);
-        emit_progress(&app, &id, "done", "re-ingested", 100);
+        emit_progress(&app, &id, "done", "erneut eingelesen", 100);
 
         let c = state.db.lock().unwrap();
         let source = repo::get_source(&c, &id)?;
@@ -1010,7 +1010,7 @@ pub async fn add_source(
         id
     };
 
-    emit_progress(&app, &source_id, "parsing", &format!("reading {kind}"), 15);
+    emit_progress(&app, &source_id, "parsing", &format!("{kind} wird gelesen"), 15);
 
     // 1b. persist the ORIGINAL bytes for file-based kinds so the frontend can
     //     render a real preview (txt/md/url keep stored_path NULL — their text
@@ -1033,7 +1033,7 @@ pub async fn add_source(
             let dest = sources_dir.join(format!("{source_id}.{ext}"));
             if let Err(e) = std::fs::copy(src_path, &dest) {
                 let c = state.db.lock().unwrap();
-                let msg = format!("failed to store original file: {e}");
+                let msg = format!("Originaldatei konnte nicht gespeichert werden: {e}");
                 let _ = repo::finalize_source(&c, &source_id, "error", None, None, Some(&msg));
                 emit_progress(&app, &source_id, "error", &msg, 100);
                 return Err(Error::Io(e));
@@ -1050,7 +1050,7 @@ pub async fn add_source(
     // transcription queue so this invoke returns immediately instead of
     // blocking on a potentially very long transcription.
     if kind == "audio" {
-        emit_progress(&app, &source_id, "queued", "queued for transcription", 10);
+        emit_progress(&app, &source_id, "queued", "zur Transkription eingereiht", 10);
         crate::asr::enqueue(&app, source_id.clone());
         let source = {
             let c = state.db.lock().unwrap();
@@ -1079,11 +1079,11 @@ pub async fn add_source(
         let is_doc = matches!(kind.as_str(), "pdf" | "docx" | "pptx");
         if is_doc && text.trim().is_empty() {
             if let Some(p) = input.path.as_deref() {
-                emit_progress(&app, &source_id, "parsing", "parsing on homelab (ingest service)", 35);
+                emit_progress(&app, &source_id, "parsing", "Wird im Homelab verarbeitet (Ingest-Dienst)", 35);
                 match ingest_remote(&state, p) {
                     Ok(Some(t)) if !t.trim().is_empty() => (t, None),
                     Ok(_) => (text, warning), // no homelab ingest, or it found nothing
-                    Err(e) => (text, Some(format!("homelab ingest failed: {e}"))),
+                    Err(e) => (text, Some(format!("Homelab-Ingest fehlgeschlagen: {e}"))),
                 }
             } else {
                 (text, warning)
@@ -1099,11 +1099,11 @@ pub async fn add_source(
     let (text, warning) = {
         let needs_ocr = kind == "image" || (kind == "pdf" && text.trim().is_empty());
         if needs_ocr {
-            emit_progress(&app, &source_id, "parsing", "reading pages with OCR (vision model)", 35);
+            emit_progress(&app, &source_id, "parsing", "Seiten werden per OCR gelesen (Vision-Modell)", 35);
             match ocr_via_vision(&state, &kind, input.path.as_deref()) {
                 Ok(t) if !t.trim().is_empty() => (t, None),
                 Ok(_) => (text, warning),
-                Err(e) => (text, Some(format!("OCR failed: {e}"))),
+                Err(e) => (text, Some(format!("OCR fehlgeschlagen: {e}"))),
             }
         } else {
             // (audio never reaches here — it early-returns above onto the
@@ -1120,7 +1120,7 @@ pub async fn add_source(
     if matches!(kind.as_str(), "pptx" | "docx") {
         if let Some(src_path) = input.path.as_deref() {
             if ingest::office_converter_available() {
-                emit_progress(&app, &source_id, "parsing", "rendering slides to PDF", 25);
+                emit_progress(&app, &source_id, "parsing", "Folien werden zu PDF gerendert", 25);
                 let pdf_dest = sources_dir.join(format!("{source_id}.pdf"));
                 match ingest::libreoffice_to_pdf(src_path, &pdf_dest) {
                     Ok(()) => {
@@ -1140,7 +1140,7 @@ pub async fn add_source(
     }
     let chars = text.chars().count() as i64;
 
-    emit_progress(&app, &source_id, "chunking", "splitting text", 35);
+    emit_progress(&app, &source_id, "chunking", "Text wird aufgeteilt", 35);
     let chunks = ingest::chunk_text(&text, 900, 150);
 
     // 3. embed (no lock). Build embedder from settings.
@@ -1148,7 +1148,7 @@ pub async fn add_source(
         &app,
         &source_id,
         "embedding",
-        &format!("{} chunks", chunks.len()),
+        &format!("{} Abschnitte", chunks.len()),
         60,
     );
     let (provider, gemini_key, ollama_url) = {
@@ -1164,7 +1164,7 @@ pub async fn add_source(
         &app,
         &source_id,
         "embedding",
-        &format!("{} chunks · {} embedder", chunks.len(), embedder.name()),
+        &format!("{} Abschnitte · {}-Embedder", chunks.len(), embedder.name()),
         60,
     );
     let vectors = match ingest::embed_chunks(embedder.as_ref(), &chunks) {
@@ -1176,7 +1176,7 @@ pub async fn add_source(
                 &app,
                 &source_id,
                 "embedding",
-                "provider failed → stub fallback",
+                "Anbieter fehlgeschlagen → Ersatz-Embedder",
                 60,
             );
             let _ = e;
@@ -1186,7 +1186,7 @@ pub async fn add_source(
     let dim = embedder.dim() as i64;
 
     // 4. store chunks (locked)
-    emit_progress(&app, &source_id, "storing", "writing vectors", 85);
+    emit_progress(&app, &source_id, "storing", "Vektoren werden geschrieben", 85);
     {
         let mut c = state.db.lock().unwrap();
         // One transaction for all chunk inserts + finalize: a 200-chunk PDF was 200
@@ -1208,9 +1208,9 @@ pub async fn add_source(
         let chunk_count = repo::count_chunks(&tx, &source_id)?;
         let status = if chunks.is_empty() { "draft" } else { "ready" };
         let meta = if chunks.is_empty() {
-            warning.clone().unwrap_or_else(|| "no extractable text".into())
+            warning.clone().unwrap_or_else(|| "Kein extrahierbarer Text".into())
         } else {
-            format!("{chunk_count} chunks · {chars} chars")
+            format!("{chunk_count} Abschnitte · {chars} Zeichen")
         };
         let error = if copies_original { None } else { warning.as_deref() };
         repo::finalize_source(
@@ -1228,7 +1228,7 @@ pub async fn add_source(
     // source list shows the new name).
     auto_rename_source(&state, &source_id, &display_name, &text);
 
-    emit_progress(&app, &source_id, "done", "ingested", 100);
+    emit_progress(&app, &source_id, "done", "eingelesen", 100);
     let _ = dim;
 
     let c = state.db.lock().unwrap();
@@ -4309,7 +4309,7 @@ fn save_recording_impl(
         repo::set_source_diarize(&c, &source_id, diarize)?;
         repo::get_source(&c, &source_id)?
     };
-    emit_progress(app, &source.id, "queued", "queued for transcription", 10);
+    emit_progress(app, &source.id, "queued", "zur Transkription eingereiht", 10);
     crate::asr::enqueue(app, source.id.clone());
     Ok(IngestResult { source, chunk_count: 0, chars: 0, warning: None })
 }
@@ -4336,14 +4336,14 @@ pub(crate) fn run_transcription_job(app: &AppHandle, source_id: &str) {
             let _ = repo::finalize_source(&c, source_id, "error", None, None, Some(&msg));
         }
         emit_progress(app, source_id, "error", &msg, 100);
-        notify(app, source_id, &src.subject_id, "Transcription failed", &format!("{} — {msg}", src.name));
+        notify(app, source_id, &src.subject_id, "Transkription fehlgeschlagen", &format!("{} — {msg}", src.name));
     };
 
     let Some(path) = src.stored_path.clone().or_else(|| src.origin.clone()) else {
-        fail("the original audio file is missing".into());
+        fail("Die Original-Audiodatei fehlt".into());
         return;
     };
-    emit_progress(app, source_id, "parsing", "transcribing audio (Whisper)", 25);
+    emit_progress(app, source_id, "parsing", "Audio wird transkribiert (Whisper)", 25);
     let data_dir = app.path().app_data_dir().unwrap_or_else(|_| std::env::temp_dir());
     let mut remote = whisper_remote(&state);
     // The save screen's per-recording "multiple people speaking" choice beats
@@ -4361,19 +4361,19 @@ pub(crate) fn run_transcription_job(app: &AppHandle, source_id: &str) {
                 &c, source_id, "draft", warning.as_deref(), None, warning.as_deref(),
             );
         }
-        emit_progress(app, source_id, "done", "saved (no transcript)", 100);
+        emit_progress(app, source_id, "done", "gespeichert (kein Transkript)", 100);
         notify(
             app,
             source_id,
             &src.subject_id,
-            "Recording saved without transcript",
-            warning.as_deref().unwrap_or("Whisper recognised no speech in the audio."),
+            "Aufnahme ohne Transkript gespeichert",
+            warning.as_deref().unwrap_or("Whisper hat keine Sprache im Audio erkannt."),
         );
         return;
     }
 
     // chunk + embed the transcript
-    emit_progress(app, source_id, "chunking", "splitting transcript", 55);
+    emit_progress(app, source_id, "chunking", "Transkript wird aufgeteilt", 55);
     let chunks = ingest::chunk_text(&transcript, 900, 150);
     let (embed_provider, gemini_key, ollama_url) = {
         let c = state.db.lock().unwrap();
@@ -4384,16 +4384,16 @@ pub(crate) fn run_transcription_job(app: &AppHandle, source_id: &str) {
         )
     };
     let embedder = embed::from_settings(&embed_provider, gemini_key.as_deref(), ollama_url.as_deref());
-    emit_progress(app, source_id, "embedding", &format!("{} chunks", chunks.len()), 75);
+    emit_progress(app, source_id, "embedding", &format!("{} Abschnitte", chunks.len()), 75);
     let vectors = match ingest::embed_chunks(embedder.as_ref(), &chunks) {
         Ok(v) => v,
         Err(e) => {
-            fail(format!("embedding failed: {e}"));
+            fail(format!("Embedding fehlgeschlagen: {e}"));
             return;
         }
     };
 
-    emit_progress(app, source_id, "storing", "writing vectors", 90);
+    emit_progress(app, source_id, "storing", "Vektoren werden geschrieben", 90);
     let stored = (|| -> Result<i64> {
         let c = state.db.lock().unwrap();
         for (i, (chunk, vec)) in chunks.iter().zip(vectors.iter()).enumerate() {
@@ -4403,24 +4403,24 @@ pub(crate) fn run_transcription_job(app: &AppHandle, source_id: &str) {
             )?;
         }
         let n = repo::count_chunks(&c, source_id)?;
-        let meta = format!("{n} chunks · transcribed");
+        let meta = format!("{n} Abschnitte · transkribiert");
         repo::finalize_source(&c, source_id, "ready", Some(&meta), Some(&transcript), None)?;
         Ok(n)
     })();
     let chunk_count = match stored {
         Ok(n) => n,
         Err(e) => {
-            fail(format!("storing chunks failed: {e}"));
+            fail(format!("Speichern der Abschnitte fehlgeschlagen: {e}"));
             return;
         }
     };
-    emit_progress(app, source_id, "done", "transcribed", 100);
+    emit_progress(app, source_id, "done", "transkribiert", 100);
     notify(
         app,
         source_id,
         &src.subject_id,
-        "Lecture transcribed",
-        &format!("{} is ready — {chunk_count} chunks embedded.", src.name),
+        "Vorlesung transkribiert",
+        &format!("{} ist bereit – {chunk_count} Abschnitte eingebettet.", src.name),
     );
 
     // auto-summary: distill the lecture into a note in the background so the

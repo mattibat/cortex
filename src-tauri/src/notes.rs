@@ -131,9 +131,9 @@ pub async fn note_to_source(app: AppHandle, id: String) -> Result<IngestResult> 
         let chunk_count = repo::count_chunks(&c, &source_id)?;
         let status = if chunks.is_empty() { "draft" } else { "ready" };
         let meta = if chunks.is_empty() {
-            "empty note".to_string()
+            "leere Notiz".to_string()
         } else {
-            format!("{chunk_count} chunks · {chars} chars · from note")
+            format!("{chunk_count} Abschnitte · {chars} Zeichen · aus Notiz")
         };
         repo::finalize_source(&c, &source_id, status, Some(&meta), Some(&text), None)?;
 
