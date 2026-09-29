@@ -32,26 +32,26 @@
   // Fixed system bindings (not rebindable) shown for reference in the Keybinds tab
   // so the page reflects every shortcut, not just the customizable single-key set.
   const SYSTEM_BINDS = [
-    { keys: "Ctrl F", label: "Find on page" },
-    { keys: "Ctrl P", label: "Command palette" },
-    { keys: "Esc",    label: "Close overlay / go back" },
-    { keys: "g d",    label: "Go to dashboard" },
-    { keys: "Alt 1–9", label: "Jump to subject N" },
+    { keys: "Ctrl F", label: "Auf der Seite suchen" },
+    { keys: "Ctrl P", label: "Befehlspalette" },
+    { keys: "Esc",    label: "Overlay schließen / zurück" },
+    { keys: "g d",    label: "Zur Übersicht" },
+    { keys: "Alt 1–9", label: "Zu Fach N springen" },
   ];
 
   // ---- tab navigation ----
   const TABS = [
-    { id: "profile",    label: "Profile",       icon: "diamond" },
-    { id: "models",     label: "Models",        icon: "bolt" },
-    { id: "keys",       label: "API keys",      icon: "lock" },
-    { id: "appearance", label: "Appearance",    icon: "grid" },
-    { id: "keybinds",   label: "Keybinds",      icon: "cmd" },
-    { id: "homelab",    label: "Integrations",  icon: "globe" },
+    { id: "profile",    label: "Profil",        icon: "diamond" },
+    { id: "models",     label: "Modelle",       icon: "bolt" },
+    { id: "keys",       label: "API-Schlüssel", icon: "lock" },
+    { id: "appearance", label: "Aussehen",      icon: "grid" },
+    { id: "keybinds",   label: "Tastenkürzel",  icon: "cmd" },
+    { id: "homelab",    label: "Integrationen", icon: "globe" },
     { id: "calendar",   label: "Google Calendar", icon: "globe" },
-    { id: "experimental", label: "Experimental", icon: "bolt" },
+    { id: "experimental", label: "Experimentell", icon: "bolt" },
     { id: "audio",      label: "Audio",         icon: "music" },
-    { id: "data",       label: "Data & privacy",icon: "doc" },
-    { id: "about",      label: "About",         icon: "diamond" },
+    { id: "data",       label: "Daten & Datenschutz", icon: "doc" },
+    { id: "about",      label: "Über",          icon: "diamond" },
   ] as const;
 
   // Mobile is a homelab-first portable view: drop the desktop-only Keybinds tab
@@ -84,10 +84,10 @@
   type Model = { id: string; label: string };
   const PROVIDERS: { id: string; label: string; models: Model[] }[] = [
     { id: "gemini", label: "Gemini", models: [
-      { id: "gemini-2.5-flash",      label: "Gemini 2.5 Flash — ⚡ best value" },
-      { id: "gemini-2.5-flash-lite", label: "Gemini 2.5 Flash-Lite — cheapest" },
-      { id: "gemini-2.0-flash-001",  label: "Gemini 2.0 Flash — legacy, cheap" },
-      { id: "gemini-2.5-pro",        label: "Gemini 2.5 Pro — ★ premium" },
+      { id: "gemini-2.5-flash",      label: "Gemini 2.5 Flash – ⚡ bestes Preis-Leistungs-Verhältnis" },
+      { id: "gemini-2.5-flash-lite", label: "Gemini 2.5 Flash-Lite – am günstigsten" },
+      { id: "gemini-2.0-flash-001",  label: "Gemini 2.0 Flash – älter, günstig" },
+      { id: "gemini-2.5-pro",        label: "Gemini 2.5 Pro – ★ Premium" },
     ] },
     { id: "openrouter", label: "OpenRouter", models: [
       // Curated shortlist + ordering (the live catalog with per-row pricing replaces
@@ -120,50 +120,50 @@
       { id: "deepseek/deepseek-r1",               label: "DeepSeek R1" },
     ] },
     { id: "openai", label: "OpenAI", models: [
-      { id: "gpt-4o-mini", label: "GPT-4o mini — cheap" },
-      { id: "gpt-5-mini",  label: "GPT-5 mini — cheap + smart" },
-      { id: "gpt-4o",      label: "GPT-4o — balanced" },
-      { id: "gpt-5",       label: "GPT-5 — ★ frontier" },
-      { id: "o3-mini",     label: "o3-mini — cheap reasoning" },
-      { id: "o3",          label: "o3 — deep reasoning" },
+      { id: "gpt-4o-mini", label: "GPT-4o mini – günstig" },
+      { id: "gpt-5-mini",  label: "GPT-5 mini – günstig + klug" },
+      { id: "gpt-4o",      label: "GPT-4o – ausgewogen" },
+      { id: "gpt-5",       label: "GPT-5 – ★ Spitzenmodell" },
+      { id: "o3-mini",     label: "o3-mini – günstiges Reasoning" },
+      { id: "o3",          label: "o3 – tiefes Reasoning" },
     ] },
     { id: "claude", label: "Claude", models: [
-      { id: "claude-haiku-4-5-20251001",  label: "Claude Haiku 4.5 — fast + cheap" },
-      { id: "claude-3-5-haiku-20241022",  label: "Claude 3.5 Haiku — cheap" },
-      { id: "claude-3-5-sonnet-20241022", label: "Claude 3.5 Sonnet — strong" },
-      { id: "claude-3-7-sonnet-20250219", label: "Claude 3.7 Sonnet — strong" },
-      { id: "claude-sonnet-4-6",          label: "Claude Sonnet 4.6 — ★ premium" },
-      { id: "claude-opus-4-8",            label: "Claude Opus 4.8 — top, pricey" },
+      { id: "claude-haiku-4-5-20251001",  label: "Claude Haiku 4.5 – schnell + günstig" },
+      { id: "claude-3-5-haiku-20241022",  label: "Claude 3.5 Haiku – günstig" },
+      { id: "claude-3-5-sonnet-20241022", label: "Claude 3.5 Sonnet – stark" },
+      { id: "claude-3-7-sonnet-20250219", label: "Claude 3.7 Sonnet – stark" },
+      { id: "claude-sonnet-4-6",          label: "Claude Sonnet 4.6 – ★ Premium" },
+      { id: "claude-opus-4-8",            label: "Claude Opus 4.8 – top, teuer" },
     ] },
-    { id: "ollama", label: "Ollama (local)", models: [
-      { id: "mistral-small", label: "Mistral Small — light, local" },
-      { id: "qwen2.5:32b",   label: "Qwen 2.5 32B — local" },
-      { id: "llama3.3:70b",  label: "Llama 3.3 70B — local, heavy" },
+    { id: "ollama", label: "Ollama (lokal)", models: [
+      { id: "mistral-small", label: "Mistral Small – leicht, lokal" },
+      { id: "qwen2.5:32b",   label: "Qwen 2.5 32B – lokal" },
+      { id: "llama3.3:70b",  label: "Llama 3.3 70B – lokal, schwer" },
     ] },
-    { id: "custom", label: "Custom endpoint", models: [] },
+    { id: "custom", label: "Eigener Endpunkt", models: [] },
   ];
   const EMBED_PROVIDERS: { id: string; label: string; models: Model[] }[] = [
     { id: "gemini",  label: "Gemini",        models: [{ id: "text-embedding-004", label: "text-embedding-004" }] },
-    { id: "openai",  label: "OpenAI",        models: [{ id: "text-embedding-3-small", label: "text-embedding-3-small — cheap" }, { id: "text-embedding-3-large", label: "text-embedding-3-large — best" }] },
-    { id: "ollama",  label: "Ollama (local)", models: [{ id: "nomic-embed-text", label: "nomic-embed-text — local" }, { id: "mxbai-embed-large", label: "mxbai-embed-large — local" }] },
+    { id: "openai",  label: "OpenAI",        models: [{ id: "text-embedding-3-small", label: "text-embedding-3-small – günstig" }, { id: "text-embedding-3-large", label: "text-embedding-3-large – beste Qualität" }] },
+    { id: "ollama",  label: "Ollama (lokal)", models: [{ id: "nomic-embed-text", label: "nomic-embed-text – lokal" }, { id: "mxbai-embed-large", label: "mxbai-embed-large – lokal" }] },
   ];
   const MODEL_TASKS = [
-    { id: "chat",       label: "Chat",                  desc: "Scoped Q&A across sources" },
-    { id: "cheatsheet", label: "Cheatsheet synthesis",  desc: "Completeness-checked merges" },
-    { id: "audio",      label: "Audio overview script", desc: "Two-host podcast dialogue" },
-    { id: "quiz",       label: "Quiz generation",       desc: "MCQ · short answer · cloze" },
-    { id: "flashcard",  label: "Flashcard generation",  desc: "Q/A pairs + SRS scheduling" },
-    { id: "embedding",  label: "Embedding",             desc: "Vector index for retrieval" },
+    { id: "chat",       label: "Chat",                  desc: "Fragen & Antworten zu deinen Quellen" },
+    { id: "cheatsheet", label: "Lernzettel erstellen",   desc: "Auf Vollständigkeit geprüft" },
+    { id: "audio",      label: "Skript Audio-Überblick", desc: "Podcast-Dialog mit zwei Sprechern" },
+    { id: "quiz",       label: "Quiz erstellen",        desc: "Multiple Choice · Kurzantwort · Lückentext" },
+    { id: "flashcard",  label: "Karteikarten erstellen", desc: "Frage/Antwort + Wiederholungsplan" },
+    { id: "embedding",  label: "Embedding",             desc: "Vektorindex für die Suche" },
   ] as const;
 
   type TaskId = typeof MODEL_TASKS[number]["id"];
 
   // ---- profile state ----
-  let name       = $state("Sam Okonkwo");
-  let pronouns   = $state("they/them");
+  let name       = $state("");
+  let pronouns   = $state("");
   let level      = $state("postgrad");
-  let field      = $state("Computer Science — MSc");
-  let about      = $state("Final-year MSc student. I think in code and analogies, already comfortable with Big-O. I revise late at night and learn fastest from worked examples, then a terse summary.");
+  let field      = $state("");
+  let about      = $state("");
   let style      = $state("balanced");
   let explain    = $state<string[]>(["worked-examples","analogies"]);
 
@@ -184,7 +184,7 @@
       newMemory = "";
       await loadMemory();
     } catch {
-      app.pushToast({ kind: "error", title: "Could not save memory" });
+      app.pushToast({ kind: "error", title: "Erinnerung konnte nicht gespeichert werden" });
     } finally {
       memoryBusy = false;
     }
@@ -194,7 +194,7 @@
       await api.deleteMemory(id);
       await loadMemory();
     } catch {
-      app.pushToast({ kind: "error", title: "Could not delete memory" });
+      app.pushToast({ kind: "error", title: "Erinnerung konnte nicht gelöscht werden" });
     }
   }
 
@@ -231,8 +231,8 @@
     { id: "gemini",     label: "Gemini",                  note: "Google AI Studio",       placeholder: "AIza…" },
     { id: "claude",     label: "Claude",                  note: "console.anthropic.com",  placeholder: "sk-ant-…" },
     { id: "openai",     label: "OpenAI",                  note: "platform.openai.com",    placeholder: "sk-…" },
-    { id: "custom_endpoint", label: "Custom endpoint URL", note: "OpenAI-compatible base URL", placeholder: "https://…/v1" },
-    { id: "custom_api_key", label: "Custom endpoint API key", note: "Bearer token for the custom endpoint", placeholder: "sk-…" },
+    { id: "custom_endpoint", label: "URL des eigenen Endpunkts", note: "OpenAI-kompatible Basis-URL", placeholder: "https://…/v1" },
+    { id: "custom_api_key", label: "API-Schlüssel des eigenen Endpunkts", note: "Bearer-Token für den eigenen Endpunkt", placeholder: "sk-…" },
   ] as const;
   // show/hide per key
   let showKey = $state<Record<string, boolean>>({
@@ -316,14 +316,14 @@
         if (ok) {
           app.pushToast({
             kind: "success",
-            title: "Keybind updated",
-            body: `${ACTION_LABELS[action]} → “${k === " " ? "Space" : k}”. Takes effect outside this screen.`,
+            title: "Tastenkürzel geändert",
+            body: `${ACTION_LABELS[action]} → „${k === " " ? "Leertaste" : k}“. Gilt außerhalb dieser Ansicht.`,
           });
         } else {
           app.pushToast({
             kind: "warning",
-            title: "Key already in use",
-            body: `“${k === " " ? "Space" : k}” is bound to another action — pick a different key.`,
+            title: "Taste bereits belegt",
+            body: `„${k === " " ? "Leertaste" : k}“ ist schon einer anderen Aktion zugewiesen – wähle eine andere Taste.`,
           });
         }
       }
@@ -365,7 +365,7 @@
   let whisperCheckNote = $state("");
   async function checkWhisper() {
     whisperCheckState = "checking";
-    whisperCheckNote = "Checking the server (a first-time model download can take a few minutes)…";
+    whisperCheckNote = "Server wird geprüft (der erste Modell-Download kann ein paar Minuten dauern)…";
     try {
       whisperCheckNote = await api.checkWhisperModel();
       whisperCheckState = "ok";
@@ -539,7 +539,7 @@
     }
   }
   function fmtSyncTime(ms: number): string {
-    return ms ? new Date(ms).toLocaleString() : "never";
+    return ms ? new Date(ms).toLocaleString() : "nie";
   }
   function syncPill() {
     // Live (WebSocket) trumps the periodic states — changes are propagating
@@ -548,11 +548,11 @@
       return { cls: "ready", label: "Live" };
     }
     switch (app.syncState) {
-      case "syncing": return { cls: "draft", label: "Syncing…" };
-      case "synced":  return { cls: "ready", label: "Synced" };
-      case "error":   return { cls: "error", label: "Sync error" };
-      case "idle":    return { cls: "ready", label: "On" };
-      default:        return { cls: "pending", label: "Off" };
+      case "syncing": return { cls: "draft", label: "Synchronisiert…" };
+      case "synced":  return { cls: "ready", label: "Synchronisiert" };
+      case "error":   return { cls: "error", label: "Sync-Fehler" };
+      case "idle":    return { cls: "ready", label: "An" };
+      default:        return { cls: "pending", label: "Aus" };
     }
   }
 
@@ -593,30 +593,30 @@
         ? await api.moodleConnect(mdUrl, mdUser.trim(), mdPass)
         : await api.moodleSetToken(mdUrl, mdToken);
       mdPass = ""; // never keep the password around
-      app.pushToast({ kind: "success", title: "Moodle connected", body: name || undefined });
+      app.pushToast({ kind: "success", title: "Moodle verbunden", body: name || undefined });
       await loadMoodle();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Moodle connect failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Moodle-Verbindung fehlgeschlagen", body: String(e) });
     } finally { mdBusy = false; }
   }
   async function mdSyncNow() {
     mdBusy = true;
     try {
       mdSummary = await api.moodleSync();
-      app.pushToast({ kind: "success", title: "Moodle synced",
-        body: `${mdSummary.courses} courses · ${mdSummary.grades} grades · ${mdSummary.deadlines} deadlines · ${mdSummary.announcements} announcements` });
+      app.pushToast({ kind: "success", title: "Moodle synchronisiert",
+        body: `${mdSummary.courses} Kurse · ${mdSummary.grades} Noten · ${mdSummary.deadlines} Termine · ${mdSummary.announcements} Ankündigungen` });
       await loadMoodle();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Moodle sync failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Moodle-Sync fehlgeschlagen", body: String(e) });
     } finally { mdBusy = false; }
   }
   async function mdAutolink() {
     try {
       const n = await api.moodleAutolink();
-      app.pushToast({ kind: n ? "success" : "info", title: `Auto-linked ${n} subject${n === 1 ? "" : "s"}` });
+      app.pushToast({ kind: n ? "success" : "info", title: `${n} ${n === 1 ? "Fach" : "Fächer"} automatisch verknüpft` });
       await app.refresh();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Auto-link failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Automatisches Verknüpfen fehlgeschlagen", body: String(e) });
     }
   }
   async function mdDisconnect() {
@@ -624,7 +624,7 @@
       await api.moodleDisconnect();
       mdToken = "";
       await loadMoodle();
-      app.pushToast({ kind: "info", title: "Moodle disconnected" });
+      app.pushToast({ kind: "info", title: "Moodle getrennt" });
     } catch { /* ignore */ }
   }
   function mdCourseName(courseId: string): string {
@@ -634,7 +634,7 @@
     try {
       await api.moodleLoginSso(mdUrl);
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Could not open SSO login", body: String(e) });
+      app.pushToast({ kind: "error", title: "SSO-Anmeldung konnte nicht geöffnet werden", body: String(e) });
     }
   }
   // SSO login happens in a separate window; react to its result here.
@@ -642,11 +642,11 @@
     let un1: (() => void) | undefined;
     let un2: (() => void) | undefined;
     api.onMoodleSsoDone(async (name) => {
-      app.pushToast({ kind: "success", title: "Moodle connected", body: name || undefined });
+      app.pushToast({ kind: "success", title: "Moodle verbunden", body: name || undefined });
       await loadMoodle();
     }).then((u) => (un1 = u));
     api.onMoodleSsoError((msg) =>
-      app.pushToast({ kind: "error", title: "SSO login failed", body: msg })
+      app.pushToast({ kind: "error", title: "SSO-Anmeldung fehlgeschlagen", body: msg })
     ).then((u) => (un2 = u));
     return () => { un1?.(); un2?.(); };
   });
@@ -678,10 +678,10 @@
     backingUp = true;
     try {
       const dest = await api.backupNow();
-      app.pushToast({ kind: "success", title: "Backup uploaded", body: dest });
+      app.pushToast({ kind: "success", title: "Backup hochgeladen", body: dest });
       await refreshBackupStatus();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Backup failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Backup fehlgeschlagen", body: String(e) });
     } finally {
       backingUp = false;
     }
@@ -766,9 +766,9 @@
     if (!depReport?.install_command) return;
     try {
       await navigator.clipboard.writeText(depReport.install_command);
-      app.pushToast({ kind: "success", title: "Copied", body: "Install command copied to clipboard." });
+      app.pushToast({ kind: "success", title: "Kopiert", body: "Installationsbefehl in die Zwischenablage kopiert." });
     } catch {
-      app.pushToast({ kind: "warning", title: "Couldn't copy", body: depReport.install_command });
+      app.pushToast({ kind: "warning", title: "Kopieren nicht möglich", body: depReport.install_command });
     }
   }
   // One-click install (macOS/Homebrew only — no sudo needed there).
@@ -777,10 +777,10 @@
     depInstalling = true;
     try {
       const msg = await api.installDependencies();
-      app.pushToast({ kind: "success", title: "Dependencies", body: msg });
+      app.pushToast({ kind: "success", title: "Abhängigkeiten", body: msg });
       await loadDeps();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Install failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Installation fehlgeschlagen", body: String(e) });
     } finally {
       depInstalling = false;
     }
@@ -801,7 +801,7 @@
     if (!gStatus?.connected) return;
     gCalBusy = true;
     try { gCalendars = await api.googleListCalendars(); }
-    catch (e) { app.pushToast({ kind: "error", title: "Couldn't list calendars", body: String(e) }); }
+    catch (e) { app.pushToast({ kind: "error", title: "Kalender konnten nicht geladen werden", body: String(e) }); }
     finally { gCalBusy = false; }
   }
   function toggleGoogleCal(id: string) {
@@ -820,10 +820,10 @@
     try {
       saveGoogleCreds();
       gStatus = await api.googleConnect();
-      app.pushToast({ kind: "success", title: "Google Calendar connected", body: gStatus.email ?? undefined });
+      app.pushToast({ kind: "success", title: "Google Kalender verbunden", body: gStatus.email ?? undefined });
       void loadGoogleCalendars();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Connect failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Verbinden fehlgeschlagen", body: String(e) });
     } finally {
       gBusy = false;
     }
@@ -834,9 +834,9 @@
       const r = await api.googleSync();
       await app.refresh();            // pulled events filed to subjects; colours updated
       app.notifyEventsChanged();      // refresh the calendar view
-      app.pushToast({ kind: "success", title: "Calendar synced", body: `${r.pulled} pulled · ${r.pushed} pushed` });
+      app.pushToast({ kind: "success", title: "Kalender synchronisiert", body: `${r.pulled} geholt · ${r.pushed} gesendet` });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Sync failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Synchronisierung fehlgeschlagen", body: String(e) });
     } finally {
       gBusy = false;
     }
@@ -844,9 +844,9 @@
   async function disconnectGoogle() {
     try {
       gStatus = await api.googleDisconnect();
-      app.pushToast({ kind: "info", title: "Google disconnected" });
+      app.pushToast({ kind: "info", title: "Google getrennt" });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Disconnect failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Trennen fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -860,12 +860,12 @@
   // status pill (class modifier + label), so every integration shows state the
   // same way the rest of the app shows source/cheatsheet state.
   function connPill(state: null | "testing" | "ok" | "fail", configured: boolean) {
-    if (state === "testing") return { cls: "draft", label: "Checking…" };
-    if (state === "ok") return { cls: "ready", label: "Connected" };
-    if (state === "fail") return { cls: "error", label: "Unreachable" };
+    if (state === "testing") return { cls: "draft", label: "Wird geprüft…" };
+    if (state === "ok") return { cls: "ready", label: "Verbunden" };
+    if (state === "fail") return { cls: "error", label: "Nicht erreichbar" };
     return configured
-      ? { cls: "pending", label: "Untested" }
-      : { cls: "pending", label: "Not set" };
+      ? { cls: "pending", label: "Nicht getestet" }
+      : { cls: "pending", label: "Nicht gesetzt" };
   }
 
   // persist the Ollama endpoint on change, and re-probe its installed models
@@ -878,10 +878,10 @@
 
   // ---- focus timer (pomodoro) durations — bound to the app-wide timer ----
   const pomoFields = [
-    { key: "workMin",            label: "Focus length",  unit: " min", step: 5, min: 5, max: 90 },
-    { key: "breakMin",           label: "Short break",   unit: " min", step: 1, min: 1, max: 30 },
-    { key: "longBreakMin",       label: "Long break",    unit: " min", step: 5, min: 5, max: 60 },
-    { key: "sessionsBeforeLong", label: "Sessions / set", unit: "",    step: 1, min: 2, max: 8  },
+    { key: "workMin",            label: "Fokusdauer",    unit: " min", step: 5, min: 5, max: 90 },
+    { key: "breakMin",           label: "Kurze Pause",   unit: " min", step: 1, min: 1, max: 30 },
+    { key: "longBreakMin",       label: "Lange Pause",   unit: " min", step: 5, min: 5, max: 60 },
+    { key: "sessionsBeforeLong", label: "Einheiten pro Runde", unit: "",    step: 1, min: 2, max: 8  },
   ] as const;
   function pomoVal(key: string): number {
     return (app.pomo as unknown as Record<string, number>)[key];
@@ -981,9 +981,9 @@
     try {
       await api.optimizeDb();
       await loadStats();
-      app.pushToast({ kind: "success", title: "Storage optimized", body: "Reclaimed unused space (VACUUM)." });
+      app.pushToast({ kind: "success", title: "Speicher optimiert", body: "Ungenutzter Platz wurde freigegeben (VACUUM)." });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Optimize failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Optimieren fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -992,27 +992,27 @@
       const { save } = await import("@tauri-apps/plugin-dialog");
       const dest = await save({
         defaultPath: "cortex-export.db",
-        filters: [{ name: "SQLite database", extensions: ["db"] }],
+        filters: [{ name: "SQLite-Datenbank", extensions: ["db"] }],
       });
       if (!dest) return;
       await api.exportDatabase(dest);
-      app.pushToast({ kind: "success", title: "Exported", body: dest });
+      app.pushToast({ kind: "success", title: "Exportiert", body: dest });
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Export failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Export fehlgeschlagen", body: String(e) });
     }
   }
 
   async function deleteEverything() {
     const ok = window.confirm(
-      "Delete ALL data?\n\nThis wipes the local database — every subject, source, cheatsheet, and embedding. This cannot be undone. Your settings and API keys are kept.",
+      "ALLE Daten löschen?\n\nDie lokale Datenbank wird geleert – alle Fächer, Quellen, Lernzettel und Embeddings. Das lässt sich nicht rückgängig machen. Einstellungen und API-Schlüssel bleiben erhalten.",
     );
     if (!ok) return;
     try {
       await api.deleteAllData();
       await loadStats();
-      app.pushToast({ kind: "success", title: "All data deleted", body: "Reload the app to start fresh." });
+      app.pushToast({ kind: "success", title: "Alle Daten gelöscht", body: "Starte die App neu, um von vorne zu beginnen." });
     } catch {
-      app.pushToast({ kind: "error", title: "Delete failed" });
+      app.pushToast({ kind: "error", title: "Löschen fehlgeschlagen" });
     }
   }
 
@@ -1140,8 +1140,8 @@
       profile_about: about,
       profile_style: style,
       profile_explain: explain.join(","),
-    }).then(() => app.pushToast({ kind: "success", title: "Profile saved", body: "The AI will use your updated context." }))
-      .catch(() => app.pushToast({ kind: "error", title: "Save failed" }));
+    }).then(() => app.pushToast({ kind: "success", title: "Profil gespeichert", body: "Die KI nutzt jetzt deine aktualisierten Angaben." }))
+      .catch(() => app.pushToast({ kind: "error", title: "Speichern fehlgeschlagen" }));
   }
 
   function saveKeys() {
@@ -1152,8 +1152,8 @@
       openai_api_key:     keys.openai,
       custom_endpoint:    keys.custom_endpoint,
       custom_api_key:     keys.custom_api_key,
-    }).then(() => app.pushToast({ kind: "success", title: "Keys saved", body: "Stored in the system keychain." }))
-      .catch(() => app.pushToast({ kind: "error", title: "Save failed" }));
+    }).then(() => app.pushToast({ kind: "success", title: "Schlüssel gespeichert", body: "Im Schlüsselbund des Systems abgelegt." }))
+      .catch(() => app.pushToast({ kind: "error", title: "Speichern fehlgeschlagen" }));
   }
 
   // Live OpenRouter catalog for the searchable model picker — fetched once, on the
@@ -1168,7 +1168,7 @@
       orModels = await loadOpenRouterModels();
       orLoaded = true;
     } catch {
-      app.pushToast({ kind: "error", title: "OpenRouter models", body: "Couldn’t load the model list — check your connection." });
+      app.pushToast({ kind: "error", title: "OpenRouter-Modelle", body: "Die Modellliste konnte nicht geladen werden – prüfe deine Verbindung." });
     } finally {
       orLoading = false;
     }
@@ -1245,7 +1245,7 @@
   const statusClass = (v: VerifyState) =>
     "key-status " + (v === "checking" ? "checking" : v ? (v.ok ? "ok" : "bad") : "off");
   const statusLabel = (v: VerifyState, isSet = false) =>
-    v === "checking" ? "checking…" : v ? (v.ok ? "connected" : v.detail) : (isSet ? "not checked" : "not set");
+    v === "checking" ? "wird geprüft…" : v ? (v.ok ? "verbunden" : v.detail) : (isSet ? "nicht geprüft" : "nicht gesetzt");
   const verifyIdForKey = (id: string) =>
     id === "custom_endpoint" || id === "custom_api_key" ? "custom" : id;
   async function verifyKey(id: string) {
@@ -1263,10 +1263,10 @@
   }
 
   const levelLabels: Record<string, string> = {
-    undergrad: "Undergraduate",
-    postgrad:  "Postgraduate",
-    phd:       "PhD / research",
-    self:      "Self-study",
+    undergrad: "Schule / Ausbildung",
+    postgrad:  "Studium",
+    phd:       "Promotion / Forschung",
+    self:      "Selbststudium",
   };
 
   function toggleExplain(id: string) {
@@ -1283,11 +1283,11 @@
       <button
         class="btn btn--icon btn--sm btn--ghost"
         onclick={() => app.setView("subject")}
-        title="Back"
+        title="Zurück"
       >
         <Icon name="chevron" size={14} style="transform:rotate(180deg)" />
       </button>
-      <span class="mono" style="color:var(--fg-bright);font-weight:600">Settings</span>
+      <span class="mono" style="color:var(--fg-bright);font-weight:600">Einstellungen</span>
     </div>
 
     {#each navTabs as t}
@@ -1299,7 +1299,7 @@
       </button>
     {/each}
 
-    <div class="set-nav-foot mono faint">Cortex {appVersion ? "v" + appVersion : ""} · BYOK · local-first</div>
+    <div class="set-nav-foot mono faint">Cortex {appVersion ? "v" + appVersion : ""} · eigener Schlüssel · lokal</div>
   </aside>
 
   <!-- MAIN BODY -->
@@ -1320,39 +1320,39 @@
     {#if tab === "profile"}
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">Profile</div>
-          <h1 class="set-title">Who the AI thinks you are</h1>
-          <p class="set-sub">Shared with every chat and generation so answers fit your level and style. Stays on this machine.</p>
+          <div class="eyebrow">Profil</div>
+          <h1 class="set-title">Wer du für die KI bist</h1>
+          <p class="set-sub">Wird bei jedem Chat und jeder Erstellung mitgegeben, damit Antworten zu deinem Niveau und Stil passen. Bleibt auf diesem Gerät.</p>
         </header>
 
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Identity</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Person</h3></div>
           <div class="set-card">
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Display name</div></div>
+              <div class="set-row-l"><div class="set-row-t">Anzeigename</div></div>
               <div class="set-row-r"><input class="input" bind:value={name} /></div>
             </div>
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Pronouns</div></div>
+              <div class="set-row-l"><div class="set-row-t">Pronomen</div></div>
               <div class="set-row-r"><input class="input" bind:value={pronouns} /></div>
             </div>
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Level</div></div>
+              <div class="set-row-l"><div class="set-row-t">Niveau</div></div>
               <div class="set-row-r">
                 <Picker
                   value={level}
                   onChange={(v) => (level = v)}
                   options={[
-                    { id: "undergrad", label: "Undergraduate" },
-                    { id: "postgrad",  label: "Postgraduate" },
-                    { id: "phd",       label: "PhD / research" },
-                    { id: "self",      label: "Self-study" },
+                    { id: "undergrad", label: "Schule / Ausbildung" },
+                    { id: "postgrad",  label: "Studium" },
+                    { id: "phd",       label: "Promotion / Forschung" },
+                    { id: "self",      label: "Selbststudium" },
                   ]}
                 />
               </div>
             </div>
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Field of study</div></div>
+              <div class="set-row-l"><div class="set-row-t">Fachrichtung</div></div>
               <div class="set-row-r"><input class="input" bind:value={field} /></div>
             </div>
           </div>
@@ -1360,22 +1360,22 @@
 
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">About you</h3>
-            <p class="set-group-d">Context the AI uses to personalize explanations.</p>
+            <h3 class="set-group-t">Über dich</h3>
+            <p class="set-group-d">Kontext, mit dem die KI Erklärungen an dich anpasst.</p>
           </div>
           <div class="set-card">
             <div class="set-row stacked">
-              <div class="set-row-t">In your words</div>
+              <div class="set-row-t">In deinen Worten</div>
               <textarea class="input set-textarea set-bio" bind:value={about} rows={6}></textarea>
             </div>
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Response style</div>
-                <div class="set-row-d">How much detail by default.</div>
+                <div class="set-row-t">Antwortstil</div>
+                <div class="set-row-d">Wie ausführlich standardmäßig.</div>
               </div>
               <div class="set-row-r">
                 <div class="seg">
-                  {#each [{ id: "concise", label: "Concise" }, { id: "balanced", label: "Balanced" }, { id: "detailed", label: "Detailed" }] as opt}
+                  {#each [{ id: "concise", label: "Knapp" }, { id: "balanced", label: "Ausgewogen" }, { id: "detailed", label: "Ausführlich" }] as opt}
                     <button type="button" class={"seg-opt" + (style === opt.id ? " on" : "")} onclick={() => (style = opt.id)}>{opt.label}</button>
                   {/each}
                 </div>
@@ -1383,12 +1383,12 @@
             </div>
             <div class="set-row stacked">
               <div class="set-row-l">
-                <div class="set-row-t">Explain with</div>
-                <div class="set-row-d">Pick what helps you learn fastest.</div>
+                <div class="set-row-t">Erklären mit</div>
+                <div class="set-row-d">Wähle, womit du am schnellsten lernst.</div>
               </div>
               <div class="set-row-r">
                 <div class="tag-suggest" style="margin-top:0">
-                  {#each [{ id: "worked-examples", label: "worked examples" }, { id: "analogies", label: "analogies" }, { id: "formal-proofs", label: "formal proofs" }, { id: "diagrams", label: "diagrams" }, { id: "code", label: "code snippets" }] as opt}
+                  {#each [{ id: "worked-examples", label: "Beispielaufgaben" }, { id: "analogies", label: "Vergleiche" }, { id: "formal-proofs", label: "formale Beweise" }, { id: "diagrams", label: "Diagramme" }, { id: "code", label: "Codebeispiele" }] as opt}
                     <button
                       type="button"
                       class={"tag-chip-add" + (explain.includes(opt.id) ? " on" : "")}
@@ -1406,8 +1406,8 @@
 
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">Memory</h3>
-            <p class="set-group-d">Long-term facts the AI is given in every chat — like remembering your exam date, the textbook you use, or how you like answers framed.</p>
+            <h3 class="set-group-t">Gedächtnis</h3>
+            <p class="set-group-d">Dauerhafte Fakten, die die KI in jedem Chat erhält – etwa dein Prüfungstermin, dein Schulbuch oder wie du Antworten gern formuliert hättest.</p>
           </div>
           <div class="set-card">
             <div class="set-row stacked">
@@ -1416,25 +1416,25 @@
                   <input
                     class="input"
                     bind:value={newMemory}
-                    placeholder="e.g. My final exam is on June 20th"
+                    placeholder="z. B. Meine Abschlussprüfung ist am 20. Juni"
                     onkeydown={(e) => { if (e.key === "Enter") { e.preventDefault(); addMemoryFact(); } }}
                   />
                   <button class="btn btn--primary" onclick={addMemoryFact} disabled={!newMemory.trim() || memoryBusy}>
-                    <Icon name="check" size={13} /> Remember
+                    <Icon name="check" size={13} /> Merken
                   </button>
                 </div>
               </div>
             </div>
             {#if memories.length === 0}
               <div class="set-row">
-                <div class="set-row-l"><div class="set-row-d">No memories yet. Add a fact above and the AI will keep it in mind.</div></div>
+                <div class="set-row-l"><div class="set-row-d">Noch keine Erinnerungen. Füge oben einen Fakt hinzu, dann behält die KI ihn im Kopf.</div></div>
               </div>
             {:else}
               {#each memories as m (m.id)}
                 <div class="set-row">
                   <div class="set-row-l"><div class="set-row-t">{m.content}</div></div>
                   <div class="set-row-r">
-                    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => removeMemory(m.id)} title="Forget this">
+                    <button class="btn btn--icon btn--sm btn--ghost" onclick={() => removeMemory(m.id)} title="Vergessen">
                       <Icon name="x" size={13} />
                     </button>
                   </div>
@@ -1445,16 +1445,16 @@
         </section>
 
         <div class="set-preview">
-          <div class="label" style="margin-bottom:8px">What the AI receives</div>
-          <pre class="set-sysprompt mono">User: {name} ({pronouns}) · {levelLabels[level] ?? level}
-Studying: {field}
-Style: {style}, prefers {explain.join(", ") || "no special format"}
-Notes: {about}</pre>
+          <div class="label" style="margin-bottom:8px">Was die KI erhält</div>
+          <pre class="set-sysprompt mono">Nutzer: {name} ({pronouns}) · {levelLabels[level] ?? level}
+Fachrichtung: {field}
+Stil: {style}, bevorzugt {explain.join(", ") || "kein besonderes Format"}
+Notizen: {about}</pre>
         </div>
 
         <div class="set-foot-actions">
           <button class="btn btn--primary" onclick={saveProfile}>
-            <Icon name="check" size={13} /> Save profile
+            <Icon name="check" size={13} /> Profil speichern
           </button>
         </div>
       </div>
@@ -1463,14 +1463,14 @@ Notes: {about}</pre>
     {:else if tab === "models"}
       <div class="set-pane set-pane--models">
         <header class="set-head">
-          <div class="eyebrow">Models</div>
-          <h1 class="set-title">A model for every task</h1>
-          <p class="set-sub">Route each job to the provider that does it best. Token budgets cap spend per call.</p>
+          <div class="eyebrow">Modelle</div>
+          <h1 class="set-title">Ein Modell für jede Aufgabe</h1>
+          <p class="set-sub">Leite jede Aufgabe an den passendsten Anbieter. Token-Budgets begrenzen die Kosten pro Aufruf.</p>
         </header>
 
         <div class="set-card set-table">
           <div class="mt-head mono">
-            <span>Task</span><span>Provider</span><span>Model</span><span>Token budget</span>
+            <span>Aufgabe</span><span>Anbieter</span><span>Modell</span><span>Token-Budget</span>
           </div>
           {#each MODEL_TASKS as t}
             {@const a = assign[t.id]}
@@ -1500,7 +1500,7 @@ Notes: {about}</pre>
                 loading={isOr && orLoading}
                 onOpen={isOr ? ensureOrModels : (isOllama ? ensureOllamaModels : undefined)}
                 allowCustom={isCustom}
-                placeholder={isCustom ? "Type model id, e.g. qwen-plus" : (isOr ? "Search OpenRouter…" : (isOllama ? (ollamaInstalled.length ? "Pick an installed model" : "No models installed") : undefined))}
+                placeholder={isCustom ? "Modell-ID eingeben, z. B. qwen-plus" : (isOr ? "OpenRouter durchsuchen…" : (isOllama ? (ollamaInstalled.length ? "Installiertes Modell wählen" : "Keine Modelle installiert") : undefined))}
               />
               {#if t.id === "embedding"}
                 <span class="mono faint mt-budget-na">n/a</span>
@@ -1517,7 +1517,7 @@ Notes: {about}</pre>
 
         <div class="set-note mono">
           <Icon name="diamond" size={11} color="var(--accent)" />
-          Ollama tasks run fully offline on this machine or your homelab — no key required.
+          Ollama-Aufgaben laufen komplett offline auf diesem Gerät oder deinem Homelab – kein Schlüssel nötig.
         </div>
       </div>
 
@@ -1525,13 +1525,13 @@ Notes: {about}</pre>
     {:else if tab === "keys"}
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">API keys</div>
-          <h1 class="set-title">Bring your own keys</h1>
-          <p class="set-sub">Stored in the OS keychain, never synced. Nothing routes through Cortex servers.</p>
+          <div class="eyebrow">API-Schlüssel</div>
+          <h1 class="set-title">Eigene Schlüssel</h1>
+          <p class="set-sub">Im Schlüsselbund des Systems gespeichert, nie synchronisiert. Nichts läuft über Cortex-Server.</p>
         </header>
 
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Providers</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Anbieter</h3></div>
           <div class="set-card">
             {#each keyMeta as k}
               {@const isSet = !!keys[k.id as keyof typeof keys]}
@@ -1560,7 +1560,7 @@ Notes: {about}</pre>
                       type="button"
                       class="masked-eye"
                       onclick={() => { showKey = { ...showKey, [k.id]: !showKey[k.id] }; }}
-                      title={showKey[k.id] ? "Hide" : "Show"}
+                      title={showKey[k.id] ? "Verbergen" : "Anzeigen"}
                     >
                       <Icon name={showKey[k.id] ? "x" : "search"} size={13} />
                     </button>
@@ -1571,12 +1571,12 @@ Notes: {about}</pre>
                         type="button"
                         class="btn btn--ghost btn--sm"
                         onclick={() => verifyKey(k.id)}
-                      >Verify</button>
+                      >Prüfen</button>
                       <button
                         type="button"
                         class="btn btn--ghost btn--sm"
                         onclick={() => { keys = { ...keys, [k.id]: "" }; verify = { ...verify, [k.id]: null }; }}
-                      >Clear</button>
+                      >Leeren</button>
                     </div>
                   {/if}
                 </div>
@@ -1590,7 +1590,7 @@ Notes: {about}</pre>
         {#if ollamaAvailable}
         {@const ov = verify.ollama}
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Local models (Ollama)</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Lokale Modelle (Ollama)</h3></div>
           <div class="set-card">
             <div class="set-row stacked">
               <div class="set-row-l">
@@ -1602,15 +1602,15 @@ Notes: {about}</pre>
                 </div>
                 <div class="set-row-d">
                   {#if isMobile}
-                    Runs through your Homelab — set the Homelab URL in Integrations. Keyless.
+                    Läuft über dein Homelab – setze die Homelab-URL unter Integrationen. Ohne Schlüssel.
                   {:else}
-                    Keyless, local. Defaults to <span class="mono">http://localhost:11434</span>; leave blank to use your Homelab.
+                    Ohne Schlüssel, lokal. Standard ist <span class="mono">http://localhost:11434</span>; leer lassen, um dein Homelab zu nutzen.
                   {/if}
                 </div>
               </div>
               <div class="set-row-r">
                 {#if isMobile}
-                  <input class="input mono" value={ollamaDisplayUrl} placeholder="set Homelab URL in Integrations" readonly />
+                  <input class="input mono" value={ollamaDisplayUrl} placeholder="Homelab-URL unter Integrationen setzen" readonly />
                 {:else}
                   <input
                     class="input mono"
@@ -1620,7 +1620,7 @@ Notes: {about}</pre>
                     spellcheck={false}
                   />
                 {/if}
-                <button type="button" class="btn btn--ghost btn--sm" style="margin-top:6px" onclick={() => verifyKey("ollama")}>Verify</button>
+                <button type="button" class="btn btn--ghost btn--sm" style="margin-top:6px" onclick={() => verifyKey("ollama")}>Prüfen</button>
               </div>
             </div>
           </div>
@@ -1629,7 +1629,7 @@ Notes: {about}</pre>
 
         <div class="set-foot-actions">
           <button class="btn btn--primary" onclick={() => { saveKeys(); verifyAllKeys(); }}>
-            <Icon name="check" size={13} /> Save keys
+            <Icon name="check" size={13} /> Schlüssel speichern
           </button>
         </div>
       </div>
@@ -1638,20 +1638,20 @@ Notes: {about}</pre>
     {:else if tab === "appearance"}
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">Appearance</div>
-          <h1 class="set-title">Make it yours</h1>
-          <p class="set-sub">Cortex re-skins live from your Omarchy theme, or pick one manually.</p>
+          <div class="eyebrow">Aussehen</div>
+          <h1 class="set-title">Nach deinem Geschmack</h1>
+          <p class="set-sub">Cortex übernimmt live dein Omarchy-Design – oder du wählst selbst eins.</p>
         </header>
 
         <!-- Follow-Omarchy mirrors the desktop's Omarchy palette — meaningless on a phone. -->
         {#if !isMobile}
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Theme</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Design</h3></div>
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Follow Omarchy theme</div>
-                <div class="set-row-d">Mirror your desktop's current Omarchy palette on every launch. Picking a theme below turns this off.</div>
+                <div class="set-row-t">Omarchy-Design folgen</div>
+                <div class="set-row-d">Übernimmt bei jedem Start die aktuellen Omarchy-Farben deines Desktops. Wenn du unten ein Design wählst, wird das abgeschaltet.</div>
               </div>
               <div class="set-row-r">
                 <button
@@ -1659,13 +1659,13 @@ Notes: {about}</pre>
                   class={"st-toggle" + (app.followOmarchy ? " on" : "")}
                   role="switch"
                   aria-checked={app.followOmarchy}
-                  aria-label="follow omarchy theme"
+                  aria-label="Omarchy-Design folgen"
                   onclick={async () => {
                     const matched = await app.setFollowOmarchy(!app.followOmarchy);
                     if (app.followOmarchy && !matched) {
-                      app.pushToast({ kind: "warning", title: "Omarchy theme not found", body: "Couldn't read your Omarchy theme, or it has no Cortex match." });
+                      app.pushToast({ kind: "warning", title: "Omarchy-Design nicht gefunden", body: "Dein Omarchy-Design konnte nicht gelesen werden oder hat keine Entsprechung in Cortex." });
                     } else if (matched) {
-                      app.pushToast({ kind: "success", title: "Following Omarchy", body: `Matched → ${THEME_LABELS[matched]}.` });
+                      app.pushToast({ kind: "success", title: "Folgt Omarchy", body: `Übernommen → ${THEME_LABELS[matched]}.` });
                     }
                   }}
                 ><span class="st-knob"></span></button>
@@ -1676,7 +1676,7 @@ Notes: {about}</pre>
         {/if}
 
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Manual theme</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Design manuell wählen</h3></div>
           <div class="set-card">
             <div class="set-themes">
               {#each THEME_OPTS as t}
@@ -1702,12 +1702,12 @@ Notes: {about}</pre>
         </section>
 
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Reading</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Lesen</h3></div>
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Cheatsheet typeface</div>
-                <div class="set-row-d">The voice of everything you read to learn.</div>
+                <div class="set-row-t">Schrift der Lernzettel</div>
+                <div class="set-row-d">Die Schrift für alles, was du zum Lernen liest.</div>
               </div>
               <div class="set-row-r">
                 <div class="seg">
@@ -1721,12 +1721,12 @@ Notes: {about}</pre>
             {#if !isMobile}
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Density</div>
-                <div class="set-row-d">Spacing throughout the app.</div>
+                <div class="set-row-t">Dichte</div>
+                <div class="set-row-d">Abstände in der ganzen App.</div>
               </div>
               <div class="set-row-r">
                 <div class="seg">
-                  {#each [{ id: "regular", label: "Regular" }, { id: "compact", label: "Compact" }] as opt}
+                  {#each [{ id: "regular", label: "Normal" }, { id: "compact", label: "Kompakt" }] as opt}
                     <button type="button" class={"seg-opt" + (density === opt.id ? " on" : "")} onclick={() => (density = opt.id)}>{opt.label}</button>
                   {/each}
                 </div>
@@ -1739,27 +1739,27 @@ Notes: {about}</pre>
         <!-- Window / tray is a desktop-only concept — hidden on mobile. -->
         {#if !isMobile}
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Window</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Fenster</h3></div>
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Close to tray</div>
-                <div class="set-row-d">Closing the window keeps Cortex running in the tray — ingest, generation and music continue. Quit from the tray menu.</div>
+                <div class="set-row-t">In den Infobereich schließen</div>
+                <div class="set-row-d">Beim Schließen läuft Cortex im Infobereich weiter – Einlesen, Erstellen und Musik laufen weiter. Beenden über das Menü im Infobereich.</div>
               </div>
               <div class="set-row-r">
-                <button type="button" class={"st-toggle" + (closeToTray ? " on" : "")} onclick={toggleCloseToTray} role="switch" aria-checked={closeToTray} aria-label="close to tray"><span class="st-knob"></span></button>
+                <button type="button" class={"st-toggle" + (closeToTray ? " on" : "")} onclick={toggleCloseToTray} role="switch" aria-checked={closeToTray} aria-label="In den Infobereich schließen"><span class="st-knob"></span></button>
               </div>
             </div>
           </div>
         </section>
 
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Display</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Anzeige</h3></div>
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">UI scale</div>
-                <div class="set-row-d">Make everything larger or smaller — helps on high-resolution displays.</div>
+                <div class="set-row-t">Skalierung</div>
+                <div class="set-row-d">Alles größer oder kleiner machen – hilfreich bei hochauflösenden Bildschirmen.</div>
               </div>
               <div class="set-row-r" style="min-width:120px">
                 <!-- Dropdown of presets (was a slider — the UI rescaling live under the
@@ -1768,10 +1768,10 @@ Notes: {about}</pre>
                   value={String(app.uiScale)}
                   onChange={(id) => app.setUiScale(+id)}
                   options={[
-                    ...([80, 90, 100, 110, 125, 150].includes(app.uiScale) ? [] : [{ id: String(app.uiScale), label: `${app.uiScale}% (custom)` }]),
+                    ...([80, 90, 100, 110, 125, 150].includes(app.uiScale) ? [] : [{ id: String(app.uiScale), label: `${app.uiScale}% (eigene)` }]),
                     { id: "80", label: "80%" },
                     { id: "90", label: "90%" },
-                    { id: "100", label: "100% — default" },
+                    { id: "100", label: "100% – Standard" },
                     { id: "110", label: "110%" },
                     { id: "125", label: "125%" },
                     { id: "150", label: "150%" },
@@ -1789,25 +1789,25 @@ Notes: {about}</pre>
     {:else if tab === "keybinds"}
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">Keybinds</div>
-          <h1 class="set-title">Helix-style, your way</h1>
-          <p class="set-sub">Click any binding to rebind it. Press Esc while listening to cancel.</p>
+          <div class="eyebrow">Tastenkürzel</div>
+          <h1 class="set-title">Helix-Stil, nach deinen Wünschen</h1>
+          <p class="set-sub">Klicke auf ein Kürzel, um es neu zu belegen. Esc bricht die Eingabe ab.</p>
         </header>
 
         <div class="set-card">
           <div class="set-row">
             <div class="set-row-l">
-              <div class="set-row-t">Preset</div>
-              <div class="set-row-d">Starting point for bindings.</div>
+              <div class="set-row-t">Vorlage</div>
+              <div class="set-row-d">Ausgangspunkt für die Belegung.</div>
             </div>
             <div class="set-row-r">
               <div class="seg">
-                {#each [{ id: "helix", label: "Helix" }, { id: "vim", label: "Vim" }, { id: "custom", label: "Custom" }] as opt}
+                {#each [{ id: "helix", label: "Helix" }, { id: "vim", label: "Vim" }, { id: "custom", label: "Eigene" }] as opt}
                   <button
                     type="button"
                     class={"seg-opt" + (keybinds.preset === opt.id ? " on" : "")}
                     disabled={opt.id === "custom"}
-                    onclick={() => { if (opt.id === "helix" || opt.id === "vim") { keybinds.applyPreset(opt.id); app.pushToast({ kind: "success", title: `${opt.label} keybinds applied`, body: "Shortcuts take effect outside this screen." }); } }}
+                    onclick={() => { if (opt.id === "helix" || opt.id === "vim") { keybinds.applyPreset(opt.id); app.pushToast({ kind: "success", title: `${opt.label}-Tastenkürzel übernommen`, body: "Die Kürzel gelten außerhalb dieser Ansicht." }); } }}
                   >{opt.label}</button>
                 {/each}
               </div>
@@ -1824,7 +1824,7 @@ Notes: {about}</pre>
                 onclick={() => (listening = action)}
               >
                 {#if listening === action}
-                  <span class="mono faint">press a key…</span>
+                  <span class="mono faint">Taste drücken…</span>
                 {:else}
                   <span class="kbd">{displayKey(keybinds.map[action])}</span>
                 {/if}
@@ -1839,23 +1839,23 @@ Notes: {about}</pre>
             onclick={() => {
               const p = keybinds.preset === "vim" ? "vim" : "helix";
               keybinds.applyPreset(p);
-              app.pushToast({ kind: "info", title: "Reset", body: `Bindings restored to ${p === "vim" ? "Vim" : "Helix"} preset.` });
+              app.pushToast({ kind: "info", title: "Zurückgesetzt", body: `Belegung auf die ${p === "vim" ? "Vim" : "Helix"}-Vorlage zurückgesetzt.` });
             }}
           >
-            Reset to preset
+            Auf Vorlage zurücksetzen
           </button>
         </div>
 
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">Leader menu (Space then…)</h3>
-            <p class="set-group-d">Press <span class="kbd">Space</span> to open the leader menu, then a key. Fixed, mnemonic — they only fire while the menu is open.</p>
+            <h3 class="set-group-t">Leertaste-Menü (Leertaste, dann…)</h3>
+            <p class="set-group-d">Drücke <span class="kbd">Leertaste</span> für das Menü, dann eine Taste. Fest belegt und leicht zu merken – sie wirken nur, solange das Menü offen ist.</p>
           </div>
           <div class="set-card set-binds">
             {#each LEADER_ACTIONS as a}
               <div class="bind-row">
                 <span class="bind-label">{a.label} <span class="faint">· {a.detail}</span></span>
-                <span class="bind-keys"><span class="kbd">Space</span> <span class="kbd">{a.key}</span></span>
+                <span class="bind-keys"><span class="kbd">Leertaste</span> <span class="kbd">{a.key}</span></span>
               </div>
             {/each}
           </div>
@@ -1864,7 +1864,7 @@ Notes: {about}</pre>
         <section class="set-group">
           <div class="set-group-h">
             <h3 class="set-group-t">System</h3>
-            <p class="set-group-d">Built-in shortcuts that follow OS conventions and can't be rebound.</p>
+            <p class="set-group-d">Eingebaute Kürzel nach Systemkonvention, die sich nicht ändern lassen.</p>
           </div>
           <div class="set-card set-binds">
             {#each SYSTEM_BINDS as b}
@@ -1896,7 +1896,7 @@ Notes: {about}</pre>
               <div class="row-inline">
                 <input class="input mono" value={o.value} oninput={(e) => o.oninput(e.currentTarget.value)} onchange={o.onsave} onblur={o.onsave} placeholder={o.placeholder} />
                 <button class="btn" onclick={o.onTest} disabled={o.state === "testing" || !o.value.trim()}>
-                  <Icon name="refresh" size={12} /> Test
+                  <Icon name="refresh" size={12} /> Testen
                 </button>
               </div>
               {#if o.state === "fail" && o.failHint}
@@ -1912,8 +1912,8 @@ Notes: {about}</pre>
       {#snippet diagramsToggle()}
         <div class="set-row">
           <div class="set-row-l">
-            <div class="set-row-t">Illustrate with diagrams</div>
-            <div class="set-row-d">A relevant diagram per cheatsheet section + images in chat. On by default once SearXNG is connected.</div>
+            <div class="set-row-t">Mit Diagrammen illustrieren</div>
+            <div class="set-row-d">Ein passendes Diagramm pro Lernzettel-Abschnitt und Bilder im Chat. Standardmäßig an, sobald SearXNG verbunden ist.</div>
           </div>
           <div class="set-row-r">
             <button type="button" class={"st-toggle" + (webImages ? " on" : "")} onclick={() => setWebImages(!webImages)} disabled={!(searxng.trim() || hlBase.trim() || hlTailscale.trim() || hlPublic.trim())} role="switch" aria-checked={webImages} aria-label="diagrams"><span class="st-knob"></span></button>
@@ -1923,70 +1923,70 @@ Notes: {about}</pre>
 
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">Integrations</div>
-          <h1 class="set-title">Transcription, search & sync — your way</h1>
-          <p class="set-sub">Everything works out of the box on this computer. Add a cloud API key for heavier lifting, or point Cortex at your own homelab (the <span class="mono">homelab/</span> docker compose) — nothing here is required.</p>
+          <div class="eyebrow">Integrationen</div>
+          <h1 class="set-title">Transkription, Suche & Sync – wie du willst</h1>
+          <p class="set-sub">Alles funktioniert direkt auf diesem Computer. Für mehr Leistung kannst du einen Cloud-API-Schlüssel hinzufügen oder Cortex auf dein eigenes Homelab (das <span class="mono">homelab/</span>-Docker-Compose) zeigen lassen – nichts davon ist Pflicht.</p>
         </header>
 
         <!-- ═══ TRANSCRIPTION — outcome-first: pick WHERE audio becomes text ═══ -->
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">Transcription</h3>
-            <p class="set-group-d">Where lecture recordings become text.</p>
+            <h3 class="set-group-t">Transkription</h3>
+            <p class="set-group-d">Wo Aufnahmen zu Text werden.</p>
           </div>
           <div class="set-card">
             <div class="set-row stacked">
               <div class="seg">
-                <button type="button" class={"seg-opt" + (transcriptionMode === "local" ? " on" : "")} onclick={() => setTranscriptionMode("local")}>This computer</button>
-                <button type="button" class={"seg-opt" + (transcriptionMode === "cloud" ? " on" : "")} onclick={() => setTranscriptionMode("cloud")}>Cloud API</button>
-                <button type="button" class={"seg-opt" + (transcriptionMode === "homelab" ? " on" : "")} onclick={() => setTranscriptionMode("homelab")}>My homelab</button>
+                <button type="button" class={"seg-opt" + (transcriptionMode === "local" ? " on" : "")} onclick={() => setTranscriptionMode("local")}>Dieser Computer</button>
+                <button type="button" class={"seg-opt" + (transcriptionMode === "cloud" ? " on" : "")} onclick={() => setTranscriptionMode("cloud")}>Cloud-API</button>
+                <button type="button" class={"seg-opt" + (transcriptionMode === "homelab" ? " on" : "")} onclick={() => setTranscriptionMode("homelab")}>Mein Homelab</button>
               </div>
               {#if transcriptionMode === "local"}
-                <div class="set-row-d">Zero setup — Whisper runs on this machine, and the first transcription fetches its model automatically. Most private; slower on long lectures than the other two.</div>
+                <div class="set-row-d">Keine Einrichtung – Whisper läuft auf diesem Gerät, die erste Transkription lädt das Modell automatisch. Am privatesten; bei langen Aufnahmen langsamer als die anderen beiden.</div>
               {:else if transcriptionMode === "cloud"}
-                <div class="set-row-d">No server, no hosting — just an API key. Groq's free tier turns a whole lecture into text in seconds with <span class="mono">large-v3-turbo</span>.</div>
+                <div class="set-row-d">Kein Server, kein Hosting – nur ein API-Schlüssel. Mit dem kostenlosen Groq-Kontingent wird eine ganze Stunde mit <span class="mono">large-v3-turbo</span> in Sekunden zu Text.</div>
               {:else}
-                <div class="set-row-d">Runs on the WhisperX lecture server behind your Homelab URL (configured below) — built for hour-plus recordings, with speaker labels when the server has an HF token. Audio never leaves your machines.</div>
+                <div class="set-row-d">Läuft auf dem WhisperX-Server hinter deiner Homelab-URL (unten eingestellt) – gebaut für stundenlange Aufnahmen, mit Sprechererkennung, wenn der Server ein HF-Token hat. Die Audiodaten verlassen deine Geräte nicht.</div>
               {/if}
             </div>
 
 
             {#if transcriptionMode === "cloud"}
               <div class="set-row stacked">
-                <div class="set-row-t">Provider</div>
+                <div class="set-row-t">Anbieter</div>
                 <div class="seg">
-                  <button type="button" class={"seg-opt" + (whisperCloudProvider === "groq" ? " on" : "")} onclick={() => applyCloudPreset("groq")}>Groq <span class="faint">free</span></button>
+                  <button type="button" class={"seg-opt" + (whisperCloudProvider === "groq" ? " on" : "")} onclick={() => applyCloudPreset("groq")}>Groq <span class="faint">kostenlos</span></button>
                   <button type="button" class={"seg-opt" + (whisperCloudProvider === "openai" ? " on" : "")} onclick={() => applyCloudPreset("openai")}>OpenAI</button>
-                  <button type="button" class={"seg-opt" + (whisperCloudProvider === "custom" ? " on" : "")} onclick={() => applyCloudPreset("custom")}>Custom</button>
+                  <button type="button" class={"seg-opt" + (whisperCloudProvider === "custom" ? " on" : "")} onclick={() => applyCloudPreset("custom")}>Eigener</button>
                 </div>
               </div>
               {#if whisperCloudProvider === "custom"}
                 <div class="set-row stacked">
-                  <div class="set-row-t">Endpoint URL</div>
+                  <div class="set-row-t">Endpunkt-URL</div>
                   <input class="input mono" bind:value={whisperCloudUrl} onchange={saveCloudWhisper} onblur={saveCloudWhisper} placeholder="https://api.example.com/v1" />
-                  <div class="set-row-d">Any OpenAI-compatible <span class="mono">/v1/audio/transcriptions</span> endpoint.</div>
+                  <div class="set-row-d">Jeder OpenAI-kompatible <span class="mono">/v1/audio/transcriptions</span>-Endpunkt.</div>
                 </div>
               {/if}
               <div class="set-row stacked">
-                <div class="set-row-t">API key</div>
+                <div class="set-row-t">API-Schlüssel</div>
                 <input class="input mono" type="password" bind:value={whisperApiKey} onchange={saveCloudWhisper} onblur={saveCloudWhisper} placeholder={whisperCloudProvider === "openai" ? "sk-…" : "gsk_…"} />
                 {#if whisperCloudProvider === "groq"}
-                  <div class="set-row-d">Get one free — no card needed:
+                  <div class="set-row-d">Kostenlos erhältlich – ohne Kreditkarte:
                     <button class="btn btn--sm btn--ghost" onclick={() => api.openExternal("https://console.groq.com/keys")}><Icon name="external" size={11} /> console.groq.com/keys</button>
                   </div>
                 {/if}
               </div>
               <div class="set-row stacked">
-                <div class="set-row-t">Model</div>
+                <div class="set-row-t">Modell</div>
                 <input class="input mono" bind:value={whisperCloudModel} onchange={saveCloudWhisper} onblur={saveCloudWhisper} placeholder="whisper-large-v3-turbo" />
               </div>
             {/if}
 
             {#if transcriptionMode === "homelab"}
               <div class="set-row stacked">
-                <div class="set-row-t">Model <span class="faint">legacy servers only</span></div>
+                <div class="set-row-t">Modell <span class="faint">nur ältere Server</span></div>
                 <input class="input mono" bind:value={whisperModel} onchange={saveWhisperModel} onblur={saveWhisperModel} placeholder="deepdml/faster-whisper-large-v3-turbo-ct2" />
-                <div class="set-row-d">Only used by OpenAI-compatible servers (speaches). The WhisperX lecture server picks its model in <span class="mono">docker-compose</span> instead (<span class="mono">WHISPER_MODEL</span>, default <span class="mono">distil-large-v3</span>) — leave this blank there.</div>
+                <div class="set-row-d">Nur für OpenAI-kompatible Server (speaches). Der WhisperX-Server legt sein Modell stattdessen in <span class="mono">docker-compose</span> fest (<span class="mono">WHISPER_MODEL</span>, Standard <span class="mono">distil-large-v3</span>) – dafür leer lassen.</div>
               </div>
             {/if}
 
@@ -1994,7 +1994,7 @@ Notes: {about}</pre>
               <div class="set-row stacked">
                 <div class="row-inline">
                   <button class="btn" onclick={checkWhisper} disabled={whisperCheckState === "checking"}>
-                    <Icon name="refresh" size={12} /> {whisperCheckState === "checking" ? "Verifying…" : "Verify setup"}
+                    <Icon name="refresh" size={12} /> {whisperCheckState === "checking" ? "Wird geprüft…" : "Einrichtung prüfen"}
                   </button>
                 </div>
                 {#if whisperCheckNote}
@@ -2008,8 +2008,8 @@ Notes: {about}</pre>
         <section class="set-group">
           <div class="set-group-h svc-h">
             <div>
-              <h3 class="set-group-t">Homelab URL</h3>
-              <p class="set-group-d">One address for everything. Run the <span class="mono">homelab/</span> docker compose and point Cortex here — search, lecture transcription, instant sync, mobile ingest and local models are all reached off this single URL (Cortex adds <span class="mono">/searxng</span>, <span class="mono">/whisper</span>, <span class="mono">/sync</span>, <span class="mono">/syncd</span>, <span class="mono">/ingest</span>, <span class="mono">/ollama</span> for you). Add a Tailscale and/or public address and Cortex auto-picks the first reachable: <strong>local → Tailscale → public</strong>.</p>
+              <h3 class="set-group-t">Homelab-URL</h3>
+              <p class="set-group-d">Eine Adresse für alles. Starte das <span class="mono">homelab/</span>-Docker-Compose und trage es hier ein – Suche, Transkription, Sofort-Sync, mobiles Einlesen und lokale Modelle laufen alle über diese eine URL (Cortex ergänzt <span class="mono">/searxng</span>, <span class="mono">/whisper</span>, <span class="mono">/sync</span>, <span class="mono">/syncd</span>, <span class="mono">/ingest</span>, <span class="mono">/ollama</span> selbst). Mit einer Tailscale- und/oder öffentlichen Adresse wählt Cortex automatisch die erste erreichbare: <strong>lokal → Tailscale → öffentlich</strong>.</p>
             </div>
             {#if hlBase.trim()}
               {@const p = connPill(hlState === "idle" ? null : hlState, true)}
@@ -2018,41 +2018,41 @@ Notes: {about}</pre>
           </div>
           <div class="set-card">
             <div class="set-row stacked">
-              <div class="set-row-t">Local URL</div>
+              <div class="set-row-t">Lokale URL</div>
               <input class="input mono" bind:value={hlBase} oninput={saveHomelabBasesSoon} onchange={saveHomelabBases} onblur={saveHomelabBases} placeholder="http://192.168.1.10:8080" />
-              <div class="set-row-d">Your homelab's LAN address (the Caddy proxy port, default <span class="mono">8080</span>).</div>
+              <div class="set-row-d">Die LAN-Adresse deines Homelabs (Port des Caddy-Proxys, Standard <span class="mono">8080</span>).</div>
             </div>
             <div class="set-row stacked">
-              <div class="set-row-t">Tailscale URL <span class="faint">optional</span></div>
+              <div class="set-row-t">Tailscale-URL <span class="faint">optional</span></div>
               <input class="input mono" bind:value={hlTailscale} oninput={saveHomelabBasesSoon} onchange={saveHomelabBases} onblur={saveHomelabBases} placeholder="https://homelab.tailnet-xxxx.ts.net" />
-              <div class="set-row-d">Used when the local URL isn't reachable. Cortex swaps just the host (and port if you give one), keeping the service paths.</div>
+              <div class="set-row-d">Wird genutzt, wenn die lokale URL nicht erreichbar ist. Cortex tauscht nur den Host (und den Port, falls angegeben) und behält die Dienstpfade.</div>
             </div>
             <div class="set-row stacked">
-              <div class="set-row-t">Public URL <span class="faint">optional</span></div>
+              <div class="set-row-t">Öffentliche URL <span class="faint">optional</span></div>
               <input class="input mono" bind:value={hlPublic} oninput={saveHomelabBasesSoon} onchange={saveHomelabBases} onblur={saveHomelabBases} placeholder="https://lab.example.com" />
             </div>
             <div class="set-row stacked">
-              <div class="set-row-t">Access token <span class="faint">optional — required for a public URL</span></div>
-              <input class="input mono" type="password" bind:value={hlToken} onchange={saveHlToken} onblur={saveHlToken} placeholder="the CORTEX_TOKEN your proxy was started with" />
-              <div class="set-row-d">Locks every homelab service behind a shared secret. Start the proxy with <span class="mono">CORTEX_TOKEN=… docker compose up -d</span> and paste the same value here — Cortex sends it automatically on every request (sync keeps its own WebDAV credentials).</div>
+              <div class="set-row-t">Zugangs-Token <span class="faint">optional – nötig für eine öffentliche URL</span></div>
+              <input class="input mono" type="password" bind:value={hlToken} onchange={saveHlToken} onblur={saveHlToken} placeholder="das CORTEX_TOKEN, mit dem dein Proxy gestartet wurde" />
+              <div class="set-row-d">Schützt alle Homelab-Dienste mit einem gemeinsamen Geheimnis. Starte den Proxy mit <span class="mono">CORTEX_TOKEN=… docker compose up -d</span> und füge denselben Wert hier ein – Cortex sendet ihn bei jeder Anfrage mit (der Sync nutzt eigene WebDAV-Zugangsdaten).</div>
               {#if hlPublic.trim() && !hlToken.trim()}
-                <div class="set-row-d" style="color:var(--warn)">Your homelab has a public URL but no access token — anyone on the internet can use your Whisper/Ollama/SearXNG. Set <span class="mono">CORTEX_TOKEN</span> on the proxy and paste it here.</div>
+                <div class="set-row-d" style="color:var(--warn)">Dein Homelab hat eine öffentliche URL, aber kein Zugangs-Token – jeder im Internet kann dein Whisper/Ollama/SearXNG nutzen. Setze <span class="mono">CORTEX_TOKEN</span> am Proxy und füge es hier ein.</div>
               {/if}
             </div>
             <div class="set-row stacked">
               <div class="row-inline" style="flex-wrap:wrap; gap:8px 12px; align-items:center">
                 <button class="btn" onclick={testHomelab} disabled={hlState === 'testing' || !(hlBase.trim() || hlTailscale.trim() || hlPublic.trim())}>
-                  <Icon name="refresh" size={12} /> {hlState === 'testing' ? "Testing…" : "Test homelab"}
+                  <Icon name="refresh" size={12} /> {hlState === 'testing' ? "Wird getestet…" : "Homelab testen"}
                 </button>
                 {#if hlReach.local}<span class="hl-reach" style="color:{hlReach.local === 'ok' ? 'var(--ok)' : 'var(--err,#e5484d)'}">LAN {hlReach.local === 'ok' ? '✓' : '✗'}</span>{/if}
                 {#if hlReach.tailscale}<span class="hl-reach" style="color:{hlReach.tailscale === 'ok' ? 'var(--ok)' : 'var(--err,#e5484d)'}">Tailscale {hlReach.tailscale === 'ok' ? '✓' : '✗'}</span>{/if}
-                {#if hlReach.public}<span class="hl-reach" style="color:{hlReach.public === 'ok' ? 'var(--ok)' : 'var(--err,#e5484d)'}">Public {hlReach.public === 'ok' ? '✓' : '✗'}</span>{/if}
+                {#if hlReach.public}<span class="hl-reach" style="color:{hlReach.public === 'ok' ? 'var(--ok)' : 'var(--err,#e5484d)'}">Öffentlich {hlReach.public === 'ok' ? '✓' : '✗'}</span>{/if}
               </div>
             </div>
             <!-- Per-service health: each feature probed on the exact URL the app
                  uses, so a red row names the ONE thing to fix (and how). -->
             {#if svcTesting && !svcStatus}
-              <div class="set-row-d faint" style="margin-top:6px">Checking each service…</div>
+              <div class="set-row-d faint" style="margin-top:6px">Dienste werden geprüft…</div>
             {:else if svcStatus}
               <div style="margin-top:10px">
                 {#each svcStatus as s (s.id)}
@@ -2062,7 +2062,7 @@ Notes: {about}</pre>
                       <span class="dep-name">{s.label}</span>
                       <span class="dep-detail mono">{s.detail}</span>
                     </div>
-                    <span class="dep-status {s.ok ? 'ok' : s.configured ? 'miss' : ''}">{s.ok ? "working" : s.configured ? "problem" : "not set"}</span>
+                    <span class="dep-status {s.ok ? 'ok' : s.configured ? 'miss' : ''}">{s.ok ? "läuft" : s.configured ? "Problem" : "nicht gesetzt"}</span>
                   </div>
                 {/each}
               </div>
@@ -2075,10 +2075,10 @@ Notes: {about}</pre>
         <section class="set-group">
           <div class="set-group-h svc-h">
             <div>
-              <h3 class="set-group-t">Dependencies</h3>
-              <p class="set-group-d">External tools Cortex shells out to for ingest, OCR, transcription and media. Install whatever's missing with the one command below.</p>
+              <h3 class="set-group-t">Abhängigkeiten</h3>
+              <p class="set-group-d">Externe Programme, die Cortex zum Einlesen, für Texterkennung, Transkription und Medien nutzt. Fehlendes installierst du mit dem Befehl unten.</p>
             </div>
-            <button class="btn btn--sm btn--ghost" onclick={loadDeps} disabled={depLoading}><Icon name="refresh" size={12} /> {depLoading ? "Checking…" : "Re-check"}</button>
+            <button class="btn btn--sm btn--ghost" onclick={loadDeps} disabled={depLoading}><Icon name="refresh" size={12} /> {depLoading ? "Wird geprüft…" : "Erneut prüfen"}</button>
           </div>
           <div class="set-card">
             {#if depReport}
@@ -2089,26 +2089,26 @@ Notes: {about}</pre>
                     <span class="dep-name">{d.name}</span>
                     <span class="dep-detail mono">{d.detail}</span>
                   </div>
-                  <span class="dep-status {d.present ? 'ok' : 'miss'}">{d.present ? "installed" : "missing"}</span>
+                  <span class="dep-status {d.present ? 'ok' : 'miss'}">{d.present ? "installiert" : "fehlt"}</span>
                 </div>
               {/each}
               {#if depReport.install_command}
                 <div class="set-row stacked" style="margin-top:10px">
-                  <div class="set-row-t">Install missing <span class="faint">· {depReport.manager}</span></div>
+                  <div class="set-row-t">Fehlendes installieren <span class="faint">· {depReport.manager}</span></div>
                   <div class="row-inline">
                     <input class="input mono" readonly value={depReport.install_command} />
-                    <button class="btn" onclick={copyDepCmd}><Icon name="doc" size={12} /> Copy</button>
+                    <button class="btn" onclick={copyDepCmd}><Icon name="doc" size={12} /> Kopieren</button>
                     {#if depReport.manager === "brew"}
-                      <button class="btn btn--primary" onclick={installDeps} disabled={depInstalling}><Icon name="plus" size={12} /> {depInstalling ? "Installing…" : "Install"}</button>
+                      <button class="btn btn--primary" onclick={installDeps} disabled={depInstalling}><Icon name="plus" size={12} /> {depInstalling ? "Wird installiert…" : "Installieren"}</button>
                     {/if}
                   </div>
-                  <div class="set-row-d">{depReport.manager === "brew" ? "One-click install via Homebrew (no sudo). LibreOffice is large — this can take a few minutes." : depReport.note}</div>
+                  <div class="set-row-d">{depReport.manager === "brew" ? "Installation mit einem Klick über Homebrew (ohne sudo). LibreOffice ist groß – das kann ein paar Minuten dauern." : depReport.note}</div>
                 </div>
               {:else}
-                <div class="set-row-d" style="color:var(--ok); margin-top:8px">All dependencies present 🎉</div>
+                <div class="set-row-d" style="color:var(--ok); margin-top:8px">Alle Abhängigkeiten vorhanden 🎉</div>
               {/if}
             {:else}
-              <div class="set-row-d faint">{depLoading ? "Checking installed tools…" : "Couldn't check dependencies."}</div>
+              <div class="set-row-d faint">{depLoading ? "Installierte Programme werden geprüft…" : "Abhängigkeiten konnten nicht geprüft werden."}</div>
             {/if}
           </div>
         </section>
@@ -2118,8 +2118,8 @@ Notes: {about}</pre>
              per-service URL overrides; everything rides the single Homelab URL above. -->
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">Homelab features</h3>
-            <p class="set-group-d">Optional features powered by the services behind your Homelab URL — they switch on the moment a Homelab URL is set.</p>
+            <h3 class="set-group-t">Homelab-Funktionen</h3>
+            <p class="set-group-d">Optionale Funktionen über die Dienste hinter deiner Homelab-URL – sie schalten sich ein, sobald eine Homelab-URL gesetzt ist.</p>
           </div>
           <div class="set-card">
             {@render diagramsToggle()}
@@ -2128,49 +2128,49 @@ Notes: {about}</pre>
         <section class="set-group">
           <div class="set-group-h svc-h">
             <div>
-              <h3 class="set-group-t">Live sync</h3>
-              <p class="set-group-d">Instant cross-device sync. Every change streams to your other devices as a tiny per-record delta over a WebSocket (the homelab's <span class="mono">/syncd</span> service) and shows up within about a second — newest edit wins, and nothing is deleted unless you actually deleted it. Source files and a full snapshot ride the <span class="mono">/sync</span> WebDAV vault, which also serves as the automatic fallback when <span class="mono">/syncd</span> isn't reachable.</p>
+              <h3 class="set-group-t">Live-Sync</h3>
+              <p class="set-group-d">Sofortiger Abgleich zwischen Geräten. Jede Änderung wird als kleines Delta pro Datensatz über einen WebSocket (den Homelab-Dienst <span class="mono">/syncd</span>) an deine anderen Geräte geschickt und ist nach etwa einer Sekunde da – die neueste Änderung gewinnt, und gelöscht wird nur, was du wirklich gelöscht hast. Quelldateien und ein vollständiger Snapshot laufen über den WebDAV-Speicher <span class="mono">/sync</span>, der auch als automatischer Ersatz dient, wenn <span class="mono">/syncd</span> nicht erreichbar ist.</p>
             </div>
             <span class="status-pill status-pill--{syncPill().cls}"><span class="dot"></span>{syncPill().label}</span>
           </div>
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Enable live sync</div>
-                <div class="set-row-d">Merges the remote vault in on launch (in the background — never blocks startup), then pushes your changes (debounced).</div>
+                <div class="set-row-t">Live-Sync aktivieren</div>
+                <div class="set-row-d">Führt beim Start den entfernten Speicher zusammen (im Hintergrund – blockiert den Start nie) und überträgt dann deine Änderungen (gebündelt).</div>
               </div>
               <div class="set-row-r">
-                <button type="button" class={"st-toggle" + (syncOn ? " on" : "")} onclick={toggleSync} disabled={!canSync} role="switch" aria-checked={syncOn} aria-label="live sync"><span class="st-knob"></span></button>
+                <button type="button" class={"st-toggle" + (syncOn ? " on" : "")} onclick={toggleSync} disabled={!canSync} role="switch" aria-checked={syncOn} aria-label="Live-Sync"><span class="st-knob"></span></button>
               </div>
             </div>
 
             <div class="set-row stacked">
-              <div class="set-row-d">Rides the <strong>Homelab URL</strong> above (its <span class="mono">/syncd</span> + <span class="mono">/sync</span> services), with the same local → Tailscale → public reachability. One username/password below covers both — it's the pair set in <span class="mono">docker-compose.yml</span> for the <span class="mono">sync</span> and <span class="mono">syncd</span> services.</div>
+              <div class="set-row-d">Läuft über die <strong>Homelab-URL</strong> oben (deren Dienste <span class="mono">/syncd</span> + <span class="mono">/sync</span>), mit derselben Reihenfolge lokal → Tailscale → öffentlich. Ein Benutzername/Passwort unten gilt für beide – es ist das Paar aus <span class="mono">docker-compose.yml</span> für die Dienste <span class="mono">sync</span> und <span class="mono">syncd</span>.</div>
               {#if syncOn}
                 {#if app.syncLive}
-                  <div class="set-row-d" style="color:var(--ok)">Live — connected to <span class="mono">/syncd</span>; changes propagate across devices in about a second.</div>
+                  <div class="set-row-d" style="color:var(--ok)">Live – verbunden mit <span class="mono">/syncd</span>; Änderungen erreichen deine Geräte in etwa einer Sekunde.</div>
                 {:else if syncdOk === false}
-                  <div class="set-row-d" style="color:var(--warn)">Running in snapshot mode: the homelab's live-sync service didn't answer (see the service check above). Update the homelab — <span class="mono">git pull && docker compose up -d --build</span> — to get instant sync; until then changes still sync via WebDAV snapshots.</div>
+                  <div class="set-row-d" style="color:var(--warn)">Snapshot-Modus: Der Live-Sync-Dienst des Homelabs hat nicht geantwortet (siehe Dienstprüfung oben). Aktualisiere das Homelab – <span class="mono">git pull && docker compose up -d --build</span> – für Sofort-Sync; bis dahin wird weiter über WebDAV-Snapshots synchronisiert.</div>
                 {:else if app.syncState === "error"}
-                  <div class="set-row-d" style="color:var(--warn)">Sync is failing — hit <strong>Test homelab</strong> above; the service check will name what's broken (URL, credentials, or a service that isn't running).</div>
+                  <div class="set-row-d" style="color:var(--warn)">Der Sync schlägt fehl – klicke oben auf <strong>Homelab testen</strong>; die Dienstprüfung zeigt, was nicht stimmt (URL, Zugangsdaten oder ein Dienst, der nicht läuft).</div>
                 {:else}
-                  <div class="set-row-d faint">Not live right now — snapshot sync still runs in the background. <strong>Test homelab</strong> above checks whether your homelab has the <span class="mono">/syncd</span> live-sync service.</div>
+                  <div class="set-row-d faint">Gerade nicht live – der Snapshot-Sync läuft trotzdem im Hintergrund. <strong>Homelab testen</strong> oben prüft, ob dein Homelab den Live-Sync-Dienst <span class="mono">/syncd</span> hat.</div>
                 {/if}
               {/if}
             </div>
             <div class="set-row stacked">
-              <div class="set-row-t">Username <span class="faint">optional</span></div>
+              <div class="set-row-t">Benutzername <span class="faint">optional</span></div>
               <input class="input mono" bind:value={syncUser} oninput={saveSyncSoon} onchange={saveSync} onblur={saveSync} placeholder="cortex" />
             </div>
             <div class="set-row stacked">
-              <div class="set-row-t">Password <span class="faint">optional</span></div>
+              <div class="set-row-t">Passwort <span class="faint">optional</span></div>
               <div class="row-inline">
                 <input class="input mono" type="password" bind:value={syncPass} oninput={saveSyncSoon} onchange={saveSync} onblur={saveSync} placeholder="••••••••" />
                 <button class="btn btn--primary" disabled={app.syncState === "syncing" || !canSync} onclick={() => app.syncManual()}>
-                  <Icon name="upload" size={12} /> {app.syncState === "syncing" ? "Syncing…" : "Sync now"}
+                  <Icon name="upload" size={12} /> {app.syncState === "syncing" ? "Synchronisiert…" : "Jetzt synchronisieren"}
                 </button>
               </div>
-              <div class="set-row-d">Last snapshot sync: <span class="mono">{fmtSyncTime(app.syncLastAt)}</span> (live deltas don't update this — it's the periodic full-vault pass). Files live under <span class="mono">files/</span> on the target; the DB merges by record.</div>
+              <div class="set-row-d">Letzter Snapshot-Sync: <span class="mono">{fmtSyncTime(app.syncLastAt)}</span> (Live-Änderungen aktualisieren das nicht – es ist der regelmäßige Komplettabgleich). Dateien liegen am Ziel unter <span class="mono">files/</span>; die Datenbank wird pro Datensatz zusammengeführt.</div>
             </div>
           </div>
         </section>
@@ -2180,8 +2180,8 @@ Notes: {about}</pre>
         <section class="set-group">
           <div class="set-group-h svc-h">
             <div>
-              <h3 class="set-group-t">Encrypted backups</h3>
-              <p class="set-group-d">Snapshot the database, encrypt it with <span class="mono">age</span>, and upload with <span class="mono">rclone</span>. Nothing leaves the machine unencrypted.</p>
+              <h3 class="set-group-t">Verschlüsselte Backups</h3>
+              <p class="set-group-d">Die Datenbank sichern, mit <span class="mono">age</span> verschlüsseln und mit <span class="mono">rclone</span> hochladen. Nichts verlässt das Gerät unverschlüsselt.</p>
             </div>
             {#if backupInfo}
               <div class="svc-tools">
@@ -2192,21 +2192,21 @@ Notes: {about}</pre>
           </div>
           <div class="set-card">
             <div class="set-row stacked">
-              <div class="set-row-t">age recipient (public key)</div>
+              <div class="set-row-t">age-Empfänger (öffentlicher Schlüssel)</div>
               <input class="input mono" bind:value={ageRecipient} onchange={saveBackupConfig} onblur={saveBackupConfig} placeholder="age1ql3z7hjy54pw3hyww5ayyfg7zqgvc7w3j2elw8zmrj2kg5sfn9aqmcac8p" />
-              <div class="set-row-d">From <span class="mono">age-keygen</span>. Only this key's holder can decrypt the backups.</div>
+              <div class="set-row-d">Aus <span class="mono">age-keygen</span>. Nur der Besitzer dieses Schlüssels kann die Backups entschlüsseln.</div>
             </div>
             <div class="set-row stacked">
-              <div class="set-row-t">rclone remote</div>
+              <div class="set-row-t">rclone-Ziel</div>
               <div class="row-inline">
                 <input class="input mono" bind:value={rcloneRemote} onchange={saveBackupConfig} onblur={saveBackupConfig} placeholder="homelab:cortex-backups" />
                 <button class="btn btn--primary" disabled={backingUp} onclick={runBackup}>
-                  <Icon name={backingUp ? "refresh" : "upload"} size={12} /> {backingUp ? "Backing up…" : "Back up now"}
+                  <Icon name={backingUp ? "refresh" : "upload"} size={12} /> {backingUp ? "Backup läuft…" : "Jetzt sichern"}
                 </button>
               </div>
               <div class="set-row-d">
-                An rclone remote + path, e.g. <span class="mono">homelab:cortex-backups</span> (configure with <span class="mono">rclone config</span>).
-                Last backup: <span class="mono">{fmtBackupTime(backupInfo?.last_at ?? null)}</span>{#if backupInfo?.last_dest} → <span class="mono">{backupInfo.last_dest}</span>{/if}
+                Ein rclone-Ziel mit Pfad, z. B. <span class="mono">homelab:cortex-backups</span> (einrichten mit <span class="mono">rclone config</span>).
+                Letztes Backup: <span class="mono">{fmtBackupTime(backupInfo?.last_at ?? null)}</span>{#if backupInfo?.last_dest} → <span class="mono">{backupInfo.last_dest}</span>{/if}
               </div>
             </div>
           </div>
@@ -2220,17 +2220,17 @@ Notes: {about}</pre>
       <div class="set-pane">
         <header class="set-head">
           <div class="eyebrow">Audio</div>
-          <h1 class="set-title">Study sound & voices</h1>
-          <p class="set-sub">Defaults for the music player and generated audio overviews.</p>
+          <h1 class="set-title">Lernmusik & Stimmen</h1>
+          <p class="set-sub">Standards für den Musikplayer und erstellte Audio-Überblicke.</p>
         </header>
 
         <!-- Music is cut on mobile (no mpv/yt-dlp sidecars) — hide its settings. -->
         {#if !isMobile}
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Study music</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Lernmusik</h3></div>
           <div class="set-card">
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Default station</div></div>
+              <div class="set-row-l"><div class="set-row-t">Standard-Sender</div></div>
               <div class="set-row-r">
                 <Picker
                   value={station}
@@ -2240,9 +2240,9 @@ Notes: {about}</pre>
               </div>
             </div>
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Autoplay on launch</div></div>
+              <div class="set-row-l"><div class="set-row-t">Beim Start automatisch abspielen</div></div>
               <div class="set-row-r">
-                <button type="button" class={"st-toggle" + (autoplay ? " on" : "")} onclick={() => (autoplay = !autoplay)} role="switch" aria-checked={autoplay} aria-label="autoplay"><span class="st-knob"></span></button>
+                <button type="button" class={"st-toggle" + (autoplay ? " on" : "")} onclick={() => (autoplay = !autoplay)} role="switch" aria-checked={autoplay} aria-label="Automatisch abspielen"><span class="st-knob"></span></button>
               </div>
             </div>
           </div>
@@ -2254,12 +2254,12 @@ Notes: {about}</pre>
         {#if !isMobile}
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">YouTube streaming</h3>
-            <p class="set-group-d">Paste a YouTube video or livestream URL in the music panel to stream it ad-free. Uses a headless <span class="mono">mpv</span> + <span class="mono">yt-dlp</span> (auto-downloaded on first use). Nothing is bundled — only the URL is saved.</p>
+            <h3 class="set-group-t">YouTube-Streaming</h3>
+            <p class="set-group-d">Füge im Musikbereich einen YouTube-Video- oder Livestream-Link ein, um ihn werbefrei zu streamen. Nutzt <span class="mono">mpv</span> + <span class="mono">yt-dlp</span> im Hintergrund (beim ersten Mal automatisch geladen). Gespeichert wird nur der Link.</p>
           </div>
           <div class="set-card">
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Tools</div></div>
+              <div class="set-row-l"><div class="set-row-t">Programme</div></div>
               <div class="set-row-r">
                 {#if mediaTools}
                   <span class="mono" style="color:{mediaTools.mpv ? 'var(--ok)' : 'var(--danger,#e06c75)'}">
@@ -2278,11 +2278,11 @@ Notes: {about}</pre>
             </div>
             {#if mediaTools && !mediaTools.mpv}
               <div class="set-row">
-                <div class="set-row-l"><div class="set-row-d">Install mpv to enable YouTube streaming: <span class="mono">sudo pacman -S mpv</span></div></div>
+                <div class="set-row-l"><div class="set-row-d">Installiere mpv für YouTube-Streaming: <span class="mono">sudo pacman -S mpv</span></div></div>
               </div>
             {:else if mediaTools && !mediaTools.ytdlp}
               <div class="set-row">
-                <div class="set-row-l"><div class="set-row-d">yt-dlp will be downloaded automatically the first time you play a YouTube station.</div></div>
+                <div class="set-row-l"><div class="set-row-d">yt-dlp wird automatisch heruntergeladen, wenn du zum ersten Mal einen YouTube-Sender abspielst.</div></div>
               </div>
             {/if}
           </div>
@@ -2291,8 +2291,8 @@ Notes: {about}</pre>
 
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">Focus timer</h3>
-            <p class="set-group-d">Pomodoro session lengths (applies app-wide).</p>
+            <h3 class="set-group-t">Fokus-Timer</h3>
+            <p class="set-group-d">Länge der Pomodoro-Einheiten (gilt für die ganze App).</p>
           </div>
           <div class="set-card">
             {#each pomoFields as f (f.key)}
@@ -2300,9 +2300,9 @@ Notes: {about}</pre>
                 <div class="set-row-l"><div class="set-row-t">{f.label}</div></div>
                 <div class="set-row-r">
                   <div style="display:flex;align-items:center;gap:8px">
-                    <button class="btn btn--icon btn--sm" onclick={() => setPomo(f.key, -f.step)} aria-label="decrease {f.label}">−</button>
+                    <button class="btn btn--icon btn--sm" onclick={() => setPomo(f.key, -f.step)} aria-label="{f.label} verringern">−</button>
                     <span class="mono" style="min-width:62px;text-align:center;color:var(--fg-bright)">{pomoVal(f.key)}{f.unit}</span>
-                    <button class="btn btn--icon btn--sm" onclick={() => setPomo(f.key, f.step)} aria-label="increase {f.label}">+</button>
+                    <button class="btn btn--icon btn--sm" onclick={() => setPomo(f.key, f.step)} aria-label="{f.label} erhöhen">+</button>
                   </div>
                 </div>
               </div>
@@ -2312,27 +2312,27 @@ Notes: {about}</pre>
 
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">Audio overview voices</h3>
-            <p class="set-group-d">The two hosts of generated podcasts.</p>
+            <h3 class="set-group-t">Stimmen für Audio-Überblicke</h3>
+            <p class="set-group-d">Die zwei Sprecher der erstellten Podcasts.</p>
           </div>
           <div class="set-card">
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Host A</div></div>
+              <div class="set-row-l"><div class="set-row-t">Sprecher A</div></div>
               <div class="set-row-r">
                 <Picker
                   value={voiceA}
                   onChange={(v) => (voiceA = v)}
-                  options={[{ id: "maya", label: "Maya · warm" }, { id: "nova", label: "Nova · bright" }, { id: "io", label: "Io · neutral" }]}
+                  options={[{ id: "maya", label: "Maya · warm" }, { id: "nova", label: "Nova · hell" }, { id: "io", label: "Io · neutral" }]}
                 />
               </div>
             </div>
             <div class="set-row">
-              <div class="set-row-l"><div class="set-row-t">Host B</div></div>
+              <div class="set-row-l"><div class="set-row-t">Sprecher B</div></div>
               <div class="set-row-r">
                 <Picker
                   value={voiceB}
                   onChange={(v) => (voiceB = v)}
-                  options={[{ id: "theo", label: "Theo · calm" }, { id: "rex", label: "Rex · energetic" }, { id: "sol", label: "Sol · deep" }]}
+                  options={[{ id: "theo", label: "Theo · ruhig" }, { id: "rex", label: "Rex · energisch" }, { id: "sol", label: "Sol · tief" }]}
                 />
               </div>
             </div>
@@ -2344,9 +2344,9 @@ Notes: {about}</pre>
     {:else if tab === "calendar"}
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">Google Calendar</div>
-          <h1 class="set-title">Sync your calendar</h1>
-          <p class="set-sub">Two-way sync with Google Calendar. The native Cortex calendar works fully without this — connecting just mirrors events both ways.</p>
+          <div class="eyebrow">Google Kalender</div>
+          <h1 class="set-title">Kalender synchronisieren</h1>
+          <p class="set-sub">Beidseitiger Abgleich mit Google Kalender. Der Cortex-Kalender funktioniert auch ohne – die Verbindung spiegelt Termine nur in beide Richtungen.</p>
         </header>
 
         <section class="set-group">
@@ -2356,14 +2356,14 @@ Notes: {about}</pre>
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Connection</div>
+                <div class="set-row-t">Verbindung</div>
                 <div class="set-row-d mono faint">
                   {#if gStatus?.connected}
-                    Connected{gStatus.email ? " · " + gStatus.email : ""}
+                    Verbunden{gStatus.email ? " · " + gStatus.email : ""}
                   {:else if gStatus?.configured}
-                    Credentials saved — not connected yet
+                    Zugangsdaten gespeichert – noch nicht verbunden
                   {:else}
-                    Not configured
+                    Nicht eingerichtet
                   {/if}
                 </div>
               </div>
@@ -2371,13 +2371,13 @@ Notes: {about}</pre>
                 {#if gStatus?.connected}
                   <div class="row-inline">
                     <button class="btn" onclick={syncGoogle} disabled={gBusy}>
-                      <Icon name="refresh" size={12} /> Sync now
+                      <Icon name="refresh" size={12} /> Jetzt synchronisieren
                     </button>
-                    <button class="btn btn--danger" onclick={disconnectGoogle} disabled={gBusy}>Disconnect</button>
+                    <button class="btn btn--danger" onclick={disconnectGoogle} disabled={gBusy}>Trennen</button>
                   </div>
                 {:else}
                   <button class="btn btn--primary" onclick={connectGoogle} disabled={gBusy}>
-                    <Icon name="globe" size={12} /> {gBusy ? "Connecting…" : "Connect Google"}
+                    <Icon name="globe" size={12} /> {gBusy ? "Wird verbunden…" : "Mit Google verbinden"}
                   </button>
                 {/if}
               </div>
@@ -2388,16 +2388,16 @@ Notes: {about}</pre>
         {#if gStatus?.connected}
           <section class="set-group">
             <div class="set-group-h">
-              <h3 class="set-group-t">Calendars to sync</h3>
-              <p class="set-group-d">Pick which Google calendars to pull events from — tick your <strong>university / timetable</strong> calendar here so its classes, deadlines and exams land on the Cortex calendar.</p>
+              <h3 class="set-group-t">Zu synchronisierende Kalender</h3>
+              <p class="set-group-d">Wähle, aus welchen Google-Kalendern Termine geholt werden – hake deinen <strong>Stundenplan-/Schulkalender</strong> an, damit Unterricht, Abgaben und Prüfungen im Cortex-Kalender landen.</p>
             </div>
             <div class="set-card">
               {#if gCalBusy && gCalendars.length === 0}
-                <div class="set-row"><div class="set-row-d faint">Loading calendars…</div></div>
+                <div class="set-row"><div class="set-row-d faint">Kalender werden geladen…</div></div>
               {:else if gCalendars.length === 0}
                 <div class="set-row">
-                  <div class="set-row-l"><div class="set-row-d faint">No calendars found.</div></div>
-                  <div class="set-row-r"><button class="btn btn--sm" onclick={loadGoogleCalendars}>Reload</button></div>
+                  <div class="set-row-l"><div class="set-row-d faint">Keine Kalender gefunden.</div></div>
+                  <div class="set-row-r"><button class="btn btn--sm" onclick={loadGoogleCalendars}>Neu laden</button></div>
                 </div>
               {:else}
                 {#each gCalendars as cal (cal.id)}
@@ -2416,18 +2416,18 @@ Notes: {about}</pre>
 
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">Credentials</h3>
-            <p class="set-group-d">Create an OAuth client of type “Desktop app” in Google Cloud → APIs &amp; Services → Credentials, enable the Calendar API, then paste the ID and secret here.</p>
+            <h3 class="set-group-t">Zugangsdaten</h3>
+            <p class="set-group-d">Lege in Google Cloud unter APIs &amp; Dienste → Anmeldedaten einen OAuth-Client vom Typ „Desktop-App“ an, aktiviere die Calendar API und füge dann ID und Secret hier ein.</p>
           </div>
           <div class="set-card">
             <div class="set-row stacked">
-              <div class="set-row-l"><div class="set-row-t">Client ID</div></div>
+              <div class="set-row-l"><div class="set-row-t">Client-ID</div></div>
               <div class="set-row-r">
                 <input class="input mono" bind:value={gClientId} onblur={saveGoogleCreds} placeholder="…apps.googleusercontent.com" />
               </div>
             </div>
             <div class="set-row stacked">
-              <div class="set-row-l"><div class="set-row-t">Client secret</div></div>
+              <div class="set-row-l"><div class="set-row-t">Client-Secret</div></div>
               <div class="set-row-r">
                 <input class="input mono" type="password" bind:value={gClientSecret} onblur={saveGoogleCreds} placeholder="GOCSPX-…" />
               </div>
@@ -2440,72 +2440,72 @@ Notes: {about}</pre>
     {:else if tab === "experimental"}
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">Settings</div>
-          <h2 class="set-title">Experimental</h2>
-          <p class="set-sub">Early features that may be rough or change. Toggle one on to try it.</p>
+          <div class="eyebrow">Einstellungen</div>
+          <h2 class="set-title">Experimentell</h2>
+          <p class="set-sub">Frühe Funktionen, die noch holprig sein oder sich ändern können. Schalte eine ein, um sie auszuprobieren.</p>
         </header>
 
         <section class="set-group">
           <div class="set-group-h svc-h">
             <div>
-              <h3 class="set-group-t">University portal (Moodle)</h3>
-              <p class="set-group-d">Pull grades, assignments, deadlines and announcements from your Moodle portal into Cortex.</p>
+              <h3 class="set-group-t">Schulportal (Moodle)</h3>
+              <p class="set-group-d">Noten, Aufgaben, Termine und Ankündigungen aus deinem Moodle in Cortex holen.</p>
             </div>
-            <button class={"st-toggle" + (expMoodle ? " on" : "")} type="button" onclick={toggleExpMoodle} role="switch" aria-checked={expMoodle} aria-label="enable moodle"><span class="st-knob"></span></button>
+            <button class={"st-toggle" + (expMoodle ? " on" : "")} type="button" onclick={toggleExpMoodle} role="switch" aria-checked={expMoodle} aria-label="Moodle aktivieren"><span class="st-knob"></span></button>
           </div>
 
           {#if expMoodle}
             <div class="set-card">
               <div class="set-row">
                 <div class="set-row-l">
-                  <div class="set-row-t">Connection</div>
-                  <div class="set-row-d">{mdStatus.configured ? `Connected · last sync ${fmtSyncTime(mdStatus.last_sync)}` : "Not connected"}</div>
+                  <div class="set-row-t">Verbindung</div>
+                  <div class="set-row-d">{mdStatus.configured ? `Verbunden · letzter Sync ${fmtSyncTime(mdStatus.last_sync)}` : "Nicht verbunden"}</div>
                 </div>
                 <span class="status-pill status-pill--{mdStatus.configured ? 'ready' : 'pending'}"><span class="dot"></span>{mdStatus.configured ? "Connected" : "Off"}</span>
               </div>
 
               <div class="set-row stacked">
-                <div class="set-row-t">Moodle site URL</div>
-                <input class="input mono" bind:value={mdUrl} placeholder="https://moodle.your-school.edu" />
+                <div class="set-row-t">Moodle-Adresse</div>
+                <input class="input mono" bind:value={mdUrl} placeholder="https://moodle.deine-schule.de" />
               </div>
 
               <div class="set-row">
                 <div class="set-row-l">
-                  <div class="set-row-t">Sign-in method</div>
-                  <div class="set-row-d">Many institutions use SSO (Microsoft/SAML), so username/password often won't work — paste a web-services token instead.</div>
+                  <div class="set-row-t">Anmeldeverfahren</div>
+                  <div class="set-row-d">Viele Schulen nutzen SSO (Microsoft/SAML), dann funktionieren Benutzername/Passwort oft nicht – füge stattdessen ein Webservice-Token ein.</div>
                 </div>
                 <div class="set-row-r" style="gap:6px">
                   <button class={"btn btn--sm" + (mdAuthMode === 'token' ? ' btn--primary' : ' btn--ghost')} type="button" onclick={() => (mdAuthMode = 'token')}>Token</button>
-                  <button class={"btn btn--sm" + (mdAuthMode === 'password' ? ' btn--primary' : ' btn--ghost')} type="button" onclick={() => (mdAuthMode = 'password')}>Password</button>
+                  <button class={"btn btn--sm" + (mdAuthMode === 'password' ? ' btn--primary' : ' btn--ghost')} type="button" onclick={() => (mdAuthMode = 'password')}>Passwort</button>
                 </div>
               </div>
 
               {#if mdAuthMode === 'password'}
                 <div class="set-row stacked">
-                  <div class="set-row-t">Username</div>
-                  <input class="input mono" bind:value={mdUser} placeholder="student number" />
+                  <div class="set-row-t">Benutzername</div>
+                  <input class="input mono" bind:value={mdUser} placeholder="Benutzername" />
                 </div>
                 <div class="set-row stacked">
-                  <div class="set-row-t">Password</div>
+                  <div class="set-row-t">Passwort</div>
                   <input class="input mono" type="password" bind:value={mdPass} placeholder="••••••••" />
                 </div>
               {:else}
                 <div class="set-row stacked">
-                  <div class="set-row-t">Web-services token</div>
-                  <input class="input mono" bind:value={mdToken} placeholder="paste your Moodle token" />
-                  <div class="set-row-d">Obtain it from the official Moodle app or a browser login. Stored locally; your password is never sent to Cortex.</div>
+                  <div class="set-row-t">Webservice-Token</div>
+                  <input class="input mono" bind:value={mdToken} placeholder="Moodle-Token einfügen" />
+                  <div class="set-row-d">Du bekommst es über die offizielle Moodle-App oder eine Anmeldung im Browser. Wird lokal gespeichert; dein Passwort wird nie an Cortex gesendet.</div>
                 </div>
               {/if}
 
               <div class="set-row">
-                <div class="set-row-l"><div class="set-row-d">Connect, then sync to pull your data.</div></div>
+                <div class="set-row-l"><div class="set-row-d">Verbinden, dann synchronisieren, um deine Daten zu holen.</div></div>
                 <div class="set-row-r" style="gap:8px">
                   {#if mdStatus.configured}
-                    <button class="btn btn--ghost btn--sm" type="button" onclick={mdDisconnect} disabled={mdBusy}>Disconnect</button>
-                    <button class="btn btn--primary btn--sm" type="button" onclick={mdSyncNow} disabled={mdBusy}><Icon name="refresh" size={12} /> {mdBusy ? "Syncing…" : "Sync now"}</button>
+                    <button class="btn btn--ghost btn--sm" type="button" onclick={mdDisconnect} disabled={mdBusy}>Trennen</button>
+                    <button class="btn btn--primary btn--sm" type="button" onclick={mdSyncNow} disabled={mdBusy}><Icon name="refresh" size={12} /> {mdBusy ? "Synchronisiert…" : "Jetzt synchronisieren"}</button>
                   {:else}
-                    <button class="btn btn--sm" type="button" onclick={mdLoginSso}>Sign in via browser (SSO)</button>
-                    <button class="btn btn--primary btn--sm" type="button" onclick={mdConnect} disabled={mdBusy || (mdAuthMode==='token' ? !mdToken.trim() : !mdUser.trim())}>{mdBusy ? "Connecting…" : "Connect"}</button>
+                    <button class="btn btn--sm" type="button" onclick={mdLoginSso}>Im Browser anmelden (SSO)</button>
+                    <button class="btn btn--primary btn--sm" type="button" onclick={mdConnect} disabled={mdBusy || (mdAuthMode==='token' ? !mdToken.trim() : !mdUser.trim())}>{mdBusy ? "Wird verbunden…" : "Verbinden"}</button>
                   {/if}
                 </div>
               </div>
@@ -2513,16 +2513,16 @@ Notes: {about}</pre>
               {#if mdStatus.configured}
                 <div class="set-row">
                   <div class="set-row-l">
-                    <div class="set-row-t">Link subjects to courses</div>
-                    <div class="set-row-d">Auto-match your Cortex subjects to Moodle courses by code/name.</div>
+                    <div class="set-row-t">Fächer mit Kursen verknüpfen</div>
+                    <div class="set-row-d">Ordnet deine Cortex-Fächer anhand von Kürzel/Name automatisch den Moodle-Kursen zu.</div>
                   </div>
-                  <div class="set-row-r"><button class="btn btn--sm" type="button" onclick={mdAutolink}>Auto-link</button></div>
+                  <div class="set-row-r"><button class="btn btn--sm" type="button" onclick={mdAutolink}>Automatisch verknüpfen</button></div>
                 </div>
               {/if}
 
               {#if mdData.courses.length}
                 <div class="set-row stacked">
-                  <div class="set-row-t">Synced data</div>
+                  <div class="set-row-t">Synchronisierte Daten</div>
                   <div class="md-stats">
                     <span class="md-stat"><b>{mdData.courses.length}</b> courses</span>
                     <span class="md-stat"><b>{mdData.grades.length}</b> grades</span>
@@ -2530,7 +2530,7 @@ Notes: {about}</pre>
                     <span class="md-stat"><b>{mdData.announcements.length}</b> announcements</span>
                   </div>
                   {#if mdUpcoming.length}
-                    <div class="md-up-h mono">Upcoming deadlines</div>
+                    <div class="md-up-h mono">Anstehende Termine</div>
                     <ul class="md-up">
                       {#each mdUpcoming.slice(0, 6) as d (d.id)}
                         <li>
@@ -2556,23 +2556,23 @@ Notes: {about}</pre>
     {:else if tab === "data"}
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">Data & privacy</div>
-          <h1 class="set-title">Local-first by default</h1>
-          <p class="set-sub">Everything lives in a SQLite database on this machine. You own it.</p>
+          <div class="eyebrow">Daten & Datenschutz</div>
+          <h1 class="set-title">Standardmäßig lokal</h1>
+          <p class="set-sub">Alles liegt in einer SQLite-Datenbank auf diesem Gerät. Sie gehört dir.</p>
         </header>
 
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Storage</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Speicher</h3></div>
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Database</div>
+                <div class="set-row-t">Datenbank</div>
                 <div class="set-row-d">~/.cortex/cortex.db</div>
               </div>
               <div class="set-row-r">
                 <span class="mono faint">
                   {#if stats}
-                    {fmtBytes(stats.db_bytes)} · {stats.subjects} subject{stats.subjects === 1 ? "" : "s"} · {stats.sources} source{stats.sources === 1 ? "" : "s"}
+                    {fmtBytes(stats.db_bytes)} · {stats.subjects} {stats.subjects === 1 ? "Fach" : "Fächer"} · {stats.sources} {stats.sources === 1 ? "Quelle" : "Quellen"}
                   {:else}
                     …
                   {/if}
@@ -2581,17 +2581,17 @@ Notes: {about}</pre>
             </div>
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Vector index</div>
-                <div class="set-row-d">Local embeddings for retrieval</div>
+                <div class="set-row-t">Vektorindex</div>
+                <div class="set-row-d">Lokale Embeddings für die Suche</div>
               </div>
               <div class="set-row-r">
-                <span class="mono faint">{stats ? `${stats.chunks} chunk${stats.chunks === 1 ? "" : "s"}` : "…"}</span>
+                <span class="mono faint">{stats ? `${stats.chunks} ${stats.chunks === 1 ? "Abschnitt" : "Abschnitte"}` : "…"}</span>
               </div>
             </div>
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Offline mode</div>
-                <div class="set-row-d">Block all network calls; Ollama only.</div>
+                <div class="set-row-t">Offline-Modus</div>
+                <div class="set-row-d">Alle Netzwerkzugriffe blockieren; nur Ollama.</div>
               </div>
               <div class="set-row-r">
                 <button type="button" class={"st-toggle" + (offlineMode ? " on" : "")} onclick={toggleOffline} role="switch" aria-checked={offlineMode} aria-label="offline"><span class="st-knob"></span></button>
@@ -2638,8 +2638,8 @@ Notes: {about}</pre>
         {#if archivedSubjects.length}
           <section class="set-group">
             <div class="set-group-h">
-              <h3 class="set-group-t">Archived subjects</h3>
-              <p class="set-group-d">Hidden from the app, kept for storage. Restore any time.</p>
+              <h3 class="set-group-t">Archivierte Fächer</h3>
+              <p class="set-group-d">In der App ausgeblendet, aber gespeichert. Jederzeit wiederherstellbar.</p>
             </div>
             <div class="set-card">
               {#each archivedSubjects as s (s.id)}
@@ -2649,11 +2649,11 @@ Notes: {about}</pre>
                       <span style="color:{app.subjectColor(s)}">{s.glyph}</span> {s.name}
                     </div>
                     <div class="set-row-d">
-                      {s.code ? s.code + " · " : ""}{s.sourceCount} source{s.sourceCount === 1 ? "" : "s"}
+                      {s.code ? s.code + " · " : ""}{s.sourceCount} {s.sourceCount === 1 ? "Quelle" : "Quellen"}
                     </div>
                   </div>
                   <div class="set-row-r">
-                    <button class="btn" onclick={() => restoreSubject(s.id)}>Restore</button>
+                    <button class="btn" onclick={() => restoreSubject(s.id)}>Wiederherstellen</button>
                   </div>
                 </div>
               {/each}
@@ -2662,35 +2662,35 @@ Notes: {about}</pre>
         {/if}
 
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Manage</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Verwalten</h3></div>
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Export everything</div>
-                <div class="set-row-d">Subjects, sources, cheatsheets → a portable archive.</div>
+                <div class="set-row-t">Alles exportieren</div>
+                <div class="set-row-d">Fächer, Quellen, Lernzettel → ein portables Archiv.</div>
               </div>
               <div class="set-row-r">
                 <button class="btn" onclick={exportData}>
-                  <Icon name="external" size={12} /> Export
+                  <Icon name="external" size={12} /> Exportieren
                 </button>
               </div>
             </div>
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Optimize storage</div>
-                <div class="set-row-d">Reclaim unused disk space (VACUUM). Safe.</div>
+                <div class="set-row-t">Speicher optimieren</div>
+                <div class="set-row-d">Ungenutzten Speicherplatz freigeben (VACUUM). Sicher.</div>
               </div>
               <div class="set-row-r">
-                <button class="btn" onclick={clearCaches}>Optimize</button>
+                <button class="btn" onclick={clearCaches}>Optimieren</button>
               </div>
             </div>
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Delete all data</div>
-                <div class="set-row-d">Irreversible. Wipes the local database.</div>
+                <div class="set-row-t">Alle Daten löschen</div>
+                <div class="set-row-d">Nicht umkehrbar. Leert die lokale Datenbank.</div>
               </div>
               <div class="set-row-r">
-                <button class="btn btn--danger" onclick={deleteEverything}>Delete…</button>
+                <button class="btn btn--danger" onclick={deleteEverything}>Löschen…</button>
               </div>
             </div>
           </div>
@@ -2701,9 +2701,9 @@ Notes: {about}</pre>
     {:else if tab === "about"}
       <div class="set-pane">
         <header class="set-head">
-          <div class="eyebrow">About</div>
+          <div class="eyebrow">Über</div>
           <h1 class="set-title">Cortex</h1>
-          <p class="set-sub">A desktop study OS for serious students.</p>
+          <p class="set-sub">Ein Lern-Betriebssystem für den Desktop.</p>
         </header>
 
         <div class="set-card">
@@ -2714,31 +2714,31 @@ Notes: {about}</pre>
           <div class="set-row">
             <div class="set-row-l">
               <div class="set-row-t">Updates</div>
-              <div class="set-row-d">Check GitHub for a newer release and install it.</div>
+              <div class="set-row-d">Auf GitHub nach einer neueren Version suchen und sie installieren.</div>
             </div>
             <div class="set-row-r">
               <button class="btn" onclick={() => app.checkForUpdates()} disabled={app.updateChecking}>
-                <Icon name="refresh" size={12} /> {app.updateChecking ? "Checking…" : "Check for updates"}
+                <Icon name="refresh" size={12} /> {app.updateChecking ? "Wird geprüft…" : "Nach Updates suchen"}
               </button>
             </div>
           </div>
           <div class="set-row">
             <div class="set-row-l">
-              <div class="set-row-t">Support Cortex</div>
-              <div class="set-row-d">Cortex is built by one student. If it saves you time, a coffee keeps the updates coming.</div>
+              <div class="set-row-t">Cortex unterstützen</div>
+              <div class="set-row-d">Cortex wird von einem Studenten entwickelt. Wenn es dir Zeit spart, hält ein Kaffee die Updates am Laufen.</div>
             </div>
             <div class="set-row-r">
               <button class="btn" onclick={() => api.openExternal("https://ko-fi.com/aidanmcconnon")}>
-                <Icon name="heart" size={12} color="var(--err)" /> Support me on Ko-fi
+                <Icon name="heart" size={12} color="var(--err)" /> Auf Ko-fi unterstützen
               </button>
             </div>
           </div>
           <div class="set-row">
-            <div class="set-row-l"><div class="set-row-t">Engine</div></div>
+            <div class="set-row-l"><div class="set-row-t">Technik</div></div>
             <div class="set-row-r"><span class="mono faint">Rust · Tauri · Svelte</span></div>
           </div>
           <div class="set-row">
-            <div class="set-row-l"><div class="set-row-t">Theme source</div></div>
+            <div class="set-row-l"><div class="set-row-t">Design-Quelle</div></div>
             <div class="set-row-r">
               <span class="mono faint">
                 Omarchy · {THEME_LABELS[app.theme]}
@@ -2746,14 +2746,14 @@ Notes: {about}</pre>
             </div>
           </div>
           <div class="set-row">
-            <div class="set-row-l"><div class="set-row-t">License</div></div>
-            <div class="set-row-r"><span class="mono faint">Source-available · BYOK</span></div>
+            <div class="set-row-l"><div class="set-row-t">Lizenz</div></div>
+            <div class="set-row-r"><span class="mono faint">Quelltext verfügbar · eigener Schlüssel</span></div>
           </div>
         </div>
 
         <div class="set-note mono">
           <Icon name="diamond" size={11} color="var(--accent)" />
-          Offline-first. Your notes never leave this machine unless you choose a cloud model.
+          Offline zuerst. Deine Notizen verlassen dieses Gerät nur, wenn du ein Cloud-Modell wählst.
         </div>
       </div>
     {/if}
