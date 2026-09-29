@@ -15,9 +15,9 @@
 
   type Status = "todo" | "doing" | "done";
   const COLUMNS: { id: Status; label: string }[] = [
-    { id: "todo", label: "To-do" },
-    { id: "doing", label: "Doing" },
-    { id: "done", label: "Done" },
+    { id: "todo", label: "Offen" },
+    { id: "doing", label: "In Arbeit" },
+    { id: "done", label: "Erledigt" },
   ];
   // Kinds that belong on the board (plain calendar "event"s are excluded).
   const BOARD_KINDS = new Set(["assignment", "project", "deadline", "exam", "task"]);
@@ -100,7 +100,7 @@
       await api.setEventStatus(id, status);
       app.notifyEventsChanged(); // keep the Assignments list + calendar in sync
     } catch (err) {
-      app.pushToast({ kind: "error", title: "Couldn't move card", body: String(err) });
+      app.pushToast({ kind: "error", title: "Karte konnte nicht verschoben werden", body: String(err) });
       events = events.map((e) => (e.id === id ? { ...e, status: ev.status } : e));
     }
   }
@@ -130,7 +130,7 @@
       events = [...events, ev];
       app.notifyEventsChanged();
     } catch (err) {
-      app.pushToast({ kind: "error", title: "Couldn't add card", body: String(err) });
+      app.pushToast({ kind: "error", title: "Karte konnte nicht hinzugefügt werden", body: String(err) });
     }
     newTitle = "";
     adding = null;
@@ -149,7 +149,7 @@
 
 <div class="board">
   {#if loading}
-    <div class="board-empty">Loading board…</div>
+    <div class="board-empty">Board wird geladen…</div>
   {:else}
     {#each COLUMNS as col (col.id)}
       <section
@@ -160,7 +160,7 @@
         <header class="bcol-h">
           <span class="bcol-t">{col.label}</span>
           <span class="bcol-n">{byStatus(col.id).length}</span>
-          <button class="bcol-add" title="Add card" onclick={() => { adding = col.id; newTitle = ""; }}>
+          <button class="bcol-add" title="Karte hinzufügen" onclick={() => { adding = col.id; newTitle = ""; }}>
             <Icon name="plus" size={13} />
           </button>
         </header>
@@ -170,7 +170,7 @@
             <!-- svelte-ignore a11y_autofocus -->
             <input
               class="bcard-input"
-              placeholder="Card title…"
+              placeholder="Titel der Karte…"
               bind:value={newTitle}
               autofocus
               onkeydown={(e) => { if (e.key === "Enter") addCard(col.id); else if (e.key === "Escape") { adding = null; newTitle = ""; } }}
@@ -200,13 +200,13 @@
                 </div>
               {/if}
               <div class="bcard-move">
-                <button title="Move left" disabled={col.id === "todo"} onpointerdown={(ev) => ev.stopPropagation()} onclick={() => move(e.id, nextStatus(col.id, -1))}>◂</button>
-                <button title="Move right" disabled={col.id === "done"} onpointerdown={(ev) => ev.stopPropagation()} onclick={() => move(e.id, nextStatus(col.id, 1))}>▸</button>
+                <button title="Nach links" disabled={col.id === "todo"} onpointerdown={(ev) => ev.stopPropagation()} onclick={() => move(e.id, nextStatus(col.id, -1))}>◂</button>
+                <button title="Nach rechts" disabled={col.id === "done"} onpointerdown={(ev) => ev.stopPropagation()} onclick={() => move(e.id, nextStatus(col.id, 1))}>▸</button>
               </div>
             </article>
           {/each}
           {#if byStatus(col.id).length === 0 && adding !== col.id}
-            <div class="bcol-empty">Drop cards here</div>
+            <div class="bcol-empty">Karten hier ablegen</div>
           {/if}
         </div>
       </section>

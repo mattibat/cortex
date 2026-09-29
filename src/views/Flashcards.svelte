@@ -10,10 +10,10 @@
   const deck = $derived(deckProp && deckProp.length > 0 ? deckProp : mock.flashcards);
   // `q` is the SM-2 quality grade (0-5) sent to the scheduler.
   const RATINGS = [
-    { id: "again", label: "Again", key: "1", cls: "again", q: 1 },
-    { id: "hard",  label: "Hard",  key: "2", cls: "hard",  q: 3 },
-    { id: "good",  label: "Good",  key: "3", cls: "good",  q: 4 },
-    { id: "easy",  label: "Easy",  key: "4", cls: "easy",  q: 5 },
+    { id: "again", label: "Nochmal", key: "1", cls: "again", q: 1 },
+    { id: "hard",  label: "Schwer",  key: "2", cls: "hard",  q: 3 },
+    { id: "good",  label: "Gut",  key: "3", cls: "good",  q: 4 },
+    { id: "easy",  label: "Leicht",  key: "4", cls: "easy",  q: 5 },
   ] as const;
 
   let i       = $state(0);
@@ -58,11 +58,11 @@
     return () => { cancelled = true; };
   });
   function fmtInterval(d: number): string {
-    if (d <= 0) return "<1d";
-    if (d < 7) return `${d}d`;
-    if (d < 30) return `${Math.round(d / 7)}w`;
-    if (d < 365) return `${Math.round(d / 30)}mo`;
-    return `${(d / 365).toFixed(d < 730 ? 1 : 0)}y`;
+    if (d <= 0) return "<1 T";
+    if (d < 7) return `${d} T`;
+    if (d < 30) return `${Math.round(d / 7)} W`;
+    if (d < 365) return `${Math.round(d / 30)} M`;
+    return `${(d / 365).toFixed(d < 730 ? 1 : 0)} J`;
   }
 
   function rate(cls: string) {
@@ -72,7 +72,7 @@
     if (sid) {
       // SM-2 grade (also logs the attempt for the "review missed" set).
       api.srsGrade(sid, "flashcard", i, activeDeck[i].q, quality).catch((e: unknown) => {
-        app.pushToast({ kind: "error", title: "Record failed", body: String(e) });
+        app.pushToast({ kind: "error", title: "Speichern fehlgeschlagen", body: String(e) });
       });
     }
     // "Again" (the first rate button) counts as missed for this session.
@@ -98,34 +98,34 @@
 
   async function startReview() {
     const sid = app.activeSubjectId;
-    if (!sid) { app.pushToast({ kind: "warning", title: "No subject selected" }); return; }
+    if (!sid) { app.pushToast({ kind: "warning", title: "Kein Fach ausgewählt" }); return; }
     try {
       const wrong = await api.reviewSet(sid, "flashcard");
       if (wrong.length === 0) {
-        app.pushToast({ kind: "success", title: "No missed cards to review 🎉" });
+        app.pushToast({ kind: "success", title: "Keine falschen Karten zum Wiederholen 🎉" });
         return;
       }
       reviewKeys = wrong.map((w) => w.item_key);
       i = 0; done = false; flipped = false; rated = 0; glow = null; missed = []; started = true;
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Review load failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Wiederholung konnte nicht geladen werden", body: String(e) });
     }
   }
 
   // Study only the cards due now (by their scheduled due date).
   async function startDue() {
     const sid = app.activeSubjectId;
-    if (!sid) { app.pushToast({ kind: "warning", title: "No subject selected" }); return; }
+    if (!sid) { app.pushToast({ kind: "warning", title: "Kein Fach ausgewählt" }); return; }
     try {
       const due = await api.srsDue(sid, "flashcard");
       if (due.length === 0) {
-        app.pushToast({ kind: "success", title: "Nothing due — you're all caught up 🎉" });
+        app.pushToast({ kind: "success", title: "Nichts fällig – alles erledigt 🎉" });
         return;
       }
       reviewKeys = due.map((d) => d.item_key);
       i = 0; done = false; flipped = false; rated = 0; glow = null; missed = []; started = true;
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Due load failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Fällige Karten konnten nicht geladen werden", body: String(e) });
     }
   }
 
@@ -183,38 +183,38 @@
       <div class="fc-done-glyph">
         <Icon name="check" size={22} color="var(--ok)" />
       </div>
-      <h2 class="read">Deck complete</h2>
+      <h2 class="read">Stapel abgeschlossen</h2>
       <p class="mono muted">
-        {activeDeck.length} cards graded · spaced-repetition schedule updated.
+        {activeDeck.length} Karten bewertet · Wiederholungsplan aktualisiert.
       </p>
       <div class="row gap-2" style="justify-content: center">
-        <button class="btn btn--primary" onclick={restart}>Study again</button>
+        <button class="btn btn--primary" onclick={restart}>Nochmal lernen</button>
         {#if dueCount > 0}
-          <button class="btn" onclick={startDue}>Study due · {dueCount}</button>
+          <button class="btn" onclick={startDue}>Fällige lernen · {dueCount}</button>
         {/if}
-        <button class="btn" onclick={startReview}>Review missed</button>
+        <button class="btn" onclick={startReview}>Falsche wiederholen</button>
         {#if onExit}
           <button class="btn" onclick={onExit}>
-            <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={12} /></span> Materials
+            <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={12} /></span> Materialien
           </button>
         {/if}
       </div>
 
       <div class="fc-review">
         <div class="fc-review-head mono">
-          <span>Cards you missed</span>
+          <span>Karten, die du nicht wusstest</span>
           {#if missedCards.length > 0}
             <span class="badge">{missedCards.length}</span>
           {/if}
         </div>
         {#if missedCards.length === 0}
-          <p class="mono muted fc-review-empty">No cards missed this session 🎉</p>
+          <p class="mono muted fc-review-empty">In dieser Runde keine Karte falsch 🎉</p>
         {:else}
           <ul class="fc-review-list">
             {#each missedCards as card, idx (idx)}
               <li class="fc-review-item">
                 <div class="fc-review-q read"><RichText text={card.q} /></div>
-                <div class="fc-review-a-label mono">ANSWER</div>
+                <div class="fc-review-a-label mono">ANTWORT</div>
                 <div class="fc-review-a read"><RichText text={card.a} /></div>
               </li>
             {/each}
@@ -227,29 +227,29 @@
       <div class="fc-done-glyph">
         <Icon name="cards" size={22} color="var(--accent)" />
       </div>
-      <h2 class="read">Flashcards</h2>
+      <h2 class="read">Karteikarten</h2>
       <p class="mono muted">
-        {deck.length} {deck.length === 1 ? "card" : "cards"}{dueCount > 0 ? ` · ${dueCount} due now` : " · nothing due right now"}
+        {deck.length} {deck.length === 1 ? "Karte" : "Karten"}{dueCount > 0 ? ` · ${dueCount} jetzt fällig` : " · gerade nichts fällig"}
       </p>
       <div class="row gap-2" style="justify-content: center; flex-wrap: wrap">
         {#if dueCount > 0}
-          <button class="btn btn--primary" onclick={startDue}>Study due · {dueCount}</button>
-          <button class="btn" onclick={studyAll}>Study all · {deck.length}</button>
+          <button class="btn btn--primary" onclick={startDue}>Fällige lernen · {dueCount}</button>
+          <button class="btn" onclick={studyAll}>Alle lernen · {deck.length}</button>
         {:else}
-          <button class="btn btn--primary" onclick={studyAll}>Study all · {deck.length}</button>
+          <button class="btn btn--primary" onclick={studyAll}>Alle lernen · {deck.length}</button>
         {/if}
-        <button class="btn" onclick={startReview}>Review missed</button>
+        <button class="btn" onclick={startReview}>Falsche wiederholen</button>
       </div>
       {#if onExit}
         <button class="btn btn--ghost btn--sm" style="margin-top:12px" onclick={onExit}>
-          <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={12} /></span> Back to materials
+          <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={12} /></span> Zurück zu den Materialien
         </button>
       {/if}
     </div>
   {:else}
     <div class="fc-bar-row">
       {#if onExit}
-        <button class="btn btn--icon btn--sm btn--ghost" onclick={onExit} title="Back to materials">
+        <button class="btn btn--icon btn--sm btn--ghost" onclick={onExit} title="Zurück zu den Materialien">
           <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={13} /></span>
         </button>
       {/if}
@@ -258,19 +258,19 @@
       </div>
       {#if !reviewKeys}
         {#if dueCount > 0}
-          <button class="btn btn--sm btn--primary" onclick={startDue} title="Study the cards scheduled as due today">
-            Study due · {dueCount}
+          <button class="btn btn--sm btn--primary" onclick={startDue} title="Die heute fälligen Karten lernen">
+            Fällige lernen · {dueCount}
           </button>
         {/if}
-        <button class="btn btn--sm" onclick={startReview} title="Review previously missed cards">
-          Review missed
+        <button class="btn btn--sm" onclick={startReview} title="Früher falsch beantwortete Karten wiederholen">
+          Falsche wiederholen
         </button>
       {/if}
     </div>
 
     <div class="fc-meta mono">
-      <span>{reviewKeys ? "Review" : "Card"} {i + 1} / {activeDeck.length}</span>
-      <span>Recursion · SRS</span>
+      <span>{reviewKeys ? "Wiederholung" : "Karte"} {i + 1} / {activeDeck.length}</span>
+      <span>Wiederholungsplan</span>
     </div>
 
     <div
@@ -281,12 +281,12 @@
       onkeydown={(e) => { if (e.key === "Enter" && !glow) flipped = !flipped; }}
     >
       <div class="fc-face fc-front">
-        <div class="fc-side mono">QUESTION</div>
+        <div class="fc-side mono">FRAGE</div>
         <div class="read fc-text"><RichText text={activeDeck[i].q} /></div>
-        <div class="fc-hint mono">click or <span class="kbd">␣</span> to flip</div>
+        <div class="fc-hint mono">klicken oder <span class="kbd">␣</span> zum Umdrehen</div>
       </div>
       <div class="fc-face fc-back">
-        <div class="fc-side mono">ANSWER</div>
+        <div class="fc-side mono">ANTWORT</div>
         <div class="read fc-text"><RichText text={activeDeck[i].a} /></div>
       </div>
     </div>

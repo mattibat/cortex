@@ -41,7 +41,7 @@
   // ── generate + start ─────────────────────────────────────────
   async function startNew() {
     const sub = app.activeSubject;
-    if (!sub) { app.pushToast({ kind: "error", title: "No active subject", body: "Open a subject first." }); return; }
+    if (!sub) { app.pushToast({ kind: "error", title: "Kein Fach aktiv", body: "Öffne zuerst ein Fach." }); return; }
     if (mcqCount + writtenCount === 0) return;
     screen = "generating";
     genError = null;
@@ -60,7 +60,7 @@
     } catch (err) {
       genError = err instanceof Error ? err.message : String(err);
       screen = "setup";
-      app.pushToast({ kind: "error", title: "Couldn't generate exam", body: genError });
+      app.pushToast({ kind: "error", title: "Prüfung konnte nicht erstellt werden", body: genError });
     }
   }
 
@@ -118,9 +118,9 @@
 
   async function confirmSubmit() {
     const ok = await app.confirm({
-      title: "Submit exam?",
-      body: "Your answers will be graded and the exam locked.",
-      okLabel: "Submit",
+      title: "Prüfung abgeben?",
+      body: "Deine Antworten werden bewertet und die Prüfung gesperrt.",
+      okLabel: "Abgeben",
     });
     if (ok) void doSubmit(false);
   }
@@ -130,7 +130,7 @@
     submitted = true;
     stopTimer();
     submitting = true;
-    if (auto) app.pushToast({ kind: "info", title: "Time's up", body: "Submitting your exam…" });
+    if (auto) app.pushToast({ kind: "info", title: "Die Zeit ist um", body: "Deine Prüfung wird abgegeben…" });
     const payload: api.ExamAnswerInput[] = questions.map((q) => ({
       id: q.id,
       choice: runAnswers[q.id]?.choice ?? null,
@@ -142,7 +142,7 @@
       void loadPast();
     } catch (err) {
       submitted = false; // allow a retry on failure
-      app.pushToast({ kind: "error", title: "Submit failed", body: err instanceof Error ? err.message : String(err) });
+      app.pushToast({ kind: "error", title: "Abgabe fehlgeschlagen", body: err instanceof Error ? err.message : String(err) });
     } finally {
       submitting = false;
     }
@@ -156,9 +156,9 @@
     try {
       results = await api.remarkExam(exam.id);
       void loadPast();
-      app.pushToast({ kind: "success", title: "Remarked", body: "Same rubric, fresh grading run." });
+      app.pushToast({ kind: "success", title: "Neu bewertet", body: "Gleiches Bewertungsschema, neuer Durchlauf." });
     } catch (err) {
-      app.pushToast({ kind: "error", title: "Remark failed", body: err instanceof Error ? err.message : String(err) });
+      app.pushToast({ kind: "error", title: "Neubewertung fehlgeschlagen", body: err instanceof Error ? err.message : String(err) });
     } finally {
       remarking = false;
     }
@@ -174,7 +174,7 @@
         results = full.results;
         screen = "results";
       } catch (err) {
-        app.pushToast({ kind: "error", title: "Couldn't open exam", body: String(err) });
+        app.pushToast({ kind: "error", title: "Prüfung konnte nicht geöffnet werden", body: String(err) });
       }
     } else {
       // ready / in_progress → (re)start it
@@ -183,17 +183,17 @@
         exam = started;
         beginRun(started);
       } catch (err) {
-        app.pushToast({ kind: "error", title: "Couldn't open exam", body: String(err) });
+        app.pushToast({ kind: "error", title: "Prüfung konnte nicht geöffnet werden", body: String(err) });
       }
     }
   }
 
   async function deletePast(e: api.ExamRec, ev: MouseEvent) {
     ev.stopPropagation();
-    const ok = await app.confirm({ title: "Delete exam?", body: e.title, danger: true, okLabel: "Delete" });
+    const ok = await app.confirm({ title: "Prüfung löschen?", body: e.title, danger: true, okLabel: "Löschen" });
     if (!ok) return;
     try { await api.deleteExam(e.id); await loadPast(); } catch (err) {
-      app.pushToast({ kind: "error", title: "Delete failed", body: String(err) });
+      app.pushToast({ kind: "error", title: "Löschen fehlgeschlagen", body: String(err) });
     }
   }
 
@@ -234,28 +234,28 @@
     <!-- Setup mirrors a Settings tab: set-pane shell, set-head, set-groups + set-cards. -->
     <div class="set-pane">
       <header class="set-head">
-        <div class="eyebrow">Exam mode</div>
-        <h1 class="set-title">Sit a timed exam</h1>
-        <p class="set-sub">Generate a timed MCQ + written exam from {app.activeSubject?.name ?? "your subject"} and have it graded instantly.</p>
+        <div class="eyebrow">Prüfungsmodus</div>
+        <h1 class="set-title">Probeprüfung auf Zeit</h1>
+        <p class="set-sub">Erstelle eine Prüfung mit Multiple-Choice- und Freitextfragen aus {app.activeSubject?.name ?? "deinem Fach"} und lass sie sofort bewerten.</p>
       </header>
 
       {#if !app.activeSubject}
         <div class="set-card">
-          <div class="set-row"><div class="set-row-l"><div class="set-row-d">Open a subject to create an exam.</div></div></div>
+          <div class="set-row"><div class="set-row-l"><div class="set-row-d">Öffne ein Fach, um eine Prüfung zu erstellen.</div></div></div>
         </div>
       {:else}
         <!-- Topics: small dashed tag-chip-add chips with a check when selected, like
              Settings → Profile → "Explain with". -->
         <section class="set-group">
           <div class="set-group-h">
-            <h3 class="set-group-t">Topics</h3>
-            <p class="set-group-d">Leave all unselected to cover the whole subject.</p>
+            <h3 class="set-group-t">Themen</h3>
+            <p class="set-group-d">Nichts auswählen, um das ganze Fach abzudecken.</p>
           </div>
           <div class="set-card">
             <div class="set-row stacked">
               <div class="set-row-r">
                 {#if topics.length === 0}
-                  <div class="set-row-d">No topics yet — the exam will use all of this subject's sources.</div>
+                  <div class="set-row-d">Noch keine Themen – die Prüfung nutzt alle Quellen dieses Fachs.</div>
                 {:else}
                   <div class="tag-suggest" style="margin-top:0">
                     {#each topics as t (t.id)}
@@ -281,13 +281,13 @@
           <div class="set-card">
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Duration</div>
-                <div class="set-row-d">How long the countdown runs.</div>
+                <div class="set-row-t">Dauer</div>
+                <div class="set-row-d">Wie lange der Countdown läuft.</div>
               </div>
               <div class="set-row-r">
                 <div class="seg">
                   {#each DURATIONS as d}
-                    <button type="button" class={"seg-opt" + (duration === d ? " on" : "")} onclick={() => (duration = d)}>{d} min</button>
+                    <button type="button" class={"seg-opt" + (duration === d ? " on" : "")} onclick={() => (duration = d)}>{d} Min.</button>
                   {/each}
                 </div>
               </div>
@@ -295,28 +295,28 @@
 
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Multiple choice</div>
-                <div class="set-row-d">One mark each.</div>
+                <div class="set-row-t">Multiple Choice</div>
+                <div class="set-row-d">Je ein Punkt.</div>
               </div>
               <div class="set-row-r">
                 <div class="exam-step">
-                  <button class="btn btn--icon btn--sm" onclick={() => clampMcq(mcqCount - 1)} disabled={mcqCount <= 0} aria-label="fewer multiple choice questions">−</button>
+                  <button class="btn btn--icon btn--sm" onclick={() => clampMcq(mcqCount - 1)} disabled={mcqCount <= 0} aria-label="weniger Multiple-Choice-Fragen">−</button>
                   <span class="mono exam-step-v">{mcqCount}</span>
-                  <button class="btn btn--icon btn--sm" onclick={() => clampMcq(mcqCount + 1)} disabled={mcqCount >= 30} aria-label="more multiple choice questions">+</button>
+                  <button class="btn btn--icon btn--sm" onclick={() => clampMcq(mcqCount + 1)} disabled={mcqCount >= 30} aria-label="mehr Multiple-Choice-Fragen">+</button>
                 </div>
               </div>
             </div>
 
             <div class="set-row">
               <div class="set-row-l">
-                <div class="set-row-t">Written</div>
-                <div class="set-row-d">Two to five marks each, graded by the model.</div>
+                <div class="set-row-t">Freitext</div>
+                <div class="set-row-d">Je zwei bis fünf Punkte, bewertet von der KI.</div>
               </div>
               <div class="set-row-r">
                 <div class="exam-step">
-                  <button class="btn btn--icon btn--sm" onclick={() => clampWritten(writtenCount - 1)} disabled={writtenCount <= 0} aria-label="fewer written questions">−</button>
+                  <button class="btn btn--icon btn--sm" onclick={() => clampWritten(writtenCount - 1)} disabled={writtenCount <= 0} aria-label="weniger Freitextfragen">−</button>
                   <span class="mono exam-step-v">{writtenCount}</span>
-                  <button class="btn btn--icon btn--sm" onclick={() => clampWritten(writtenCount + 1)} disabled={writtenCount >= 15} aria-label="more written questions">+</button>
+                  <button class="btn btn--icon btn--sm" onclick={() => clampWritten(writtenCount + 1)} disabled={writtenCount >= 15} aria-label="mehr Freitextfragen">+</button>
                 </div>
               </div>
             </div>
@@ -326,14 +326,14 @@
         <!-- Primary action + summary, mirroring GenerateMaterial's footer. -->
         <div class="exam-cta">
           <button class="btn btn--primary" onclick={startNew} disabled={!canStart}>
-            <Icon name="bolt" size={13} /> Generate &amp; start
+            <Icon name="bolt" size={13} /> Erstellen &amp; starten
           </button>
-          <span class="mono faint">{mcqCount + writtenCount} questions · {duration} min</span>
+          <span class="mono faint">{mcqCount + writtenCount} Fragen · {duration} Min.</span>
         </div>
 
         {#if pastExams.length > 0}
           <section class="set-group">
-            <div class="set-group-h"><h3 class="set-group-t">Past exams</h3></div>
+            <div class="set-group-h"><h3 class="set-group-t">Frühere Prüfungen</h3></div>
             <div class="set-card">
               {#each pastExams as e (e.id)}
                 <div
@@ -346,15 +346,15 @@
                   <div class="set-row-l">
                     <div class="set-row-t">{e.title}</div>
                     <div class="set-row-d">
-                      {e.status === "graded" ? "Graded" : e.status === "in_progress" ? "In progress" : "Ready to start"}
+                      {e.status === "graded" ? "Bewertet" : e.status === "in_progress" ? "Begonnen" : "Bereit"}
                     </div>
                   </div>
                   <div class="set-row-r exam-past-r">
                     {#if e.status === "graded"}
                       <span class="mono exam-past-score">{Math.round(e.score ?? 0)}%</span>
                     {/if}
-                    <span class="badge">{e.status === "graded" ? "graded" : e.status === "in_progress" ? "resume" : "start"}</span>
-                    <button class="btn btn--icon btn--sm btn--ghost" title="Delete exam" aria-label="Delete exam" onclick={(ev) => deletePast(e, ev)}>
+                    <span class="badge">{e.status === "graded" ? "bewertet" : e.status === "in_progress" ? "fortsetzen" : "starten"}</span>
+                    <button class="btn btn--icon btn--sm btn--ghost" title="Prüfung löschen" aria-label="Prüfung löschen" onclick={(ev) => deletePast(e, ev)}>
                       <Icon name="x" size={12} />
                     </button>
                   </div>
@@ -372,8 +372,8 @@
       <div class="exam-gen-card">
         <span class="is-spin"></span>
         <div class="exam-gen-text">
-          <span class="mono exam-gen-label">Writing your exam…</span>
-          <span class="mono faint exam-gen-sub">{mcqCount} multiple-choice · {writtenCount} written</span>
+          <span class="mono exam-gen-label">Deine Prüfung wird erstellt…</span>
+          <span class="mono faint exam-gen-sub">{mcqCount} Multiple Choice · {writtenCount} Freitext</span>
         </div>
       </div>
     </div>
@@ -394,7 +394,7 @@
             <div class="exam-q-head">
               <span class="quiz-key mono">{qi + 1}</span>
               <p class="quiz-q read">{q.q}</p>
-              <span class="mono faint exam-q-marks">{q.marks} mark{q.marks === 1 ? "" : "s"}</span>
+              <span class="mono faint exam-q-marks">{q.marks} {q.marks === 1 ? "Punkt" : "Punkte"}</span>
             </div>
             {#if q.type === "mcq"}
               <div class="quiz-opts">
@@ -412,7 +412,7 @@
               <textarea
                 class="input exam-textarea"
                 rows="4"
-                placeholder="Write your answer…"
+                placeholder="Deine Antwort…"
                 value={runAnswers[q.id]?.text ?? ""}
                 oninput={(e) => write(q.id, e.currentTarget.value)}
               ></textarea>
@@ -423,7 +423,7 @@
 
       <div class="exam-run-foot">
         <button class="btn btn--primary" onclick={confirmSubmit} disabled={submitting}>
-          {#if submitting}<span class="is-spin"></span> Grading…{:else}<Icon name="check" size={13} /> Submit exam{/if}
+          {#if submitting}<span class="is-spin"></span> Wird bewertet…{:else}<Icon name="check" size={13} /> Prüfung abgeben{/if}
         </button>
       </div>
     </div>
@@ -431,44 +431,44 @@
   {:else if screen === "results"}
     <div class="set-pane">
       <header class="set-head">
-        <div class="eyebrow">Results</div>
+        <div class="eyebrow">Ergebnis</div>
         <h1 class="set-title">{exam?.title}</h1>
         {#if results?.graded_by}
-          <p class="set-sub mono">Written answers graded by {results.graded_by} — double-check anything that looks off.</p>
+          <p class="set-sub mono">Freitextantworten bewertet von {results.graded_by} – prüfe alles, was dir seltsam vorkommt.</p>
         {/if}
       </header>
 
       <!-- Score as an AnalyticsView-style stat card row. -->
       <div class="exam-stats">
         <div class="exam-stat">
-          <div class="exam-stat-k mono">Score</div>
+          <div class="exam-stat-k mono">Ergebnis</div>
           <div class="exam-stat-v">{Math.round(scorePct)}<span class="exam-stat-u">%</span></div>
         </div>
         {#if results}
           <div class="exam-stat">
-            <div class="exam-stat-k mono">Marks earned</div>
+            <div class="exam-stat-k mono">Erreichte Punkte</div>
             <div class="exam-stat-v">{results.earned ?? 0}<span class="exam-stat-u"> / {results.total ?? 0}</span></div>
           </div>
           <div class="exam-stat">
-            <div class="exam-stat-k mono">Questions</div>
+            <div class="exam-stat-k mono">Fragen</div>
             <div class="exam-stat-v">{questions.length}</div>
           </div>
         {/if}
       </div>
 
       <div class="exam-cta">
-        <button class="btn btn--primary" onclick={startNew}><Icon name="bolt" size={13} /> Retake</button>
-        <button class="btn" onclick={backToSetup}><Icon name="book" size={13} /> New exam</button>
-        <button class="btn" onclick={doRemark} disabled={remarking} title="Re-grade these answers with the same rubric — useful when grading failed or misread an answer">
+        <button class="btn btn--primary" onclick={startNew}><Icon name="bolt" size={13} /> Wiederholen</button>
+        <button class="btn" onclick={backToSetup}><Icon name="book" size={13} /> Neue Prüfung</button>
+        <button class="btn" onclick={doRemark} disabled={remarking} title="Antworten mit demselben Schema neu bewerten – hilfreich, wenn die Bewertung fehlschlug oder eine Antwort falsch gelesen wurde">
           {#if remarking}<span class="is-spin" style:width="12px" style:height="12px"></span>{:else}<Icon name="refresh" size={13} />{/if}
-          Remark
+          Neu bewerten
         </button>
       </div>
 
       {#if weakTopics.length > 0}
         <!-- Weak-topic callout: a set-card with a warn accent. -->
         <section class="set-group">
-          <div class="set-group-h"><h3 class="set-group-t">Topics to revise</h3></div>
+          <div class="set-group-h"><h3 class="set-group-t">Zu wiederholende Themen</h3></div>
           <div class="set-card exam-weak">
             <div class="set-row stacked">
               <div class="set-row-r">
@@ -485,7 +485,7 @@
 
       <!-- Per-question review reuses Quiz.svelte's answered-state classes. -->
       <section class="set-group">
-        <div class="set-group-h"><h3 class="set-group-t">Review</h3></div>
+        <div class="set-group-h"><h3 class="set-group-t">Auswertung</h3></div>
         <div class="exam-review">
           {#each reviewItems as { q, r }, idx (q.id)}
             {@const correct = q.type === "mcq" ? r?.correct : (r?.score ?? 0) >= q.marks}
@@ -507,15 +507,15 @@
                     <div class="quiz-opt{isAnswer ? ' correct' : ''}{isPick && !isAnswer ? ' wrong' : ''}">
                       <span class="quiz-key mono">{String.fromCharCode(65 + oi)}</span>
                       <span class="read">{opt}</span>
-                      {#if isPick}<span class="badge">Your answer</span>{/if}
+                      {#if isPick}<span class="badge">Deine Antwort</span>{/if}
                       {#if isAnswer}<Icon name="check" size={13} color="var(--ok)" />{/if}
                     </div>
                   {/each}
                 </div>
               {:else}
                 <div class="exam-rev-written">
-                  <span class="mono faint exam-rev-label">Your answer</span>
-                  <p class="read exam-rev-yours">{r?.your_text || "(blank)"}</p>
+                  <span class="mono faint exam-rev-label">Deine Antwort</span>
+                  <p class="read exam-rev-yours">{r?.your_text || "(leer)"}</p>
                 </div>
               {/if}
 
