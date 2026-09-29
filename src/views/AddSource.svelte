@@ -14,11 +14,11 @@
   let textTitle = $state("");
 
   const allMethods = [
-    { id: "upload" as const, ico: "doc",    t: "Upload Files",   d: "PDF · PPTX · DOCX · TXT · MD", k: "u" },
-    { id: "url"    as const, ico: "search", t: "Paste URL",       d: "web page · YouTube",            k: "p" },
-    { id: "text"   as const, ico: "doc",    t: "Paste Text",      d: "markdown · plain text",         k: "t" },
-    { id: "record" as const, ico: "record", t: "Record Lecture",  d: "live audio + transcript",       k: "r" },
-    { id: "photo"  as const, ico: "grid",   t: "Snap Photo",      d: "OCR a whiteboard / page",       k: "o" },
+    { id: "upload" as const, ico: "doc",    t: "Dateien hochladen", d: "PDF · PPTX · DOCX · TXT · MD", k: "u" },
+    { id: "url"    as const, ico: "search", t: "Link einfügen",   d: "Webseite · YouTube",            k: "p" },
+    { id: "text"   as const, ico: "doc",    t: "Text einfügen",   d: "Markdown · reiner Text",         k: "t" },
+    { id: "record" as const, ico: "record", t: "Unterricht aufnehmen", d: "Live-Audio + Transkript",       k: "r" },
+    { id: "photo"  as const, ico: "grid",   t: "Foto aufnehmen",  d: "Tafel / Seite per Texterkennung lesen",       k: "o" },
   ] as const;
   // Recording is available on mobile again: it captures audio and transcribes via the
   // homelab Whisper endpoint (remote-first). MobileShell mounts the Recorder view.
@@ -58,12 +58,12 @@
   // Themed dropdown options: the selected subject's topics, plus an explicit "no topic" entry.
   const topicOptions = $derived([
     ...(selectedSubject?.topics ?? []).map((t) => ({ id: t.id, label: t.name })),
-    { id: "", label: "— no topic —" },
+    { id: "", label: "– kein Thema –" },
   ]);
 
   function guardSubject(): boolean {
     if (!selectedSubject) {
-      app.pushToast({ kind: "error", title: "Select a subject first", body: "Choose a subject before adding a source." });
+      app.pushToast({ kind: "error", title: "Wähle zuerst ein Fach", body: "Wähle ein Fach, bevor du eine Quelle hinzufügst." });
       return false;
     }
     return true;
@@ -102,7 +102,7 @@
       const picked = await open({
         multiple: true,
         directory: false,
-        filters: [{ name: "Documents", extensions: ["pdf", "epub", "docx", "pptx", "doc", "ppt", "txt", "md"] }],
+        filters: [{ name: "Dokumente", extensions: ["pdf", "epub", "docx", "pptx", "doc", "ppt", "txt", "md"] }],
       });
       const paths = Array.isArray(picked) ? picked : picked ? [picked] : [];
       if (paths.length === 0) return;
@@ -120,19 +120,19 @@
           try {
             ingestPath = await api.stageUpload(path);
           } catch (e) {
-            app.pushToast({ kind: "error", title: "Couldn't read the file", body: String(e) });
+            app.pushToast({ kind: "error", title: "Datei konnte nicht gelesen werden", body: String(e) });
             continue;
           }
         }
         queueIngest({ subject_id: selectedSubjectId, topic_id: topicId, path: ingestPath, name, tags: [] }, name);
       }
       if (paths.length > 1) {
-        app.pushToast({ kind: "info", title: `Ingesting ${paths.length} files`, body: "Added to the queue." });
+        app.pushToast({ kind: "info", title: `${paths.length} Dateien werden eingelesen`, body: "Zur Warteschlange hinzugefügt." });
       }
       app.openSubject(selectedSubjectId);
       app.setTab("sources");
     } catch (e) {
-      app.pushToast({ kind: "error", title: "File pick failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Dateiauswahl fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -145,7 +145,7 @@
       if (!dir || typeof dir !== "string") return;
       const files = await api.listFolderSources(dir);
       if (files.length === 0) {
-        app.pushToast({ kind: "warning", title: "Nothing to import", body: "No PDFs, slides, docs or images in that folder." });
+        app.pushToast({ kind: "warning", title: "Nichts zu importieren", body: "In diesem Ordner sind keine PDFs, Präsentationen, Dokumente oder Bilder." });
         return;
       }
       const imgExts = ["png", "jpg", "jpeg", "webp"];
@@ -156,11 +156,11 @@
           : { subject_id: selectedSubjectId, topic_id: topicId, path: f.path, name: f.name, tags: [] };
         queueIngest(input, f.name);
       }
-      app.pushToast({ kind: "info", title: `Ingesting ${files.length} file${files.length === 1 ? "" : "s"}`, body: "Folder contents added to the queue." });
+      app.pushToast({ kind: "info", title: `${files.length} ${files.length === 1 ? "Datei wird" : "Dateien werden"} eingelesen`, body: "Ordnerinhalt zur Warteschlange hinzugefügt." });
       app.openSubject(selectedSubjectId);
       app.setTab("sources");
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Folder import failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Ordnerimport fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -174,7 +174,7 @@
   function beginText() {
     if (!guardSubject()) return;
     if (!value.trim()) return;
-    const name = textTitle.trim() || "Pasted text";
+    const name = textTitle.trim() || "Eingefügter Text";
     startIngest({ subject_id: selectedSubjectId, topic_id: topicId, text: value.trim(), kind: "md", name, tags: [] }, name);
   }
 
@@ -185,7 +185,7 @@
       const picked = await open({
         multiple: false,
         directory: false,
-        filters: [{ name: "Images", extensions: ["png", "jpg", "jpeg", "webp"] }],
+        filters: [{ name: "Bilder", extensions: ["png", "jpg", "jpeg", "webp"] }],
       });
       const path = typeof picked === "string" ? picked : picked?.[0] ?? null;
       if (!path) return;
@@ -196,13 +196,13 @@
         try {
           ingestPath = await api.stageUpload(path);
         } catch (e) {
-          app.pushToast({ kind: "error", title: "Couldn't read the image", body: String(e) });
+          app.pushToast({ kind: "error", title: "Bild konnte nicht gelesen werden", body: String(e) });
           return;
         }
       }
       startIngest({ subject_id: selectedSubjectId, topic_id: topicId, path: ingestPath, kind: "image", name, tags: [] }, name);
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Image pick failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Bildauswahl fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -268,7 +268,7 @@
               : { subject_id: selectedSubjectId, topic_id: topicId, path, name, tags: [] };
             queueIngest(input, name);
           }
-          app.pushToast({ kind: "info", title: `Ingesting ${dropped.length} file${dropped.length === 1 ? "" : "s"}`, body: "Dropped files added to the queue." });
+          app.pushToast({ kind: "info", title: `${dropped.length} ${dropped.length === 1 ? "Datei wird" : "Dateien werden"} eingelesen`, body: "Abgelegte Dateien zur Warteschlange hinzugefügt." });
           app.openSubject(selectedSubjectId);
           app.setTab("sources");
         });
@@ -282,17 +282,17 @@
   <!-- Page header -->
   <div class="addsrc-head">
     {#if !isMobile}
-      <button class="btn btn--icon btn--sm btn--ghost" onclick={() => app.setView("subject")} title="Back">
+      <button class="btn btn--icon btn--sm btn--ghost" onclick={() => app.setView("subject")} title="Zurück">
         <span style:transform="rotate(180deg)" style:display="flex"><Icon name="chevron" size={14} /></span>
       </button>
     {/if}
     <div>
-      <div class="eyebrow">Add source</div>
-      <h1 class="addsrc-title">New source</h1>
+      <div class="eyebrow">Quelle hinzufügen</div>
+      <h1 class="addsrc-title">Neue Quelle</h1>
     </div>
     {#if selectedSubject}
       <div class="addsrc-crumb mono faint">
-        into {selectedSubject.name}{selectedTopic ? " › " + (selectedSubject.topics.find((t) => t.id === selectedTopic)?.name ?? "") : ""}
+        in {selectedSubject.name}{selectedTopic ? " › " + (selectedSubject.topics.find((t) => t.id === selectedTopic)?.name ?? "") : ""}
       </div>
     {/if}
   </div>
@@ -303,13 +303,13 @@
       {#if isMobile}
         <!-- Touch: a themed dropdown instead of clipping tiles. -->
         <div class="field">
-          <span class="onb-label mono">SOURCE TYPE</span>
+          <span class="onb-label mono">ART DER QUELLE</span>
           <Picker
             value={method ?? ""}
             onChange={(id) => selectMethod(id as typeof methods[number]["id"])}
             options={methods.map((m) => ({ id: m.id, label: m.t }))}
             icon={methods.find((m) => m.id === method)?.ico ?? "doc"}
-            placeholder="Choose a source type…"
+            placeholder="Art der Quelle wählen…"
           />
         </div>
       {:else}
@@ -332,22 +332,22 @@
 
       <div class="addsrc-target">
         <div class="field">
-          <span class="onb-label mono">SUBJECT</span>
+          <span class="onb-label mono">FACH</span>
           <Picker
             value={selectedSubjectId}
             onChange={(id) => { selectedSubjectId = id; selectedTopic = ""; }}
             options={subjectOptions}
-            placeholder="— select subject —"
+            placeholder="– Fach wählen –"
           />
         </div>
         {#if selectedSubject}
           <div class="field">
-            <span class="onb-label mono">TOPIC <span class="faint">where this lives</span></span>
+            <span class="onb-label mono">THEMA <span class="faint">wo die Quelle abgelegt wird</span></span>
             <Picker
               value={selectedTopic}
               onChange={(id) => (selectedTopic = id)}
               options={topicOptions}
-              placeholder="— no topic —"
+              placeholder="– kein Thema –"
             />
           </div>
         {/if}
@@ -367,64 +367,64 @@
         {:else if method === "url"}
           <span class="onb-label mono">URL</span>
           <!-- svelte-ignore a11y_autofocus -->
-          <input class="input" autofocus placeholder="https://… or a YouTube link" bind:value onkeydown={(e) => e.key === "Enter" && beginUrl()} />
-          <p class="mono faint addsrc-hint">A web page or YouTube link — Cortex fetches and ingests the readable content.</p>
+          <input class="input" autofocus placeholder="https://… oder ein YouTube-Link" bind:value onkeydown={(e) => e.key === "Enter" && beginUrl()} />
+          <p class="mono faint addsrc-hint">Eine Webseite oder ein YouTube-Link – Cortex lädt den lesbaren Inhalt und liest ihn ein.</p>
         {:else if method === "text"}
-          <span class="onb-label mono">PASTE TEXT</span>
+          <span class="onb-label mono">TEXT EINFÜGEN</span>
           <!-- svelte-ignore a11y_autofocus -->
-          <input class="input" autofocus placeholder="Title (optional)" bind:value={textTitle} />
-          <textarea class="input addsrc-textarea" placeholder="Paste your text or markdown here…" bind:value></textarea>
+          <input class="input" autofocus placeholder="Titel (optional)" bind:value={textTitle} />
+          <textarea class="input addsrc-textarea" placeholder="Text oder Markdown hier einfügen…" bind:value></textarea>
         {:else if method === "upload"}
-          <span class="onb-label mono">UPLOAD FILES</span>
+          <span class="onb-label mono">DATEIEN HOCHLADEN</span>
           <!-- svelte-ignore a11y_click_events_have_key_events -->
           <!-- svelte-ignore a11y_no_static_element_interactions -->
           <div class="add-drop addsrc-drop" onclick={beginUpload}>
             <Icon name="doc" size={22} color="var(--fg-faint)" />
-            <span class="mono">Drag files in, or click to browse — one or many</span>
-            <span class="mono faint">PDF · PPTX · DOCX · TXT · MD · images</span>
+            <span class="mono">Dateien hierher ziehen oder zum Auswählen klicken – eine oder mehrere</span>
+            <span class="mono faint">PDF · PPTX · DOCX · TXT · MD · Bilder</span>
           </div>
           <button class="btn btn--ghost btn--sm" style="margin-top:8px" onclick={beginFolder}>
-            <Icon name="grid" size={12} /> Add a folder — imports every supported file inside
+            <Icon name="grid" size={12} /> Ordner hinzufügen – importiert alle unterstützten Dateien darin
           </button>
         {:else if method === "photo"}
-          <span class="onb-label mono">SNAP PHOTO</span>
+          <span class="onb-label mono">FOTO</span>
           <!-- svelte-ignore a11y_click_events_have_key_events -->
           <!-- svelte-ignore a11y_no_static_element_interactions -->
           <div class="add-drop addsrc-drop" onclick={beginPhoto}>
             <Icon name="grid" size={22} color="var(--fg-faint)" />
-            <span class="mono">Click to browse for an image</span>
-            <span class="mono faint">PNG · JPG · WebP — OCR'd to text</span>
+            <span class="mono">Klicken, um ein Bild auszuwählen</span>
+            <span class="mono faint">PNG · JPG · WebP – per Texterkennung gelesen</span>
           </div>
         {:else if method === "record"}
           <div class="addsrc-empty">
             <Icon name="record" size={26} color="var(--accent)" />
-            <p class="mono faint">Opening the lecture recorder…</p>
+            <p class="mono faint">Aufnahme wird geöffnet…</p>
           </div>
         {/if}
       </div>
 
       <!-- Footer actions -->
       <div class="add-foot addsrc-foot">
-        <button class="btn btn--ghost" onclick={() => app.setView("subject")}>Cancel</button>
+        <button class="btn btn--ghost" onclick={() => app.setView("subject")}>Abbrechen</button>
         {#if method === "url" || method === "text"}
           <button class="btn btn--primary" disabled={!value.trim() || !selectedSubject} onclick={handleBegin}>
-            Ingest source <Icon name="arrowR" size={13} />
+            Quelle einlesen <Icon name="arrowR" size={13} />
           </button>
         {:else if method === "upload"}
           <button class="btn btn--primary" disabled={!selectedSubject} onclick={beginUpload}>
-            Pick file(s) <Icon name="arrowR" size={13} />
+            Datei(en) wählen <Icon name="arrowR" size={13} />
           </button>
         {:else if method === "photo"}
           <button class="btn btn--primary" disabled={!selectedSubject} onclick={beginPhoto}>
-            Pick image <Icon name="arrowR" size={13} />
+            Bild wählen <Icon name="arrowR" size={13} />
           </button>
         {:else if method === "record"}
           <button class="btn btn--primary" disabled={!selectedSubject} onclick={() => app.setView("recorder")}>
-            Open recorder <Icon name="arrowR" size={13} />
+            Aufnahme öffnen <Icon name="arrowR" size={13} />
           </button>
         {:else}
           <button class="btn btn--primary" disabled onclick={handleBegin}>
-            Ingest source <Icon name="arrowR" size={13} />
+            Quelle einlesen <Icon name="arrowR" size={13} />
           </button>
         {/if}
       </div>

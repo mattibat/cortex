@@ -31,14 +31,14 @@
         try {
           await api.createTopic(subj.id, tn);
         } catch (te) {
-          app.pushToast({ kind: "error", title: "Couldn't add topic", body: `${tn}: ${String(te)}` });
+          app.pushToast({ kind: "error", title: "Thema konnte nicht hinzugefügt werden", body: `${tn}: ${String(te)}` });
         }
       }
       await app.refresh();
-      app.pushToast({ kind: "success", title: "Subject created", body: name.trim() + " is ready." });
+      app.pushToast({ kind: "success", title: "Fach erstellt", body: name.trim() + " ist bereit." });
       app.setView("dashboard");
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Failed to create subject", body: String(e) });
+      app.pushToast({ kind: "error", title: "Fach konnte nicht erstellt werden", body: String(e) });
     }
   }
 </script>
@@ -47,14 +47,14 @@
   <div class="addpage addpage--subject">
     <div class="addpage-head">
       {#if !isMobile}
-        <button class="btn btn--icon btn--sm btn--ghost" onclick={() => app.setView("dashboard")} title="Back">
+        <button class="btn btn--icon btn--sm btn--ghost" onclick={() => app.setView("dashboard")} title="Zurück">
           <Icon name="chevron" size={14} style="transform:rotate(180deg)" />
         </button>
       {/if}
       <div>
-        <div class="eyebrow">New subject</div>
-        <h1 class="addpage-title">Create a subject</h1>
-        <div class="mono faint" style="font-size:var(--t-xs)">holds topics, sources and one living cheatsheet</div>
+        <div class="eyebrow">Neues Fach</div>
+        <h1 class="addpage-title">Fach erstellen</h1>
+        <div class="mono faint" style="font-size:var(--t-xs)">enthält Themen, Quellen und einen mitwachsenden Lernzettel</div>
       </div>
     </div>
 
@@ -64,27 +64,27 @@
       </span>
       <div>
         <div class="read" style="font-size:var(--r-lg);color:var(--fg-bright)">{name || "Untitled subject"}</div>
-        <div class="mono faint" style="font-size:var(--t-2xs)">{code || "no code"} · {topics.filter(t => t.trim()).length} topics</div>
+        <div class="mono faint" style="font-size:var(--t-2xs)">{code || "kein Kürzel"} · {topics.filter(t => t.trim()).length} Themen</div>
       </div>
     </div>
 
     <div class="addsubj-form">
       <div class="field">
         <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="onb-label mono">SUBJECT NAME</label>
+        <label class="onb-label mono">NAME DES FACHS</label>
         <!-- svelte-ignore a11y_autofocus -->
-        <input class="input" autofocus bind:value={name} placeholder="e.g. Algorithms" />
+        <input class="input" autofocus bind:value={name} placeholder="z. B. Mathematik" />
       </div>
 
       <div class="field">
         <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="onb-label mono">COURSE CODE <span class="faint">optional</span></label>
-        <input class="input mono" bind:value={code} placeholder="CS-3490" />
+        <label class="onb-label mono">KÜRZEL <span class="faint">optional</span></label>
+        <input class="input mono" bind:value={code} placeholder="MA-11" />
       </div>
 
       <div class="field">
         <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="onb-label mono">COLOR</label>
+        <label class="onb-label mono">FARBE</label>
         <div class="color-row">
           {#each colors as c}
             <button
@@ -102,20 +102,20 @@
 
       <div class="field">
         <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="onb-label mono">GLYPH</label>
+        <label class="onb-label mono">SYMBOL</label>
         <EmojiPicker value={glyph} onPick={(e) => (glyph = e)} />
       </div>
 
       <div class="field">
         <!-- svelte-ignore a11y_label_has_associated_control -->
-        <label class="onb-label mono">FIRST TOPICS <span class="faint">optional — add lectures into these</span></label>
+        <label class="onb-label mono">ERSTE THEMEN <span class="faint">optional – hier legst du Material ab</span></label>
         <div class="topic-inputs">
           {#each topics as t, i}
             <input
               class="input"
               value={t}
               oninput={e => setTopic(i, (e.target as HTMLInputElement).value)}
-              placeholder={["Recursion", "Dynamic programming", "Graphs"][i] || "Topic"}
+              placeholder={["Analysis", "Lineare Algebra", "Stochastik"][i] || "Thema"}
             />
           {/each}
         </div>
@@ -123,9 +123,9 @@
     </div>
 
     <div class="add-foot">
-      <button class="btn btn--ghost" onclick={() => app.setView("dashboard")}>Cancel</button>
+      <button class="btn btn--ghost" onclick={() => app.setView("dashboard")}>Abbrechen</button>
       <button class="btn btn--primary" disabled={!ready} onclick={create}>
-        <Icon name="check" size={13} /> Create subject
+        <Icon name="check" size={13} /> Fach erstellen
       </button>
     </div>
   </div>

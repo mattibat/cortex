@@ -12,11 +12,11 @@
   import { jobs } from "../lib/jobs.svelte";
 
   const TABS = [
-    { id: "cheatsheet", label: "Cheatsheet", icon: "book" },
-    { id: "sources", label: "Sources", icon: "doc" },
+    { id: "cheatsheet", label: "Lernzettel", icon: "book" },
+    { id: "sources", label: "Quellen", icon: "doc" },
     { id: "chats", label: "Chats", icon: "chat" },
-    { id: "materials", label: "Materials", icon: "grid" },
-    { id: "citations", label: "Planner", icon: "cards" },
+    { id: "materials", label: "Materialien", icon: "grid" },
+    { id: "citations", label: "Planer", icon: "cards" },
   ] as const;
 
   // Collapsed tab menu (narrow widths / touch): one trigger opens a popover of all
@@ -40,8 +40,8 @@
   // Cheatsheet view keeps in sync with its tab selection.
   const scopeLabel = $derived(
     app.cheatTopicId
-      ? (subj?.topics.find((t) => t.id === app.cheatTopicId)?.name ?? "Whole subject")
-      : "Whole subject"
+      ? (subj?.topics.find((t) => t.id === app.cheatTopicId)?.name ?? "Ganzes Fach")
+      : "Ganzes Fach"
   );
 
   // Load ALL sources for the subject (including ones with no topic, which the
@@ -84,7 +84,7 @@
 
   async function deleteSrc(e: MouseEvent, src: Source) {
     e.stopPropagation();
-    if (!(await app.confirm({ title: "Delete this source?", danger: true, okLabel: "Delete" }))) return;
+    if (!(await app.confirm({ title: "Diese Quelle löschen?", danger: true, okLabel: "Löschen" }))) return;
     await app.deleteSource(src.id); // toasts + refreshes the store internally
     loadSources(); // reload the local list this tab renders from
   }
@@ -102,13 +102,13 @@
   }
 
   async function deleteTopicGroup(topicId: string, name: string) {
-    if (!(await app.confirm({ title: `Delete topic "${name}"?`, body: "This empty topic will be removed.", danger: true, okLabel: "Delete" }))) return;
+    if (!(await app.confirm({ title: `Thema „${name}“ löschen?`, body: "Dieses leere Thema wird entfernt.", danger: true, okLabel: "Löschen" }))) return;
     await app.deleteTopic(topicId); // toasts + refreshes store internally
     loadSources();
   }
 
   async function addTopic() {
-    const name = await app.prompt({ title: "Add topic", label: "Topic name", placeholder: "e.g. Determinism" });
+    const name = await app.prompt({ title: "Thema hinzufügen", label: "Name des Themas", placeholder: "z. B. Determinismus" });
     if (name) {
       await app.createTopic(name); // adds to active subject + toasts + refreshes
       loadSources();
@@ -122,7 +122,7 @@
     }
     return [...m.entries()].map(([k, items]) => ({
       key: k,
-      name: k === "__none__" ? "Ungrouped" : (subj?.topics.find((t) => t.id === k)?.name ?? "Ungrouped"),
+      name: k === "__none__" ? "Ohne Thema" : (subj?.topics.find((t) => t.id === k)?.name ?? "Ohne Thema"),
       items,
     }));
   });
@@ -156,14 +156,14 @@
   }
   const moveTargets = $derived([
     ...(subj?.topics ?? []).map((t) => ({ id: t.id, label: "→ " + t.name })),
-    { id: "__none__", label: "→ no topic" },
+    { id: "__none__", label: "→ kein Thema" },
   ]);
   async function bulkDelete() {
     const n = selIds.length;
     if (n === 0) return;
-    if (!(await app.confirm({ title: `Delete ${n} source${n === 1 ? "" : "s"}?`, danger: true, okLabel: "Delete" }))) return;
+    if (!(await app.confirm({ title: `${n} ${n === 1 ? "Quelle" : "Quellen"} löschen?`, danger: true, okLabel: "Löschen" }))) return;
     for (const id of selIds) { try { await api.deleteSource(id); } catch (e) { /* keep going */ } }
-    app.pushToast({ kind: "success", title: `Deleted ${n} source${n === 1 ? "" : "s"}` });
+    app.pushToast({ kind: "success", title: `${n} ${n === 1 ? "Quelle" : "Quellen"} gelöscht` });
     clearSel();
     await app.refresh();
     loadSources();
@@ -173,7 +173,7 @@
     const tid = target === "__none__" ? null : target;
     const n = selIds.length;
     for (const id of selIds) { try { await api.moveSource(id, subj.id, tid); } catch (e) { /* keep going */ } }
-    app.pushToast({ kind: "success", title: `Moved ${n} source${n === 1 ? "" : "s"}` });
+    app.pushToast({ kind: "success", title: `${n} ${n === 1 ? "Quelle" : "Quellen"} verschoben` });
     clearSel();
     await app.refresh();
     loadSources();
@@ -182,7 +182,7 @@
     const sid = subj?.id;
     const ids = selIds;
     if (!sid || ids.length === 0) return;
-    app.pushToast({ kind: "info", title: `Re-ingesting ${ids.length} source${ids.length === 1 ? "" : "s"}…`, body: "Re-OCR / re-chunk in progress." });
+    app.pushToast({ kind: "info", title: `${ids.length} ${ids.length === 1 ? "Quelle wird" : "Quellen werden"} neu eingelesen…`, body: "Texterkennung und Aufteilung laufen erneut." });
     clearSel();
     for (const id of ids) {
       // Surface each as a running job card so progress is visible.
@@ -207,7 +207,7 @@
         class="st-id st-id--clickable"
         role="button"
         tabindex="0"
-        title="Open subject details"
+        title="Fachdetails öffnen"
         onclick={() => app.openSubjectPanel()}
         onkeydown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); app.openSubjectPanel(); } }}
       >
@@ -218,7 +218,7 @@
         </div>
         <button
           class="btn btn--icon btn--sm btn--ghost"
-          title="Edit subject"
+          title="Fach bearbeiten"
           onclick={(e) => { e.stopPropagation(); editSubject(); }}
         >
           <Icon name="pencil" size={12} />
@@ -286,15 +286,15 @@
               <span class="label">{srcList.length} {srcList.length === 1 ? "source" : "sources"} · {groups.length} {groups.length === 1 ? "group" : "groups"}</span>
               <div class="grow"></div>
               {#if srcList.length > 0}
-                <button class="btn btn--sm btn--ghost" onclick={selectAll} title="Select all sources">
-                  <Icon name="check" size={12} /> {allSelected ? "Deselect all" : "Select all"}
+                <button class="btn btn--sm btn--ghost" onclick={selectAll} title="Alle Quellen auswählen">
+                  <Icon name="check" size={12} /> {allSelected ? "Auswahl aufheben" : "Alle auswählen"}
                 </button>
               {/if}
               <button class="btn btn--sm btn--ghost" onclick={addTopic}>
-                <Icon name="plus" size={12} /> Add topic
+                <Icon name="plus" size={12} /> Thema hinzufügen
               </button>
               <button class="btn btn--sm btn--primary" onclick={() => app.setView("add-source")}>
-                <Icon name="plus" size={12} /> Add source
+                <Icon name="plus" size={12} /> Quelle hinzufügen
               </button>
             </div>
 
@@ -307,16 +307,16 @@
                     value=""
                     onChange={(id) => bulkMove(id)}
                     options={moveTargets}
-                    placeholder="Move to…"
+                    placeholder="Verschieben nach…"
                   />
                 </div>
-                <button class="btn btn--sm" onclick={bulkReingest} title="Re-OCR / re-chunk selected sources">
-                  <Icon name="refresh" size={12} /> Re-ingest
+                <button class="btn btn--sm" onclick={bulkReingest} title="Ausgewählte Quellen neu einlesen">
+                  <Icon name="refresh" size={12} /> Neu einlesen
                 </button>
                 <button class="btn btn--sm sv-delete" onclick={bulkDelete}>
-                  <Icon name="x" size={12} /> Delete
+                  <Icon name="x" size={12} /> Löschen
                 </button>
-                <button class="btn btn--sm btn--ghost" onclick={clearSel}>Clear</button>
+                <button class="btn btn--sm btn--ghost" onclick={clearSel}>Aufheben</button>
               </div>
             {/if}
 
@@ -333,7 +333,7 @@
                     <div class="grow"></div>
                     <button
                       class="btn btn--icon btn--sm btn--ghost"
-                      title="Edit topic"
+                      title="Thema bearbeiten"
                       onclick={() => editTopicGroup(g.key, g.name)}
                     >
                       <Icon name="pencil" size={12} />
@@ -341,7 +341,7 @@
                     {#if g.items.length === 0}
                       <button
                         class="btn btn--icon btn--sm btn--ghost"
-                        title="Delete empty topic"
+                        title="Leeres Thema löschen"
                         onclick={() => deleteTopicGroup(g.key, g.name)}
                       >
                         <Icon name="x" size={12} />
@@ -359,13 +359,13 @@
                       tabindex="0"
                       onclick={() => tileClick(src)}
                       onkeydown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tileClick(src); } }}
-                      title={selecting ? "Toggle selection" : "Open source"}
+                      title={selecting ? "Auswahl umschalten" : "Quelle öffnen"}
                     >
                       <div class="stl-top">
                         <button
                           class="src-check{sel[src.id] ? ' on' : ''}"
                           onclick={(e) => toggleSel(src.id, e)}
-                          title="Select source"
+                          title="Quelle auswählen"
                           aria-pressed={!!sel[src.id]}
                         >
                           {#if sel[src.id]}<Icon name="check" size={10} />{/if}
@@ -375,21 +375,21 @@
                         </span>
                         <span
                           class="status-pill status-pill--{src.status === 'ready' ? 'ready' : src.status === 'error' ? 'error' : 'pending'}"
-                          title={src.status === 'ready' ? 'Ready' : src.status === 'error' ? 'Failed — re-ingest' : 'Not generated yet'}
+                          title={src.status === 'ready' ? 'Bereit' : src.status === 'error' ? 'Fehlgeschlagen – neu einlesen' : 'Noch nicht verarbeitet'}
                         >
                           <span class="dot"></span>
                         </span>
                         <div class="grow"></div>
                         <button
                           class="btn btn--icon btn--sm btn--ghost"
-                          title="Edit source"
+                          title="Quelle bearbeiten"
                           onclick={(e) => editSrc(e, src)}
                         >
                           <Icon name="pencil" size={12} />
                         </button>
                         <button
                           class="btn btn--icon btn--sm btn--ghost"
-                          title="Delete source"
+                          title="Quelle löschen"
                           onclick={(e) => deleteSrc(e, src)}
                         >
                           <Icon name="x" size={12} />
@@ -397,7 +397,7 @@
                       </div>
                       <div class="stl-name mono">{src.name}</div>
                       {#if src.meta}
-                        <div class="stl-meta mono">{src.meta} · {src.status === "ready" ? "embedded" : src.status === "error" ? "error" : (app.ingestProgress[src.id]?.detail ?? "ingesting…")}</div>
+                        <div class="stl-meta mono">{src.meta} · {src.status === "ready" ? "eingebettet" : src.status === "error" ? "Fehler" : (app.ingestProgress[src.id]?.detail ?? "wird eingelesen…")}</div>
                       {/if}
                       {#if src.tags && src.tags.length > 0}
                         <div class="stl-tags">
@@ -423,10 +423,10 @@
                 style:color="var(--fg-faint)"
               >
                 <Icon name="doc" size={26} color="var(--fg-faint)" />
-                <h1 class="read" style:font-size="var(--r-xl)" style:color="var(--fg-bright)" style:font-weight="500">No sources yet</h1>
-                <p class="mono muted">Add a lecture, PDF, link, recording or photo to start building this subject.</p>
+                <h1 class="read" style:font-size="var(--r-xl)" style:color="var(--fg-bright)" style:font-weight="500">Noch keine Quellen</h1>
+                <p class="mono muted">Füge Unterrichtsmaterial, PDFs, Links, Aufnahmen oder Fotos hinzu, um dieses Fach aufzubauen.</p>
                 <button class="btn btn--primary" onclick={() => app.setView("add-source")}>
-                  <Icon name="plus" size={13} /> Add source
+                  <Icon name="plus" size={13} /> Quelle hinzufügen
                 </button>
               </div>
             {/if}
@@ -451,13 +451,13 @@
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:62vh;padding:48px 32px;text-align:center;color:var(--fg-faint)">
       <Icon name="diamond" size={30} color="var(--fg-faint)" />
       {#if app.subjects.length === 0}
-        <p class="read" style="font-size:var(--r-lg);color:var(--fg-bright);margin:4px 0 0">No subjects yet</p>
-        <p style="max-width:360px;margin:0">Add your first subject to start building cheatsheets, flashcards and more.</p>
+        <p class="read" style="font-size:var(--r-lg);color:var(--fg-bright);margin:4px 0 0">Noch keine Fächer</p>
+        <p style="max-width:360px;margin:0">Füge dein erstes Fach hinzu, um Lernzettel, Karteikarten und mehr zu erstellen.</p>
         <button class="btn btn--primary btn--sm" style="margin-top:6px" onclick={() => app.setView("add-subject")}>
-          <Icon name="plus" size={13} /> New subject
+          <Icon name="plus" size={13} /> Neues Fach
         </button>
       {:else}
-        <p style="margin:0">Select a subject from the sidebar to get started.</p>
+        <p style="margin:0">Wähle links in der Seitenleiste ein Fach aus.</p>
       {/if}
     </div>
   </div>

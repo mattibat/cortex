@@ -4498,7 +4498,7 @@ fn spawn_lecture_summary(
                     &c,
                     Some(&subject_id),
                     topic_id.as_deref(),
-                    &format!("Summary — {name}"),
+                    &format!("Zusammenfassung — {name}"),
                     summary.trim(),
                 ) {
                     eprintln!("[summary] couldn't save note: {e}");
