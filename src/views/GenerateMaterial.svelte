@@ -6,12 +6,12 @@
 
   // ── Material type definitions ──────────────────────────────
   const GEN_TYPES = [
-    { id: "flashcards", label: "Flashcards",      ico: "cards", desc: "Spaced-repetition deck",    color: "var(--accent)"      },
-    { id: "quiz",       label: "Quiz",             ico: "check", desc: "MCQ · short answer · cloze", color: "var(--info)"        },
-    { id: "audio",      label: "Audio overview",   ico: "music", desc: "Two-host podcast",           color: "var(--mode-select)" },
-    { id: "slideshow",  label: "Slides",           ico: "grid",  desc: "Presentation slide deck",     color: "var(--warn)"        },
-    { id: "infographic",label: "Infographic",      ico: "grid",  desc: "One-poster summary",         color: "var(--ok)"          },
-    { id: "mindmap",    label: "Mind map",          ico: "link",  desc: "Concept map of the topic",    color: "var(--info)"        },
+    { id: "flashcards", label: "Karteikarten",    ico: "cards", desc: "Stapel mit Wiederholungsplan",    color: "var(--accent)"      },
+    { id: "quiz",       label: "Quiz",             ico: "check", desc: "Multiple Choice · Kurzantwort · Lückentext", color: "var(--info)"        },
+    { id: "audio",      label: "Audio-Überblick",  ico: "music", desc: "Podcast mit zwei Sprechern",           color: "var(--mode-select)" },
+    { id: "slideshow",  label: "Präsentation",     ico: "grid",  desc: "Foliensatz",     color: "var(--warn)"        },
+    { id: "infographic",label: "Infografik",       ico: "grid",  desc: "Zusammenfassung auf einem Poster",         color: "var(--ok)"          },
+    { id: "mindmap",    label: "Mindmap",           ico: "link",  desc: "Begriffsnetz zum Thema",    color: "var(--info)"        },
   ] as const;
 
   const srcLabel: Record<string, string> = {
@@ -66,7 +66,7 @@
 
   const tm = $derived(GEN_TYPES.find(t => t.id === type)!);
   const suffixFor = (t: string) =>
-    ({ flashcards: " — flashcards", quiz: " — quiz", audio: " — deep dive", slideshow: " — slides", infographic: " — infographic", mindmap: " — mind map" } as Record<string, string>)[t] ?? "";
+    ({ flashcards: " – Karteikarten", quiz: " – Quiz", audio: " – Vertiefung", slideshow: " – Präsentation", infographic: " – Infografik", mindmap: " – Mindmap" } as Record<string, string>)[t] ?? "";
   const suggested = $derived.by(() => {
     const suffix = suffixFor(type);
     if (selSources.length === 1) {
@@ -101,7 +101,7 @@
   function generate() {
     const sub = app.activeSubject;
     if (!sub) {
-      app.pushToast({ kind: "error", title: "No active subject", body: "Select a subject first." });
+      app.pushToast({ kind: "error", title: "Kein Fach aktiv", body: "Wähle zuerst ein Fach." });
       return;
     }
 
@@ -144,14 +144,14 @@
 <div class="genmat2">
   <!-- Header -->
   <div class="gm2-head">
-    <button class="btn btn--icon btn--sm btn--ghost" onclick={cancel} title="Back">
+    <button class="btn btn--icon btn--sm btn--ghost" onclick={cancel} title="Zurück">
       <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={14} /></span>
     </button>
     <div>
-      <div class="eyebrow">Generate material</div>
-      <h1 class="addpage-title">New study material</h1>
+      <div class="eyebrow">Material erstellen</div>
+      <h1 class="addpage-title">Neues Lernmaterial</h1>
       <div class="mono faint" style="font-size: var(--t-xs)">
-        from {app.activeSubject?.name ?? "your subject"} · pick a format and sources
+        aus {app.activeSubject?.name ?? "deinem Fach"} · wähle Format und Quellen
       </div>
     </div>
   </div>
@@ -177,12 +177,12 @@
 
       {#if countLimit && countValue !== null}
         <div class="gm2-block">
-          <div class="onb-label mono">{type === "quiz" ? "QUESTIONS" : "CARDS"}</div>
+          <div class="onb-label mono">{type === "quiz" ? "FRAGEN" : "KARTEN"}</div>
           <div class="gm2-count">
             <div class="gm2-step">
-              <button class="btn btn--icon btn--sm" onclick={() => setCount(countValue - 1)} aria-label="fewer" disabled={countValue <= countLimit.min}>−</button>
+              <button class="btn btn--icon btn--sm" onclick={() => setCount(countValue - 1)} aria-label="weniger" disabled={countValue <= countLimit.min}>−</button>
               <span class="mono gm2-step-v">{countValue}</span>
-              <button class="btn btn--icon btn--sm" onclick={() => setCount(countValue + 1)} aria-label="more" disabled={countValue >= countLimit.max}>+</button>
+              <button class="btn btn--icon btn--sm" onclick={() => setCount(countValue + 1)} aria-label="mehr" disabled={countValue >= countLimit.max}>+</button>
             </div>
             <div class="seg gm2-count-presets">
               {#each [Math.round(countLimit.def / 2), countLimit.def, Math.min(countLimit.max, countLimit.def * 2)] as p}
@@ -196,31 +196,31 @@
       <div class="gm2-block">
         <div class="field">
           <!-- svelte-ignore a11y_label_has_associated_control -->
-          <label class="onb-label mono">TITLE <span class="gm2-label-hint">auto-suggested</span></label>
-          <input class="input" bind:value={title} placeholder={suggested || "Select sources first…"} />
+          <label class="onb-label mono">TITEL <span class="gm2-label-hint">automatisch vorgeschlagen</span></label>
+          <input class="input" bind:value={title} placeholder={suggested || "Zuerst Quellen auswählen…"} />
         </div>
         <div class="field">
           <!-- svelte-ignore a11y_label_has_associated_control -->
-          <label class="onb-label mono">CUSTOM INSTRUCTIONS <span class="gm2-label-hint">optional</span></label>
+          <label class="onb-label mono">EIGENE ANWEISUNGEN <span class="gm2-label-hint">optional</span></label>
           <textarea
             class="input set-textarea"
             bind:value={customPrompt}
             rows="3"
-            placeholder={`e.g. “Focus on exam-likely topics”, “Explain like I'm new to ${app.activeSubject?.name ?? "this"}”, “Emphasise dates and order”…`}
+            placeholder={`z. B. „Auf prüfungsrelevante Themen konzentrieren“, „Erklären, als wäre ich neu in ${app.activeSubject?.name ?? "dem Fach"}“, „Daten und Reihenfolge betonen“…`}
           ></textarea>
         </div>
         <div class="gm-autotag">
           <div class="gm-autotag-l">
             <Icon name="lock" size={13} color="var(--fg-faint)" />
-            <span class="mono">Auto-filed under topic</span>
+            <span class="mono">Automatisch abgelegt unter Thema</span>
           </div>
           {#if autoTopic}
             <div class="gm-autotag-r">
               <span class="topic-tag mono"><Icon name="chevron" size={9} /> {autoTopic}</span>
-              {#if multi}<span class="mono faint">spans {topicNames.length} topics</span>{/if}
+              {#if multi}<span class="mono faint">umfasst {topicNames.length} Themen</span>{/if}
             </div>
           {:else}
-            <span class="mono faint">select sources to assign a topic</span>
+            <span class="mono faint">Quellen auswählen, um ein Thema zuzuordnen</span>
           {/if}
         </div>
       </div>
@@ -229,12 +229,12 @@
     <!-- RIGHT — source selection (scrolls within the panel) -->
     <div class="gm2-right">
       <div class="gm2-right-head">
-        <span class="onb-label mono" style="margin:0">SOURCES</span>
+        <span class="onb-label mono" style="margin:0">QUELLEN</span>
         <span class="faint mono">{sel.length} selected</span>
       </div>
       <div class="gm2-panel">
         {#if subjectTopics.length === 0}
-          <p class="mono faint" style="font-size: var(--t-sm); padding: 8px;">No sources found for this subject. Add sources first.</p>
+          <p class="mono faint" style="font-size: var(--t-sm); padding: 8px;">Keine Quellen in diesem Fach. Füge zuerst Quellen hinzu.</p>
         {:else}
           <div class="gm-sources">
             {#each subjectTopics as topic (topic.id)}
@@ -274,9 +274,9 @@
 
   <!-- Sticky footer — always visible, no scrolling to reach Generate -->
   <div class="add-foot gm2-foot">
-    <button class="btn btn--ghost" onclick={cancel}>Cancel</button>
+    <button class="btn btn--ghost" onclick={cancel}>Abbrechen</button>
     <button class="btn btn--primary" disabled={!ready} onclick={generate}>
-      <Icon name="bolt" size={13} /> Generate {tm.label.toLowerCase()}
+      <Icon name="bolt" size={13} /> {tm.label} erstellen
     </button>
   </div>
 </div>

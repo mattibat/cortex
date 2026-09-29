@@ -22,7 +22,7 @@
     app.subjects.map((s) => ({ id: s.id, label: s.code ? `${s.name} · ${s.code}` : s.name })),
   );
   const topicOptions = $derived([
-    { id: "", label: "— no topic —" },
+    { id: "", label: "– kein Thema –" },
     ...(app.subjects.find((s) => s.id === rec.reviewSubjectId)?.topics ?? []).map((t) => ({ id: t.id, label: t.name })),
   ]);
 
@@ -140,7 +140,7 @@
     input.value = ""; // allow re-picking the same file
     if (!file) return;
     if (!app.activeSubject) {
-      app.pushToast({ kind: "error", title: "Open a subject first", body: "Select a subject before adding audio." });
+      app.pushToast({ kind: "error", title: "Öffne zuerst ein Fach", body: "Wähle ein Fach, bevor du Audio hinzufügst." });
       return;
     }
     try {
@@ -198,40 +198,40 @@
 
       <div class="rev-body">
         <div class="field">
-          <span class="onb-label mono">NAME <span class="faint">how this source is titled</span></span>
+          <span class="onb-label mono">NAME <span class="faint">Titel der Quelle</span></span>
           <!-- svelte-ignore a11y_autofocus -->
           <input
             class="input"
             autofocus
             bind:value={rec.reviewName}
-            placeholder="Untitled recording"
+            placeholder="Unbenannte Aufnahme"
           />
         </div>
 
         <div class="field" style:margin-top="16px">
-          <span class="onb-label mono">SUBJECT <span class="faint">which course this lecture belongs to</span></span>
+          <span class="onb-label mono">FACH <span class="faint">zu welchem Fach die Aufnahme gehört</span></span>
           <Picker
             value={rec.reviewSubjectId}
             onChange={(id) => rec.setReviewSubject(id)}
             options={subjectOptions}
-            placeholder="Pick a subject"
+            placeholder="Fach wählen"
           />
         </div>
 
         <div class="field" style:margin-top="16px">
-          <span class="onb-label mono">TOPIC <span class="faint">where this recording lives</span></span>
+          <span class="onb-label mono">THEMA <span class="faint">wo die Aufnahme abgelegt wird</span></span>
           <Picker
             value={rec.reviewTopicId}
             onChange={(id) => (rec.reviewTopicId = id)}
             options={topicOptions}
-            placeholder="— no topic —"
+            placeholder="– kein Thema –"
           />
         </div>
 
         <div class="rev-speakers" style:margin-top="16px">
           <div class="rev-speakers-l">
-            <span class="onb-label mono">MULTIPLE PEOPLE SPEAKING</span>
-            <span class="rev-speakers-d">Label the transcript by voice — “Speaker 1 / Speaker 2” (homelab WhisperX or a diarizing cloud model).</span>
+            <span class="onb-label mono">MEHRERE SPRECHER</span>
+            <span class="rev-speakers-d">Transkript nach Stimmen kennzeichnen – „Sprecher 1 / Sprecher 2“ (Homelab-WhisperX oder ein Cloud-Modell mit Sprechererkennung).</span>
           </div>
           <button
             type="button"
@@ -239,20 +239,20 @@
             onclick={() => (rec.reviewDiarize = !rec.reviewDiarize)}
             role="switch"
             aria-checked={rec.reviewDiarize}
-            aria-label="multiple people speaking"
+            aria-label="mehrere Sprecher"
           ><span class="st-knob"></span></button>
         </div>
 
         <div class="rev-meta mono faint">
-          <span class="rev-meta-item"><Icon name="bolt" size={11} color="var(--fg-faint)" />{rec.reviewSourceLabel === "uploaded" ? "Uploaded audio file" : `Captured ${rec.reviewDuration}`}</span>
+          <span class="rev-meta-item"><Icon name="bolt" size={11} color="var(--fg-faint)" />{rec.reviewSourceLabel === "uploaded" ? "Hochgeladene Audiodatei" : `${rec.reviewDuration} aufgenommen`}</span>
           {#if rec.reviewTranscript.trim()}
-            <span class="rev-meta-item"><Icon name="doc" size={11} color="var(--fg-faint)" />Live transcript captured</span>
+            <span class="rev-meta-item"><Icon name="doc" size={11} color="var(--fg-faint)" />Live-Transkript erfasst</span>
           {/if}
         </div>
 
         {#if rec.reviewTranscript.trim()}
           <div class="field" style:margin-top="14px">
-            <span class="onb-label mono">TRANSCRIPT PREVIEW <span class="faint">re-transcribed precisely on save</span></span>
+            <span class="onb-label mono">TRANSKRIPT-VORSCHAU <span class="faint">wird beim Speichern genau neu transkribiert</span></span>
             <div class="rev-transcript read">{rec.reviewTranscript}</div>
           </div>
         {/if}
@@ -263,13 +263,13 @@
       </div>
 
       <div class="rev-actions">
-        <button class="btn btn--ghost rev-discard" onclick={() => rec.discardReview()}>Discard</button>
+        <button class="btn btn--ghost rev-discard" onclick={() => rec.discardReview()}>Verwerfen</button>
         <span class="grow"></span>
-        <button class="btn btn--primary" onclick={() => rec.confirmSave()}>Save recording</button>
+        <button class="btn btn--primary" onclick={() => rec.confirmSave()}>Aufnahme speichern</button>
       </div>
 
       <div class="rev-hint mono faint">
-        <span class="kbd">⏎</span> save · <span class="kbd">esc</span> discard
+        <span class="kbd">⏎</span> speichern · <span class="kbd">esc</span> verwerfen
       </div>
     </div>
   </div>
@@ -279,7 +279,7 @@
   <div class="rec-stage">
     <div class="rec-status mono">
       <span class="rec-led{rec.live ? ' live' : ''}"></span>
-      {rec.status === "transcribing" ? "TRANSCRIBING" : rec.recording ? (rec.paused ? "PAUSED" : "RECORDING") : rec.status === "done" ? "DONE" : "READY"}
+      {rec.status === "transcribing" ? "WIRD TRANSKRIBIERT" : rec.recording ? (rec.paused ? "PAUSIERT" : "AUFNAHME") : rec.status === "done" ? "FERTIG" : "BEREIT"}
       <span class="grow"></span>
       <span class="rec-clock">{rec.mm}:{rec.ss}</span>
     </div>
@@ -295,23 +295,23 @@
       {#if rec.status === "transcribing"}
         <span class="is-spin" style:width="22px" style:height="22px"></span>
       {:else if !rec.recording}
-        <button class="rec-btn rec-btn--go" onclick={() => rec.start()} title="Start recording">
+        <button class="rec-btn rec-btn--go" onclick={() => rec.start()} title="Aufnahme starten">
           <span class="rec-btn-dot"></span>
         </button>
       {:else}
-        <button class="btn btn--icon" onclick={() => rec.togglePause()} title={rec.paused ? "Resume" : "Pause"}>
+        <button class="btn btn--icon" onclick={() => rec.togglePause()} title={rec.paused ? "Fortsetzen" : "Pause"}>
           {#if rec.paused}<Icon name="play" size={15} />{:else}<Icon name="pause" size={15} />{/if}
         </button>
-        <button class="rec-btn rec-btn--stop" onclick={() => rec.stop()} title="Stop & save"><span class="rec-stop-sq"></span></button>
-        <button class="btn btn--icon" onclick={() => rec.tagMoment()} title="Tag moment (m)"><Icon name="bolt" size={15} color="var(--warn)" /></button>
+        <button class="rec-btn rec-btn--stop" onclick={() => rec.stop()} title="Stoppen & speichern"><span class="rec-stop-sq"></span></button>
+        <button class="btn btn--icon" onclick={() => rec.tagMoment()} title="Moment markieren (m)"><Icon name="bolt" size={15} color="var(--warn)" /></button>
       {/if}
     </div>
 
     <div class="rec-hint mono faint">
       {#if rec.status === "transcribing"}
-        Transcribing with Whisper…
+        Wird mit Whisper transkribiert…
       {:else if !rec.recording}
-        Press <span class="kbd">␣</span> or click to start · output becomes a transcribed source
+        Drücke <span class="kbd">␣</span> oder klicke zum Starten · die Aufnahme wird zu einer transkribierten Quelle
       {:else}
         <span class="kbd">m</span> tag moment · <span class="kbd">space</span> pause · <span class="kbd">⏎</span> stop &amp; save · leaving this screen keeps recording
       {/if}
@@ -324,10 +324,10 @@
     <!-- Fallback: upload a pre-recorded audio file (always available, emphasised on error) -->
     {#if rec.status !== "transcribing"}
       <div class="rec-upload mono faint" style:margin-top={rec.errorMsg ? "12px" : "18px"}>
-        {#if rec.errorMsg}Can't use the mic? {/if}
+        {#if rec.errorMsg}Mikrofon funktioniert nicht? {/if}
         <label class="btn btn--ghost btn--sm" style:cursor="pointer">
           <Icon name="doc" size={13} />
-          Upload an audio file
+          Audiodatei hochladen
           <input type="file" accept="audio/*" onchange={uploadAudioFile} style:display="none" />
         </label>
       </div>
@@ -344,10 +344,10 @@
     {#if isMobile}
       <div style:display="flex" style:gap="10px" style:margin-top="18px">
         {#if rec.recording}
-          <button class="btn btn--ghost btn--sm" onclick={discard}>Discard</button>
+          <button class="btn btn--ghost btn--sm" onclick={discard}>Verwerfen</button>
           <button class="btn btn--ghost btn--sm" onclick={leave}>Hide (keeps recording)</button>
         {:else}
-          <button class="btn btn--ghost btn--sm" onclick={leave}>Close</button>
+          <button class="btn btn--ghost btn--sm" onclick={leave}>Schließen</button>
         {/if}
       </div>
     {/if}
@@ -358,20 +358,20 @@
   {#if !isMobile}
   <aside class="rec-transcript">
     <div class="rt-head">
-      <span class="rt-eyebrow mono">LIVE TRANSCRIPT</span>
+      <span class="rt-eyebrow mono">LIVE-TRANSKRIPT</span>
       <span class="grow"></span>
       {#if rec.status === "transcribing"}
         <span class="status-pill status-pill--draft"><span class="dot dot--pulse"></span>processing</span>
       {:else if rec.live && rec.liveTranscriptOn && rec.liveUpdating}
-        <span class="status-pill status-pill--draft"><span class="dot dot--pulse"></span>transcribing…</span>
+        <span class="status-pill status-pill--draft"><span class="dot dot--pulse"></span>wird transkribiert…</span>
       {:else if rec.live && rec.liveTranscriptOn}
         <span class="status-pill status-pill--draft"><span class="dot dot--pulse"></span>listening</span>
       {/if}
       <!-- Closing the panel also stops live transcription; "t" toggles it. -->
-      <button class="btn btn--icon btn--sm btn--ghost rt-collapse" title="Close transcript (t)" onclick={() => rec.toggleTranscriptPanel()}>
+      <button class="btn btn--icon btn--sm btn--ghost rt-collapse" title="Transkript schließen (t)" onclick={() => rec.toggleTranscriptPanel()}>
         <Icon name="chevron" size={13} />
       </button>
-      <span class="kbd rt-kbd" title="Press t to toggle">t</span>
+      <span class="kbd rt-kbd" title="Mit t umschalten">t</span>
     </div>
     <div class="rt-body" bind:this={rtBody} onscroll={onRtScroll}>
       {#if rec.status === "transcribing"}
@@ -388,39 +388,39 @@
             {rec.liveFinal}<span class="rt-interim">{rec.liveInterim}</span>
           </p>
         {:else}
-          <div class="rt-listening mono faint"><span class="rt-shimmer">Listening</span><span class="rt-ell"></span></div>
+          <div class="rt-listening mono faint"><span class="rt-shimmer">Hört zu</span><span class="rt-ell"></span></div>
         {/if}
       {:else if rec.recording && rec.whisperMissing}
         <!-- Backend fallback tried, came back empty: no Whisper installed. Be honest. -->
         <div class="rt-note rt-note--warn mono">
-          <span class="rt-note-title">Live transcript needs Whisper</span>
-          No Whisper backend answered. Configure a homelab Whisper server in Settings, or install
-          faster-whisper locally — the recording is still saved and transcribed when you stop.
+          <span class="rt-note-title">Live-Transkript braucht Whisper</span>
+          Kein Whisper-Dienst hat geantwortet. Richte in den Einstellungen einen Homelab-Whisper-Server ein oder installiere
+          faster-whisper lokal – die Aufnahme wird trotzdem gespeichert und nach dem Stoppen transkribiert.
         </div>
       {:else if rec.recording}
         <!-- Backend chunked fallback (WebKitGTK / Tauri Linux): refreshes every ~7s. -->
         {#if rec.liveBackendText.trim()}
           <p class="rt-live read">{rec.liveBackendText}</p>
         {:else}
-          <div class="rt-listening mono faint"><span class="rt-shimmer">Listening</span><span class="rt-ell"></span></div>
+          <div class="rt-listening mono faint"><span class="rt-shimmer">Hört zu</span><span class="rt-ell"></span></div>
         {/if}
       {:else}
         <div class="rt-empty mono faint">
-          Hit record to capture a lecture. On stop, Cortex transcribes it with Whisper and saves it as a searchable source.
+          Starte die Aufnahme, um den Unterricht festzuhalten. Nach dem Stoppen transkribiert Cortex sie mit Whisper und speichert sie als durchsuchbare Quelle.
           A live transcript appears here while you record — close it with <span class="kbd">t</span>; closed means transcription is off until you reopen it.
-          Leaving this screen mid-recording keeps capturing — a small floating widget follows you around the app.
+          Wenn du diese Ansicht verlässt, läuft die Aufnahme weiter – ein kleines schwebendes Fenster begleitet dich durch die App.
         </div>
       {/if}
     </div>
     {#if rec.recording}
-      <button class="btn btn--ghost btn--sm rt-close" onclick={discard}>Discard recording</button>
+      <button class="btn btn--ghost btn--sm rt-close" onclick={discard}>Aufnahme verwerfen</button>
     {:else}
-      <button class="btn btn--ghost btn--sm rt-close" onclick={leave}>Close</button>
+      <button class="btn btn--ghost btn--sm rt-close" onclick={leave}>Schließen</button>
     {/if}
   </aside>
 
   {#if rec.transcriptCollapsed}
-    <button class="rt-reopen mono" title="Open live transcript (t)" onclick={() => rec.toggleTranscriptPanel()}>
+    <button class="rt-reopen mono" title="Live-Transkript öffnen (t)" onclick={() => rec.toggleTranscriptPanel()}>
       <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={13} /></span>
       <span class="kbd rt-kbd">t</span>
     </button>

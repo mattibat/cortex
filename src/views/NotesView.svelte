@@ -55,7 +55,7 @@
         select(list[0] ?? null);
       }
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Failed to load notes", body: String(e) });
+      app.pushToast({ kind: "error", title: "Notizen konnten nicht geladen werden", body: String(e) });
     } finally {
       loading = false;
     }
@@ -71,11 +71,11 @@
 
   async function newNote() {
     try {
-      const n = await api.createNote("Untitled", "", app.activeSubjectId ?? null);
+      const n = await api.createNote("Unbenannt", "", app.activeSubjectId ?? null);
       notes = [n, ...notes];
       select(n);
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Couldn't create note", body: String(e) });
+      app.pushToast({ kind: "error", title: "Notiz konnte nicht erstellt werden", body: String(e) });
     }
   }
 
@@ -94,7 +94,7 @@
       notes = notes.map((n) => (n.id === id ? updated : n));
       saved = true;
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Save failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Speichern fehlgeschlagen", body: String(e) });
     }
   }
 
@@ -105,17 +105,17 @@
     try {
       if (!saved) await save();
       await api.noteToSource(id);
-      app.pushToast({ kind: "success", title: "Converted to source", body: title || "Untitled" });
+      app.pushToast({ kind: "success", title: "In Quelle umgewandelt", body: title || "Unbenannt" });
       await app.refresh();
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Convert failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Umwandeln fehlgeschlagen", body: String(e) });
     }
   }
 
   async function remove() {
     const id = selectedId;
     if (!id) return;
-    const ok = await app.confirm({ title: "Delete note?", danger: true, okLabel: "Delete" });
+    const ok = await app.confirm({ title: "Notiz löschen?", danger: true, okLabel: "Löschen" });
     if (!ok) return;
     try {
       await api.deleteNote(id);
@@ -123,14 +123,14 @@
       notes = rest;
       select(rest[0] ?? null);
     } catch (e) {
-      app.pushToast({ kind: "error", title: "Delete failed", body: String(e) });
+      app.pushToast({ kind: "error", title: "Löschen fehlgeschlagen", body: String(e) });
     }
   }
 
   async function exportPdf() {
     const el = document.querySelector(".notes-print-preview");
     if (!el) {
-      app.pushToast({ kind: "warning", title: "Nothing to export" });
+      app.pushToast({ kind: "warning", title: "Nichts zu exportieren" });
       return;
     }
     const body = `<article class="note-export cs-doc">${el.innerHTML}</article>`;
@@ -140,12 +140,12 @@
   function relTime(ms: number): string {
     const diff = Date.now() - ms;
     const m = Math.round(diff / 60000);
-    if (m < 1) return "just now";
-    if (m < 60) return `${m}m ago`;
+    if (m < 1) return "gerade eben";
+    if (m < 60) return `vor ${m} Min.`;
     const h = Math.round(m / 60);
-    if (h < 24) return `${h}h ago`;
+    if (h < 24) return `vor ${h} Std.`;
     const d = Math.round(h / 24);
-    if (d < 7) return `${d}d ago`;
+    if (d < 7) return `vor ${d} Tagen`;
     return new Date(ms).toLocaleDateString();
   }
 
@@ -156,12 +156,12 @@
   <div class={"notes" + (embedded ? " notes--embedded" : "") + (listCollapsed && !isMobile ? " notes--collapsed" : "") + (isMobile ? (selected ? " notes--m notes--m-detail" : " notes--m notes--m-list") : "")}>
     <!-- Left: note list or slim rail when collapsed -->
     {#if listCollapsed && !isMobile}
-      <aside class="notes-rail" aria-label="Note list (collapsed)">
+      <aside class="notes-rail" aria-label="Notizliste (eingeklappt)">
         <button
           type="button"
           class="notes-rail-toggle"
-          title="Expand note list"
-          aria-label="Expand note list"
+          title="Notizliste aufklappen"
+          aria-label="Notizliste aufklappen"
           onclick={() => (listCollapsed = false)}
         >
           <!-- Chevron points right → "open left panel" -->
@@ -170,8 +170,8 @@
         <button
           type="button"
           class="notes-rail-new"
-          title="New note"
-          aria-label="New note"
+          title="Neue Notiz"
+          aria-label="Neue Notiz"
           onclick={newNote}
         >
           <Icon name="plus" size={13} />
@@ -180,17 +180,17 @@
     {:else}
       <aside class="notes-list">
         <div class="notes-list-head">
-          <span class="notes-list-title">Notes</span>
+          <span class="notes-list-title">Notizen</span>
           <div class="notes-list-head-actions">
-            <button class="btn btn--primary btn--sm" type="button" onclick={newNote} title="New note">
-              <Icon name="plus" size={12} /> New note
+            <button class="btn btn--primary btn--sm" type="button" onclick={newNote} title="Neue Notiz">
+              <Icon name="plus" size={12} /> Neue Notiz
             </button>
             <!-- Collapse button: visually prominent, chevron points left (← close) -->
             <button
               type="button"
               class="notes-collapse-btn"
-              title="Collapse note list"
-              aria-label="Collapse note list"
+              title="Notizliste einklappen"
+              aria-label="Notizliste einklappen"
               onclick={() => (listCollapsed = true)}
             >
               <!-- Chevron default points right; rotate 180° to point left = collapse -->
@@ -200,16 +200,16 @@
         </div>
         <div class="notes-items">
           {#if loading}
-            <div class="notes-hint">Loading…</div>
+            <div class="notes-hint">Wird geladen…</div>
           {:else if notes.length === 0}
             <div class="notes-empty">
               <div class="notes-empty-glyph">📝</div>
-              <div class="notes-empty-title">No notes yet</div>
+              <div class="notes-empty-title">Noch keine Notizen</div>
               <div class="notes-empty-body">
-                {app.activeSubjectId ? "Capture ideas in Markdown for this subject." : "Capture ideas in Markdown."}
+                {app.activeSubjectId ? "Halte Ideen für dieses Fach in Markdown fest." : "Halte Ideen in Markdown fest."}
               </div>
               <button class="btn btn--primary btn--sm" type="button" onclick={newNote}>
-                <Icon name="plus" size={12} /> New note
+                <Icon name="plus" size={12} /> Neue Notiz
               </button>
             </div>
           {:else}
@@ -219,7 +219,7 @@
                 class={"notes-item" + (n.id === selectedId ? " on" : "")}
                 onclick={() => select(n)}
               >
-                <span class="notes-item-title">{n.title || "Untitled"}</span>
+                <span class="notes-item-title">{n.title || "Unbenannt"}</span>
                 <span class="notes-item-time">{relTime(n.updated_at)}</span>
               </button>
             {/each}
@@ -232,25 +232,25 @@
       {#if selected}
         <div class="notes-detail-head">
           {#if isMobile}
-            <button class="btn btn--icon btn--sm btn--ghost" title="Back to notes" aria-label="Back to notes" onclick={() => select(null)}>
+            <button class="btn btn--icon btn--sm btn--ghost" title="Zurück zu den Notizen" aria-label="Zurück zu den Notizen" onclick={() => select(null)}>
               <span style="display:inline-flex;transform:rotate(180deg)"><Icon name="chevron" size={14} /></span>
             </button>
           {/if}
           <input
             class="notes-title"
-            placeholder="Untitled"
+            placeholder="Unbenannt"
             value={title}
             oninput={(e) => { title = (e.target as HTMLInputElement).value; markDirty(); }}
           />
           <span class={"notes-saved" + (saved ? " on" : "")}>
-            {#if saved}<Icon name="check" size={12} /> Saved{:else}Editing…{/if}
+            {#if saved}<Icon name="check" size={12} /> Gespeichert{:else}Wird bearbeitet…{/if}
           </span>
           <!-- Fullscreen toggle -->
           <button
             type="button"
             class={"notes-fullscreen-btn" + (fullscreen ? " on" : "")}
-            title={fullscreen ? "Exit fullscreen (Esc)" : "Enter fullscreen"}
-            aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            title={fullscreen ? "Vollbild verlassen (Esc)" : "Vollbild"}
+            aria-label={fullscreen ? "Vollbild verlassen" : "Vollbild"}
             onclick={() => (fullscreen = !fullscreen)}
           >
             {#if fullscreen}
@@ -267,7 +267,7 @@
 
         <!-- Print-only rendered preview — hidden on screen, shown when printing -->
         <div class="notes-print-preview" aria-hidden="true">
-          <h1 class="notes-print-title">{title || "Untitled"}</h1>
+          <h1 class="notes-print-title">{title || "Unbenannt"}</h1>
           <RichText text={body} />
         </div>
 
@@ -277,34 +277,34 @@
             type="button"
             style="margin-right:auto"
             onclick={remove}
-            title="Delete this note"
+            title="Diese Notiz löschen"
           >
-            Delete
+            Löschen
           </button>
           <button
             class="btn btn--ghost btn--sm"
             type="button"
             onclick={exportPdf}
-            title="Export note as PDF"
+            title="Notiz als PDF exportieren"
           >
-            <Icon name="doc" size={13} /> Save as PDF
+            <Icon name="doc" size={13} /> Als PDF speichern
           </button>
-          <span class="notes-convert-wrap" title={canConvert ? "" : "Notes need a subject to become a source"}>
+          <span class="notes-convert-wrap" title={canConvert ? "" : "Notizen brauchen ein Fach, um zur Quelle zu werden"}>
             <button class="btn btn--ghost btn--sm" type="button" disabled={!canConvert} onclick={convert}>
-              <Icon name="arrowR" size={13} /> Convert to source
+              <Icon name="arrowR" size={13} /> In Quelle umwandeln
             </button>
           </span>
           {#if !isMobile}
-            <button class="btn btn--primary btn--sm" type="button" disabled={saved} onclick={save} title="Save note">
-              Save
+            <button class="btn btn--primary btn--sm" type="button" disabled={saved} onclick={save} title="Notiz speichern">
+              Speichern
             </button>
           {/if}
         </div>
       {:else if !loading}
         <div class="notes-detail-empty">
           <div class="notes-empty-glyph">🗒️</div>
-          <div class="notes-empty-title">Select or create a note</div>
-          <div class="notes-empty-body">Your Markdown notes live here.</div>
+          <div class="notes-empty-title">Notiz auswählen oder erstellen</div>
+          <div class="notes-empty-body">Hier liegen deine Markdown-Notizen.</div>
         </div>
       {/if}
     </section>
@@ -313,25 +313,25 @@
 
 <!-- Fullscreen overlay: renders the editor maximised over the whole window -->
 {#if fullscreen && selected}
-  <div class="notes-fs-overlay" role="dialog" aria-modal="true" aria-label="Note — fullscreen">
+  <div class="notes-fs-overlay" role="dialog" aria-modal="true" aria-label="Notiz – Vollbild">
     <div class="notes-fs-head">
       <input
         class="notes-fs-title"
-        placeholder="Untitled"
+        placeholder="Unbenannt"
         value={title}
         oninput={(e) => { title = (e.target as HTMLInputElement).value; markDirty(); }}
       />
       <span class={"notes-saved notes-fs-saved" + (saved ? " on" : "")}>
-        {#if saved}<Icon name="check" size={12} /> Saved{:else}Editing…{/if}
+        {#if saved}<Icon name="check" size={12} /> Gespeichert{:else}Wird bearbeitet…{/if}
       </span>
       <button
         type="button"
         class="notes-fs-exit-btn"
-        title="Exit fullscreen (Esc)"
-        aria-label="Exit fullscreen"
+        title="Vollbild verlassen (Esc)"
+        aria-label="Vollbild verlassen"
         onclick={() => (fullscreen = false)}
       >
-        <Icon name="x" size={15} /> Exit fullscreen
+        <Icon name="x" size={15} /> Vollbild verlassen
       </button>
     </div>
     <div class="notes-fs-editor">
@@ -343,7 +343,7 @@
         type="button"
         style="margin-right:auto"
         onclick={remove}
-        title="Delete this note"
+        title="Diese Notiz löschen"
       >
         Delete
       </button>
@@ -351,17 +351,17 @@
         class="btn btn--ghost btn--sm"
         type="button"
         onclick={exportPdf}
-        title="Export note as PDF"
+        title="Notiz als PDF exportieren"
       >
-        <Icon name="doc" size={13} /> Save as PDF
+        <Icon name="doc" size={13} /> Als PDF speichern
       </button>
-      <span class="notes-convert-wrap" title={canConvert ? "" : "Notes need a subject to become a source"}>
+      <span class="notes-convert-wrap" title={canConvert ? "" : "Notizen brauchen ein Fach, um zur Quelle zu werden"}>
         <button class="btn btn--ghost btn--sm" type="button" disabled={!canConvert} onclick={convert}>
-          <Icon name="arrowR" size={13} /> Convert to source
+          <Icon name="arrowR" size={13} /> In Quelle umwandeln
         </button>
       </span>
       {#if !isMobile}
-        <button class="btn btn--primary btn--sm" type="button" disabled={saved} onclick={save} title="Save note">
+        <button class="btn btn--primary btn--sm" type="button" disabled={saved} onclick={save} title="Notiz speichern">
           Save
         </button>
       {/if}
@@ -375,11 +375,11 @@
   <div class="workspace-scroll notes-workspace-scroll">
     <div class="notes-page">
       <div class="notes-page-head">
-        <div class="eyebrow">Notes</div>
+        <div class="eyebrow">Notizen</div>
         <h1 class="notes-page-title">
           {app.activeSubject ? app.activeSubject.name + " · Notes" : "Notes"}
         </h1>
-        <div class="mono faint" style="font-size:var(--t-xs)">Markdown notes you can convert into sources</div>
+        <div class="mono faint" style="font-size:var(--t-xs)">Markdown-Notizen, die du in Quellen umwandeln kannst</div>
       </div>
       {@render notesWorkspace()}
     </div>

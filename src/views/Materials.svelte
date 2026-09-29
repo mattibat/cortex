@@ -14,12 +14,12 @@
 
   // material type metadata
   const MAT_TYPES: Record<string, { label: string; group: string; icon: string; color: string }> = {
-    flashcards:  { label: "Flashcards",      group: "Flashcards",       icon: "cards", color: "var(--accent)"       },
-    quiz:        { label: "Quiz",             group: "Quizzes",          icon: "check", color: "var(--info)"         },
-    audio:       { label: "Audio overview",   group: "Audio overviews",  icon: "music", color: "var(--mode-select)"  },
-    slideshow:   { label: "Slides",           group: "Slides",           icon: "grid",  color: "var(--warn)"         },
-    infographic: { label: "Infographic",      group: "Infographics",     icon: "grid",  color: "var(--ok)"           },
-    mindmap:     { label: "Mind map",          group: "Mind maps",        icon: "link",  color: "var(--info)"         },
+    flashcards:  { label: "Karteikarten",    group: "Karteikarten",     icon: "cards", color: "var(--accent)"       },
+    quiz:        { label: "Quiz",             group: "Quizze",           icon: "check", color: "var(--info)"         },
+    audio:       { label: "Audio-Überblick",  group: "Audio-Überblicke", icon: "music", color: "var(--mode-select)"  },
+    slideshow:   { label: "Präsentation",     group: "Präsentationen",   icon: "grid",  color: "var(--warn)"         },
+    infographic: { label: "Infografik",       group: "Infografiken",     icon: "grid",  color: "var(--ok)"           },
+    mindmap:     { label: "Mindmap",           group: "Mindmaps",         icon: "link",  color: "var(--info)"         },
   };
   const MAT_ORDER = ["flashcards", "quiz", "audio", "slideshow", "infographic", "mindmap"];
 
@@ -99,14 +99,14 @@
 
   function launchLabel(type: string): string {
     const map: Record<string, string> = {
-      flashcards: "Study",
-      quiz: "Start quiz",
-      audio: "Play",
-      infographic: "View",
-      slideshow: "View slides",
-      mindmap: "View map",
+      flashcards: "Lernen",
+      quiz: "Quiz starten",
+      audio: "Abspielen",
+      infographic: "Ansehen",
+      slideshow: "Folien ansehen",
+      mindmap: "Mindmap ansehen",
     };
-    return map[type] ?? "Open";
+    return map[type] ?? "Öffnen";
   }
 
   function launch(m: Card) {
@@ -116,24 +116,24 @@
 
   async function renameMaterial(e: Event, m: Card) {
     e.stopPropagation();
-    const name = await app.prompt({ title: "Rename material", label: "Name", value: m.title, placeholder: m.title });
+    const name = await app.prompt({ title: "Material umbenennen", label: "Name", value: m.title, placeholder: m.title });
     if (name && name.trim() && name.trim() !== m.title) {
       try {
         await api.renameMaterial(m.id, name.trim());
         if (app.activeSubject) loadMaterials(app.activeSubject.id);
       } catch (err) {
-        app.pushToast({ kind: "error", title: "Rename failed", body: String(err) });
+        app.pushToast({ kind: "error", title: "Umbenennen fehlgeschlagen", body: String(err) });
       }
     }
   }
   async function deleteMaterial(e: Event, m: Card) {
     e.stopPropagation();
-    if (!(await app.confirm({ title: `Delete "${m.title}"?`, danger: true, okLabel: "Delete" }))) return;
+    if (!(await app.confirm({ title: `„${m.title}“ löschen?`, danger: true, okLabel: "Löschen" }))) return;
     try {
       await api.deleteMaterial(m.id);
       if (app.activeSubject) loadMaterials(app.activeSubject.id);
     } catch (err) {
-      app.pushToast({ kind: "error", title: "Delete failed", body: String(err) });
+      app.pushToast({ kind: "error", title: "Löschen fehlgeschlagen", body: String(err) });
     }
   }
   // Export a flashcard deck to an Anki .apkg via a native save dialog.
@@ -144,13 +144,13 @@
       const safe = m.title.replace(/[^\w.-]+/g, "_").replace(/^_+|_+$/g, "") || "deck";
       const dest = await save({
         defaultPath: `${safe}.apkg`,
-        filters: [{ name: "Anki deck", extensions: ["apkg"] }],
+        filters: [{ name: "Anki-Stapel", extensions: ["apkg"] }],
       });
       if (!dest) return;
       const n = await api.exportAnki(m.id, dest);
-      app.pushToast({ kind: "success", title: "Exported to Anki", body: `${n} card${n !== 1 ? "s" : ""} → ${dest}` });
+      app.pushToast({ kind: "success", title: "Nach Anki exportiert", body: `${n} ${n !== 1 ? "Karten" : "Karte"} → ${dest}` });
     } catch (err) {
-      app.pushToast({ kind: "error", title: "Anki export failed", body: String(err) });
+      app.pushToast({ kind: "error", title: "Anki-Export fehlgeschlagen", body: String(err) });
     }
   }
 
@@ -160,27 +160,27 @@
   let importing = $state(false);
   async function importAnki() {
     const sub = app.activeSubject;
-    if (!sub) { app.pushToast({ kind: "warning", title: "Select a subject first" }); return; }
+    if (!sub) { app.pushToast({ kind: "warning", title: "Wähle zuerst ein Fach" }); return; }
     try {
       const { open } = await import("@tauri-apps/plugin-dialog");
       const picked = await open({
         multiple: false,
-        filters: [{ name: "Anki deck", extensions: ["apkg"] }],
+        filters: [{ name: "Anki-Stapel", extensions: ["apkg"] }],
       });
       const path = Array.isArray(picked) ? picked[0] : picked;
       if (!path) return;
       importing = true;
       const r = await api.importAnki(sub.id, path);
-      const decks = `${r.deck_count} deck${r.deck_count !== 1 ? "s" : ""}`;
-      const cards = `${r.card_count} card${r.card_count !== 1 ? "s" : ""}`;
+      const decks = `${r.deck_count} ${r.deck_count !== 1 ? "Stapeln" : "Stapel"}`;
+      const cards = `${r.card_count} ${r.card_count !== 1 ? "Karten" : "Karte"}`;
       app.pushToast(
         r.skipped > 0
-          ? { kind: "warning", title: "Imported with skips", body: `${cards} across ${decks} · ${r.skipped} duplicate${r.skipped !== 1 ? "s" : ""} skipped` }
-          : { kind: "success", title: "Imported from Anki", body: `${cards} across ${decks}` }
+          ? { kind: "warning", title: "Mit Auslassungen importiert", body: `${cards} aus ${decks} · ${r.skipped} ${r.skipped !== 1 ? "Duplikate" : "Duplikat"} übersprungen` }
+          : { kind: "success", title: "Aus Anki importiert", body: `${cards} aus ${decks}` }
       );
       loadMaterials(sub.id);
     } catch (err) {
-      app.pushToast({ kind: "error", title: "Anki import failed", body: String(err) });
+      app.pushToast({ kind: "error", title: "Anki-Import fehlgeschlagen", body: String(err) });
     } finally {
       importing = false;
     }
@@ -227,28 +227,28 @@
     <div class="materials-page">
       <!-- toolbar -->
       <div class="sources-toolbar">
-        <span class="label">{materials.length} materials · generated from this subject</span>
+        <span class="label">{materials.length} Materialien · aus diesem Fach erstellt</span>
         <div class="grow"></div>
         <button
           class="btn btn--sm"
           onclick={importAnki}
           disabled={importing}
-          title="Import an Anki .apkg deck as flashcards"
+          title="Anki-Stapel (.apkg) als Karteikarten importieren"
         >
           <Icon name="upload" size={12} /> {importing ? "Importing…" : "Import Anki"}
         </button>
         <button
           class="btn btn--sm"
           onclick={() => app.setView("exam")}
-          title="Take a timed, graded practice exam"
+          title="Eine zeitlich begrenzte, bewertete Probeprüfung schreiben"
         >
-          <Icon name="check" size={12} /> Exam mode
+          <Icon name="check" size={12} /> Prüfungsmodus
         </button>
         <button
           class="btn btn--sm btn--primary"
           onclick={() => app.setView("gen-material")}
         >
-          <Icon name="bolt" size={12} /> Generate material
+          <Icon name="bolt" size={12} /> Material erstellen
         </button>
       </div>
 
@@ -258,7 +258,7 @@
 
       {#if loading}
         <div class="mat-empty">
-          <span class="mono faint">Loading materials…</span>
+          <span class="mono faint">Materialien werden geladen…</span>
         </div>
       {:else if materials.length === 0}
         <!-- empty state -->
@@ -266,13 +266,13 @@
           <div class="mat-empty-ico">
             <Icon name="bolt" size={26} color="var(--fg-faint)" />
           </div>
-          <h2 class="read mat-empty-h">No materials yet</h2>
-          <p class="mono faint mat-empty-sub">Generate flashcards, quizzes, study guides, slides, or infographics from your sources.</p>
+          <h2 class="read mat-empty-h">Noch keine Materialien</h2>
+          <p class="mono faint mat-empty-sub">Erstelle aus deinen Quellen Karteikarten, Quizze, Präsentationen oder Infografiken.</p>
           <button
             class="btn btn--primary"
             onclick={() => app.setView("gen-material")}
           >
-            <Icon name="bolt" size={13} /> Generate material
+            <Icon name="bolt" size={13} /> Material erstellen
           </button>
         </div>
       {:else}
@@ -281,7 +281,7 @@
           <button
             class="filter-chip{filter === 'all' ? ' on' : ''}"
             onclick={() => (filter = "all")}
-          >All topics</button>
+          >Alle Themen</button>
           {#each topics as t (t)}
             <button
               class="filter-chip{filter === t ? ' on' : ''}"
@@ -319,14 +319,14 @@
                       <span class="dot"></span>
                     </span>
                     {#if m.type === "flashcards"}
-                      <button class="btn btn--icon btn--sm btn--ghost mat-act" title="Export to Anki (.apkg)" aria-label="Export deck to Anki" onclick={(e) => exportAnki(e, m)}>
+                      <button class="btn btn--icon btn--sm btn--ghost mat-act" title="Nach Anki exportieren (.apkg)" aria-label="Stapel nach Anki exportieren" onclick={(e) => exportAnki(e, m)}>
                         <Icon name="upload" size={12} />
                       </button>
                     {/if}
-                    <button class="btn btn--icon btn--sm btn--ghost mat-act" title="Rename" aria-label="Rename material" onclick={(e) => renameMaterial(e, m)}>
+                    <button class="btn btn--icon btn--sm btn--ghost mat-act" title="Umbenennen" aria-label="Material umbenennen" onclick={(e) => renameMaterial(e, m)}>
                       <Icon name="pencil" size={12} />
                     </button>
-                    <button class="btn btn--icon btn--sm btn--ghost mat-act" title="Delete" aria-label="Delete material" onclick={(e) => deleteMaterial(e, m)}>
+                    <button class="btn btn--icon btn--sm btn--ghost mat-act" title="Löschen" aria-label="Material löschen" onclick={(e) => deleteMaterial(e, m)}>
                       <Icon name="x" size={12} />
                     </button>
                   </div>
