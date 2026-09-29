@@ -18,7 +18,7 @@
     withTime?: boolean;
   } = $props();
 
-  const DOW = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+  const DOW = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
   let open = $state(false);
@@ -55,7 +55,7 @@
 
   const cells = $derived.by(() => {
     const first = new Date(viewY, viewM, 1);
-    const start = new Date(viewY, viewM, 1 - first.getDay());
+    const start = new Date(viewY, viewM, 1 - ((first.getDay() + 6) % 7));
     return Array.from({ length: 42 }, (_, i) => {
       const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
       return { d, inMonth: d.getMonth() === viewM };

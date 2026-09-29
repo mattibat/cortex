@@ -12,9 +12,9 @@
   // Selectable window for the per-day charts + tables (the heatmap is always a year).
   let range = $state(30);
   const RANGES = [
-    { d: 7, label: "7d" },
-    { d: 30, label: "30d" },
-    { d: 90, label: "90d" },
+    { d: 7, label: "7 T" },
+    { d: 30, label: "30 T" },
+    { d: 90, label: "90 T" },
   ];
   async function load() {
     loading = true;
@@ -106,13 +106,13 @@
     return raw.map((v) => (v > 0 ? Math.max(0.12, Math.sqrt(v)) : 0));
   });
   const radarMetricLabel = $derived(
-    radarMetric === "accuracy" ? "review accuracy" : radarMetric === "cards" ? "flashcards" : "engagement (sources · materials · cards)"
+    radarMetric === "accuracy" ? "Trefferquote" : radarMetric === "cards" ? "Karteikarten" : "Aktivität (Quellen · Materialien · Karten)"
   );
   const accentColor = $derived(topicSubject ? app.subjectColor(app.subjects.find((s) => s.id === topicSubject) ?? null) : "var(--accent)");
 
   // Subject lookups come from the already-loaded subject list, not extra queries.
   function subjectName(id: string): string {
-    return app.subjects.find((s) => s.id === id)?.name ?? "Unknown subject";
+    return app.subjects.find((s) => s.id === id)?.name ?? "Unbekanntes Fach";
   }
   function subjectColor(id: string): string {
     return app.subjectColor(app.subjects.find((s) => s.id === id) ?? null);
@@ -126,10 +126,10 @@
 
   // Format minutes as "Hh Mm" / "Mm" so the cards read naturally.
   function fmtMins(m: number): string {
-    if (m <= 0) return "0m";
+    if (m <= 0) return "0 min";
     const h = Math.floor(m / 60);
     const min = m % 60;
-    return h > 0 ? (min > 0 ? `${h}h ${min}m` : `${h}h`) : `${min}m`;
+    return h > 0 ? (min > 0 ? `${h} h ${min} min` : `${h} h`) : `${min} min`;
   }
   const pct = (x: number) => `${Math.round(x * 100)}%`;
 
@@ -207,7 +207,7 @@
     });
     return out;
   });
-  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const MONTHS = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
 
   const yearMinutesTotal = $derived(yearDays.reduce((a, d) => a + d.minutes, 0));
   const yearHours = $derived(yearMinutesTotal / 60);
@@ -220,7 +220,7 @@
     const [y, m, d] = c.date.split("-").map(Number);
     const dt = new Date(y, m - 1, d);
     const when = dt.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
-    const amount = c.minutes >= 60 ? `${(c.minutes / 60).toFixed(1)}h` : `${c.minutes}m`;
+    const amount = c.minutes >= 60 ? `${(c.minutes / 60).toFixed(1)} h` : `${c.minutes} min`;
     return `${amount} · ${when}`;
   }
   function showTip(e: MouseEvent, c: Cell) {
@@ -266,48 +266,48 @@
   <div class="dash an">
     <header class="dash-head">
       <div>
-        <div class="eyebrow">Insights</div>
-        <h1 class="dash-title">Study analytics</h1>
+        <div class="eyebrow">Statistik</div>
+        <h1 class="dash-title">Lernstatistik</h1>
       </div>
     </header>
 
     {#if loading}
-      <div class="an-note">Loading your study data…</div>
+      <div class="an-note">Lerndaten werden geladen…</div>
     {:else if error}
-      <div class="an-note an-note--err">Couldn't load analytics: {error}</div>
+      <div class="an-note an-note--err">Statistik konnte nicht geladen werden: {error}</div>
     {:else if isEmpty}
       <div class="an-empty">
         <div class="an-empty-glyph">📊</div>
-        <div class="an-empty-t read">No study data yet</div>
+        <div class="an-empty-t read">Noch keine Lerndaten</div>
         <div class="an-empty-d">
-          Start a pomodoro or review some cards — your focus minutes, review
-          accuracy and upcoming due cards will show up here.
+          Starte einen Pomodoro oder lerne ein paar Karten – deine Fokusminuten, deine
+          Trefferquote und fällige Karten erscheinen dann hier.
         </div>
       </div>
     {:else if data}
       <!-- ── headline stat cards ── -->
       <div class="an-stats">
         <div class="an-stat">
-          <div class="an-stat-k mono">Current streak</div>
-          <div class="an-stat-v">{streak}<span class="an-stat-u"> day{streak === 1 ? "" : "s"}</span></div>
+          <div class="an-stat-k mono">Aktuelle Serie</div>
+          <div class="an-stat-v">{streak}<span class="an-stat-u"> {streak === 1 ? "Tag" : "Tage"}</span></div>
         </div>
         <div class="an-stat">
-          <div class="an-stat-k mono">Focus this week</div>
+          <div class="an-stat-k mono">Fokus diese Woche</div>
           <div class="an-stat-v">{fmtMins(minutesWeek)}</div>
         </div>
         <div class="an-stat">
-          <div class="an-stat-k mono">Reviews this week</div>
+          <div class="an-stat-k mono">Wiederholungen diese Woche</div>
           <div class="an-stat-v">{reviewsWeek}</div>
         </div>
         <div class="an-stat">
-          <div class="an-stat-k mono">Accuracy this week</div>
+          <div class="an-stat-k mono">Trefferquote diese Woche</div>
           <div class="an-stat-v">{reviewsWeek > 0 ? pct(accuracyWeek) : "—"}</div>
         </div>
       </div>
 
       <!-- ── window selector ── -->
       <div class="an-rangebar">
-        <span class="an-range-lbl mono">Window</span>
+        <span class="an-range-lbl mono">Zeitraum</span>
         <div class="seg an-range">
           {#each RANGES as r}
             <button type="button" class={"seg-opt" + (range === r.d ? " on" : "")} onclick={() => (range = r.d)}>{r.label}</button>
@@ -318,24 +318,24 @@
       <!-- ── radial summary row (donuts + focus clock) ── -->
       <div class="an-radials">
         <section class="an-card an-radial">
-          <div class="an-card-h"><h3 class="an-card-t mono">Accuracy · 7d</h3></div>
+          <div class="an-card-h"><h3 class="an-card-t mono">Trefferquote · 7 Tage</h3></div>
           <svg class="an-donut" viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="48" class="an-donut-bg" />
             <circle cx="60" cy="60" r="48" class="an-donut-fg" style:stroke="var(--ok)" stroke-dasharray={ringDash(accuracyWeek, 48)} transform="rotate(-90 60 60)" />
             <text x="60" y="58" class="an-donut-v">{reviewsWeek > 0 ? pct(accuracyWeek) : "—"}</text>
-            <text x="60" y="76" class="an-donut-k">{reviewsWeek} reviews</text>
+            <text x="60" y="76" class="an-donut-k">{reviewsWeek} Wiederh.</text>
           </svg>
         </section>
 
         {#if pomo}
           <section class="an-card an-radial">
-            <div class="an-card-h"><h3 class="an-card-t mono">When you focus</h3></div>
+            <div class="an-card-h"><h3 class="an-card-t mono">Wann du lernst</h3></div>
             <svg class="an-clock" viewBox="0 0 120 120">
               <circle cx="60" cy="60" r="52" class="an-donut-bg" />
               {#each pomo.by_hour as min, h (h)}
                 {@const p1 = polar(60, 60, 16, h / 24)}
                 {@const p2 = polar(60, 60, 16 + (min > 0 ? Math.max(0.32, min / maxHour) : 0.07) * 38, h / 24)}
-                <line x1={p1[0]} y1={p1[1]} x2={p2[0]} y2={p2[1]} class="an-spoke" class:zero={min === 0} style:stroke={min > 0 ? accentColor : "var(--border)"}><title>{min > 0 ? fmtMins(min) : "no focus"} · {h}:00</title></line>
+                <line x1={p1[0]} y1={p1[1]} x2={p2[0]} y2={p2[1]} class="an-spoke" class:zero={min === 0} style:stroke={min > 0 ? accentColor : "var(--border)"}><title>{min > 0 ? fmtMins(min) : "kein Fokus"} · {h}:00</title></line>
               {/each}
               <text x="60" y="64" class="an-clock-c mono">24h</text>
             </svg>
@@ -343,7 +343,7 @@
         {/if}
 
         <section class="an-card an-radial">
-          <div class="an-card-h"><h3 class="an-card-t mono">Consistency · {range}d</h3></div>
+          <div class="an-card-h"><h3 class="an-card-t mono">Regelmäßigkeit · {range} Tage</h3></div>
           <svg class="an-donut" viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="48" class="an-donut-bg" />
             <circle cx="60" cy="60" r="48" class="an-donut-fg" style:stroke="var(--accent)" stroke-dasharray={ringDash(consistency, 48)} transform="rotate(-90 60 60)" />
@@ -355,7 +355,7 @@
 
       <!-- ── trends: focus minutes + reviews per day ── -->
       <section class="an-card">
-        <div class="an-card-h"><h3 class="an-card-t mono">Focus minutes · last {range}d</h3></div>
+        <div class="an-card-h"><h3 class="an-card-t mono">Fokusminuten · letzte {range} Tage</h3></div>
         <div class="an-ts">
           {#each mpd as d, i (d.day)}
             <div class="an-ts-col">
@@ -367,11 +367,11 @@
       </section>
 
       <section class="an-card">
-        <div class="an-card-h"><h3 class="an-card-t mono">Reviews · last {range}d</h3></div>
+        <div class="an-card-h"><h3 class="an-card-t mono">Wiederholungen · letzte {range} Tage</h3></div>
         <div class="an-ts">
           {#each rpd as d, i (d.day)}
             <div class="an-ts-col">
-              <div class="an-ts-track"><div class="an-ts-fill rev" style:height={pct(d.reviews / maxRev)} class:zero={d.reviews === 0}><title>{d.reviews} reviews · {d.reviews > 0 ? pct(d.accuracy) : "—"} acc · {d.day}</title></div></div>
+              <div class="an-ts-track"><div class="an-ts-fill rev" style:height={pct(d.reviews / maxRev)} class:zero={d.reviews === 0}><title>{d.reviews} Wiederholungen · {d.reviews > 0 ? pct(d.accuracy) : "—"} richtig · {d.day}</title></div></div>
               {#if i % labelEvery === 0}<span class="an-ts-x mono">{dayNum(d.day)}</span>{/if}
             </div>
           {/each}
@@ -381,12 +381,12 @@
       <!-- ── pomodoro / focus sessions ── -->
       {#if pomo && pomo.focus_sessions > 0}
         <section class="an-card">
-          <div class="an-card-h"><h3 class="an-card-t mono">Focus sessions</h3><span class="an-card-sub mono">{fmtMins(pomo.focus_minutes)} focused</span></div>
+          <div class="an-card-h"><h3 class="an-card-t mono">Fokus-Einheiten</h3><span class="an-card-sub mono">{fmtMins(pomo.focus_minutes)} Fokus</span></div>
           <div class="an-pomo">
             <div class="an-pomo-stat"><div class="an-pomo-v">{pomo.focus_sessions}</div><div class="an-pomo-k mono">sessions</div></div>
-            <div class="an-pomo-stat"><div class="an-pomo-v">{Math.round(pomo.avg_session_min)}<span class="an-stat-u">m</span></div><div class="an-pomo-k mono">avg length</div></div>
-            <div class="an-pomo-stat"><div class="an-pomo-v">{pomo.longest_session_min}<span class="an-stat-u">m</span></div><div class="an-pomo-k mono">longest</div></div>
-            <div class="an-pomo-stat"><div class="an-pomo-v">{fmtMins(pomo.break_minutes)}</div><div class="an-pomo-k mono">on breaks</div></div>
+            <div class="an-pomo-stat"><div class="an-pomo-v">{Math.round(pomo.avg_session_min)}<span class="an-stat-u"> min</span></div><div class="an-pomo-k mono">Ø Dauer</div></div>
+            <div class="an-pomo-stat"><div class="an-pomo-v">{pomo.longest_session_min}<span class="an-stat-u"> min</span></div><div class="an-pomo-k mono">längste</div></div>
+            <div class="an-pomo-stat"><div class="an-pomo-v">{fmtMins(pomo.break_minutes)}</div><div class="an-pomo-k mono">Pausen</div></div>
           </div>
         </section>
       {/if}
@@ -395,7 +395,7 @@
       {#if app.subjects.length}
         <section class="an-card">
           <div class="an-card-h">
-            <h3 class="an-card-t mono">Topic mastery</h3>
+            <h3 class="an-card-t mono">Themen-Beherrschung</h3>
             <div class="an-pills">
               {#each app.subjects as s (s.id)}
                 <button type="button" class={"an-pill" + (topicSubject === s.id ? " on" : "")} onclick={() => (topicSubject = s.id)} style:--pill={app.subjectColor(s)}>{s.name}</button>
@@ -403,7 +403,7 @@
             </div>
           </div>
           <div class="an-metricbar">
-            {#each [{ id: "engagement", label: "Engagement" }, { id: "accuracy", label: "Accuracy" }, { id: "cards", label: "Cards" }] as m}
+            {#each [{ id: "engagement", label: "Aktivität" }, { id: "accuracy", label: "Trefferquote" }, { id: "cards", label: "Karten" }] as m}
               <button type="button" class={"an-metric" + (radarMetric === m.id ? " on" : "")} onclick={() => (radarMetric = m.id as typeof radarMetric)}>{m.label}</button>
             {/each}
           </div>
@@ -426,7 +426,7 @@
               <div class="an-radar-note mono">distance from centre = {radarMetricLabel} · hover a point for detail</div>
             </div>
           {:else}
-            <p class="an-empty-d">Not enough topic activity yet — review cards across this subject's topics to grow the mastery radar.</p>
+            <p class="an-empty-d">Noch zu wenig Aktivität – lerne Karten zu den Themen dieses Fachs, damit das Diagramm wächst.</p>
           {/if}
         </section>
       {/if}
@@ -434,8 +434,8 @@
       <!-- ── focus-hours contributions heatmap (last year) ── -->
       <section class="an-card hm-card">
         <div class="an-card-h">
-          <h3 class="an-card-t mono">Focus hours · last year</h3>
-          <span class="an-card-sub mono">{yearHours.toFixed(1)}h total</span>
+          <h3 class="an-card-t mono">Fokusstunden · letztes Jahr</h3>
+          <span class="an-card-sub mono">{yearHours.toFixed(1)} h gesamt</span>
         </div>
 
         <!-- Scroll wrapper: the full year is ~53 weeks wide; if it can't fit the
@@ -452,12 +452,12 @@
             <div class="hm-body">
               <!-- weekday labels (Mon/Wed/Fri) down the left, faint mono -->
               <div class="hm-wd">
-                <span class="hm-wd-l mono" style:grid-row="2">Mon</span>
-                <span class="hm-wd-l mono" style:grid-row="4">Wed</span>
-                <span class="hm-wd-l mono" style:grid-row="6">Fri</span>
+                <span class="hm-wd-l mono" style:grid-row="2">Mo</span>
+                <span class="hm-wd-l mono" style:grid-row="4">Mi</span>
+                <span class="hm-wd-l mono" style:grid-row="6">Fr</span>
               </div>
 
-              <div class="hm-grid" role="img" aria-label="Focus hours over the last year">
+              <div class="hm-grid" role="img" aria-label="Fokusstunden im letzten Jahr">
                 {#each weeks as wk, ci (ci)}
                   {#each wk as cell, ri (ri)}
                     {#if cell}
@@ -487,7 +487,7 @@
         <!-- legend bottom-right + (when empty) the tracking hint bottom-left -->
         <div class="hm-foot">
           {#if heatmapEmpty}
-            <span class="hm-hint">No study time tracked yet — focused app time counts automatically now.</span>
+            <span class="hm-hint">Noch keine Lernzeit erfasst – aktive Zeit in der App zählt ab jetzt automatisch.</span>
           {:else}
             <span></span>
           {/if}
@@ -506,9 +506,9 @@
       <!-- ── due forecast (next 7 days) ── -->
       <section class="an-card">
         <div class="an-card-h">
-          <h3 class="an-card-t mono">Cards due · next 7 days</h3>
+          <h3 class="an-card-t mono">Fällige Karten · nächste 7 Tage</h3>
           <span class="an-card-sub mono">
-            {forecast.reduce((a, d) => a + d.due, 0)} scheduled
+            {forecast.reduce((a, d) => a + d.due, 0)} geplant
           </span>
         </div>
         <div class="an-forecast">
@@ -522,7 +522,7 @@
                 ></div>
               </div>
               <div class="an-fc-n mono">{d.due}</div>
-              <div class="an-fc-d mono">{i === 0 ? "Today" : dayLabel(d.day)}</div>
+              <div class="an-fc-d mono">{i === 0 ? "Heute" : dayLabel(d.day)}</div>
             </div>
           {/each}
         </div>
@@ -532,14 +532,14 @@
       {#if data.per_subject.length}
         <section class="an-card">
           <div class="an-card-h">
-            <h3 class="an-card-t mono">By subject</h3>
+            <h3 class="an-card-t mono">Nach Fach</h3>
           </div>
           <div class="an-table">
             <div class="an-tr an-tr--head mono">
-              <span class="an-th an-th--name">Subject</span>
-              <span class="an-th">Focus</span>
-              <span class="an-th">Reviews</span>
-              <span class="an-th">Accuracy</span>
+              <span class="an-th an-th--name">Fach</span>
+              <span class="an-th">Fokus</span>
+              <span class="an-th">Wiederh.</span>
+              <span class="an-th">Trefferquote</span>
             </div>
             {#each data.per_subject as s (s.subject_id)}
               <div class="an-tr">
@@ -560,8 +560,8 @@
       {#if weakTopics.length}
         <section class="an-card">
           <div class="an-card-h">
-            <h3 class="an-card-t mono">Topics needing work</h3>
-            <span class="an-card-sub mono">weakest first</span>
+            <h3 class="an-card-t mono">Themen mit Nachholbedarf</h3>
+            <span class="an-card-sub mono">schwächste zuerst</span>
           </div>
           <div class="an-weak">
             {#each weakTopics as t (t.topic_id)}
@@ -576,8 +576,8 @@
                   <div class="an-weak-reason mono">{t.reason}</div>
                 </div>
                 <div class="an-weak-stats mono">
-                  {#if t.reviews > 0}<span class="an-weak-stat">{pct(t.accuracy)} acc</span>{/if}
-                  {#if t.lapses > 0}<span class="an-weak-stat">{t.lapses} lapse{t.lapses === 1 ? "" : "s"}</span>{/if}
+                  {#if t.reviews > 0}<span class="an-weak-stat">{pct(t.accuracy)} richtig</span>{/if}
+                  {#if t.lapses > 0}<span class="an-weak-stat">{t.lapses} Fehler</span>{/if}
                 </div>
               </div>
             {/each}
@@ -588,22 +588,22 @@
       <!-- ── FSRS memory state ── -->
       <section class="an-card">
         <div class="an-card-h">
-          <h3 class="an-card-t mono">Spaced-repetition memory</h3>
+          <h3 class="an-card-t mono">Langzeitgedächtnis</h3>
         </div>
         <div class="an-fsrs">
           <div class="an-fsrs-stat">
             <div class="an-fsrs-v">{data.fsrs.cards}</div>
-            <div class="an-fsrs-k mono">cards scheduled</div>
+            <div class="an-fsrs-k mono">Karten geplant</div>
           </div>
           <div class="an-fsrs-stat">
             <div class="an-fsrs-v">
-              {data.fsrs.cards > 0 ? data.fsrs.avg_stability.toFixed(1) : "—"}<span class="an-stat-u">{data.fsrs.cards > 0 ? " d" : ""}</span>
+              {data.fsrs.cards > 0 ? data.fsrs.avg_stability.toFixed(1) : "—"}<span class="an-stat-u">{data.fsrs.cards > 0 ? " T" : ""}</span>
             </div>
-            <div class="an-fsrs-k mono">avg stability</div>
+            <div class="an-fsrs-k mono">Ø Stabilität</div>
           </div>
           <div class="an-fsrs-stat">
             <div class="an-fsrs-v">{data.fsrs.lapses}</div>
-            <div class="an-fsrs-k mono">lapses</div>
+            <div class="an-fsrs-k mono">Fehler</div>
           </div>
         </div>
       </section>

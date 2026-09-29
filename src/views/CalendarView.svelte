@@ -14,12 +14,14 @@
   import Picker from "../components/Picker.svelte";
   import EventModal from "../components/EventModal.svelte";
 
-  const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const DOW = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+  const DOW_FROM_MONDAY = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
   const MONTHS = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember",
   ];
-  const DAYS_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const DAYS_LONG = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+  const daysSinceMonday = (d: Date) => (d.getDay() + 6) % 7;
 
   // ---- visible month / view mode ----
   const today = new Date();
@@ -69,7 +71,7 @@
   }
   function startOfWeek(d: Date): Date {
     const x = startOfDay(d);
-    return addDays(x, -x.getDay()); // Sunday-based
+    return addDays(x, -daysSinceMonday(x)); // Monday-based
   }
   function sameYMD(a: Date, b: Date): boolean {
     return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -114,21 +116,21 @@
   const headerTitle = $derived.by<string>(() => {
     if (mode === "month") return `${MONTHS[month]} ${year}`;
     if (mode === "day") {
-      return `${DAYS_LONG[selectedDay.getDay()]}, ${MONTHS[selectedDay.getMonth()]} ${selectedDay.getDate()}`;
+      return `${DAYS_LONG[selectedDay.getDay()]}, ${selectedDay.getDate()}. ${MONTHS[selectedDay.getMonth()]}`;
     }
     // week → "Jun 8 – 14, 2026" (compact, spanning months when needed)
     const a = weekDays[0], b = weekDays[6];
-    const left = `${MONTHS[a.getMonth()].slice(0, 3)} ${a.getDate()}`;
-    const right = a.getMonth() === b.getMonth()
-      ? `${b.getDate()}`
-      : `${MONTHS[b.getMonth()].slice(0, 3)} ${b.getDate()}`;
-    return `${left} – ${right}, ${b.getFullYear()}`;
+    const left = a.getMonth() === b.getMonth()
+      ? `${a.getDate()}.`
+      : `${a.getDate()}. ${MONTHS[a.getMonth()].slice(0, 3)}`;
+    const right = `${b.getDate()}. ${MONTHS[b.getMonth()].slice(0, 3)}`;
+    return `${left} – ${right} ${b.getFullYear()}`;
   });
 
   // ---- filter ----
   let filterSubjectId = $state<string>(""); // "" = all subjects
   const subjectOptions = $derived([
-    { id: "", label: "All subjects" },
+    { id: "", label: "Alle Fächer" },
     ...app.subjects.map((s) => ({ id: s.id, label: s.name })),
   ]);
 
@@ -141,7 +143,7 @@
   function loadWindow(): { fromMs: number; toMs: number } {
     if (mode === "month") {
       const first = new Date(year, month, 1);
-      const gridStart = addDays(first, -first.getDay());
+      const gridStart = addDays(first, -daysSinceMonday(first));
       gridStart.setHours(0, 0, 0, 0);
       const gridEnd = addDays(gridStart, 42);
       return { fromMs: gridStart.getTime(), toMs: gridEnd.getTime() };
@@ -165,7 +167,7 @@
       .catch((e) => {
         if (!cancelled) {
           events = [];
-          app.pushToast({ kind: "error", title: "Failed to load events", body: String(e) });
+          app.pushToast({ kind: "error", title: "Termine konnten nicht geladen werden", body: String(e) });
         }
       })
       .finally(() => { if (!cancelled) loading = false; });
@@ -176,7 +178,7 @@
   type Cell = { date: Date; key: string; inMonth: boolean; isToday: boolean; weekend: boolean };
   const cells = $derived.by<Cell[]>(() => {
     const first = new Date(year, month, 1);
-    const start = addDays(first, -first.getDay());
+    const start = addDays(first, -daysSinceMonday(first));
     const now = new Date();
     return Array.from({ length: 42 }, (_, i) => {
       const d = addDays(start, i);
@@ -213,10 +215,7 @@
   const MIN_BLOCK_PX = 26; // always fits title + time
 
   function hourLabel(h: number): string {
-    if (h === 0) return "12 am";
-    if (h === 12) return "12 pm";
-    const ap = h >= 12 ? "pm" : "am";
-    return `${h % 12} ${ap}`;
+    return `${String(h).padStart(2, "0")}:00`;
   }
 
   // ---- time-grid layout engine (overlap → lanes) ----
@@ -421,7 +420,7 @@
       .listEvents(sid, fromMs, toMs)
       .then((evs) => (events = evs))
       .catch((e) =>
-        app.pushToast({ kind: "error", title: "Failed to load events", body: String(e) })
+        app.pushToast({ kind: "error", title: "Termine konnten nicht geladen werden", body: String(e) })
       );
   }
 
@@ -432,7 +431,7 @@
       events = events.map((x) => (x.id === updated.id ? updated : x));
       app.notifyEventsChanged();
     } catch (err) {
-      app.pushToast({ kind: "error", title: "Update failed", body: String(err) });
+      app.pushToast({ kind: "error", title: "Aktualisierung fehlgeschlagen", body: String(err) });
     }
   }
 
@@ -447,21 +446,21 @@
   <!-- ===== HEADER ===== -->
   <div class="cal-head">
     <div class="cal-nav">
-      <button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Previous" onclick={prev}>
+      <button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Zurück" onclick={prev}>
         <Icon name="chevron" size={12} style="transform:rotate(180deg)" />
       </button>
-      <button class="btn btn--sm cal-today" type="button" onclick={goToday}>Today</button>
-      <button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Next" onclick={next}>
+      <button class="btn btn--sm cal-today" type="button" onclick={goToday}>Heute</button>
+      <button class="btn btn--ghost btn--icon btn--sm" type="button" aria-label="Weiter" onclick={next}>
         <Icon name="chevron" size={12} />
       </button>
       <div class="cal-title">{headerTitle}</div>
     </div>
 
     <div class="cal-head-r">
-      <div class="seg cal-modeseg" role="group" aria-label="Calendar view">
-        <button type="button" class={"seg-opt" + (mode === "month" ? " on" : "")} onclick={() => setMode("month")}>Month</button>
-        <button type="button" class={"seg-opt" + (mode === "week" ? " on" : "")} onclick={() => setMode("week")}>Week</button>
-        <button type="button" class={"seg-opt" + (mode === "day" ? " on" : "")} onclick={() => setMode("day")}>Day</button>
+      <div class="seg cal-modeseg" role="group" aria-label="Kalenderansicht">
+        <button type="button" class={"seg-opt" + (mode === "month" ? " on" : "")} onclick={() => setMode("month")}>Monat</button>
+        <button type="button" class={"seg-opt" + (mode === "week" ? " on" : "")} onclick={() => setMode("week")}>Woche</button>
+        <button type="button" class={"seg-opt" + (mode === "day" ? " on" : "")} onclick={() => setMode("day")}>Tag</button>
       </div>
       <div class="picker-wrap">
         <Picker
@@ -469,12 +468,12 @@
           onChange={(id) => (filterSubjectId = id)}
           options={subjectOptions}
           icon="book"
-          placeholder="All subjects"
+          placeholder="Alle Fächer"
         />
       </div>
       <button class="btn btn--primary btn--sm" type="button" onclick={() => openCreate(addTarget())}>
         <Icon name="plus" size={12} />
-        <span>New</span>
+        <span>Neu</span>
       </button>
     </div>
   </div>
@@ -482,8 +481,8 @@
   {#if mode === "month"}
     <!-- ===== MONTH GRID ===== -->
     <div class="cal-dow">
-      {#each DOW as d, i}
-        <div class={"cal-dow-cell" + (i === 0 || i === 6 ? " weekend" : "")}>{d}</div>
+      {#each DOW_FROM_MONDAY as d, i}
+        <div class={"cal-dow-cell" + (i >= 5 ? " weekend" : "")}>{d}</div>
       {/each}
     </div>
 
@@ -515,7 +514,7 @@
                     class={"chip-check" + (e.done ? " on" : "")}
                     role="checkbox"
                     aria-checked={e.done}
-                    aria-label="Toggle done"
+                    aria-label="Erledigt umschalten"
                     tabindex="-1"
                     onclick={(ev) => toggleDone(e, ev)}
                     onkeydown={(ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleDone(e, ev); } }}
@@ -531,7 +530,7 @@
               </button>
             {/each}
             {#if overflow > 0}
-              <button type="button" class="chip-more" onclick={() => openDayView(c.date)}>+{overflow} more</button>
+              <button type="button" class="chip-more" onclick={() => openDayView(c.date)}>+{overflow} weitere</button>
             {/if}
           </div>
         </div>
@@ -539,7 +538,7 @@
     </div>
 
     {#if !loading && events.length === 0}
-      <div class="cal-empty">No events — click a day to view or add one.</div>
+      <div class="cal-empty">Keine Termine – klicke auf einen Tag, um Termine anzusehen oder anzulegen.</div>
     {/if}
 
   {:else if mode === "week"}
@@ -563,7 +562,7 @@
       <!-- all-day strip (only when present) -->
       {#if weekHasAllDay}
         <div class="tg-allday">
-          <div class="tg-gutter-lbl">All day</div>
+          <div class="tg-gutter-lbl">Ganztägig</div>
           {#each weekCols as c (c.date.getTime())}
             <div class={"tg-allday-col" + (c.weekend ? " weekend" : "")}>
               {#each c.allDay as e (e.id)}
@@ -604,7 +603,7 @@
                     class="tg-slot"
                     style:top={`${h * HOUR_PX}px`}
                     style:height={`${HOUR_PX}px`}
-                    aria-label={`Create event at ${hourLabel(h)}`}
+                    aria-label={`Termin um ${hourLabel(h)} erstellen`}
                     onclick={() => openCreateAtHour(c.date, h)}
                   ></button>
                 {/each}
@@ -642,7 +641,7 @@
       <!-- all-day strip -->
       {#if dayAllDay.length > 0}
         <div class="tg-allday day-allday">
-          <div class="tg-gutter-lbl">All day</div>
+          <div class="tg-gutter-lbl">Ganztägig</div>
           <div class="day-allday-list">
             {#each dayAllDay as e (e.id)}
               <button
@@ -657,7 +656,7 @@
                     class={"ad-check" + (e.done ? " on" : "")}
                     role="checkbox"
                     aria-checked={e.done}
-                    aria-label="Toggle done"
+                    aria-label="Erledigt umschalten"
                     tabindex="-1"
                     onclick={(ev) => toggleDone(e, ev)}
                     onkeydown={(ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleDone(e, ev); } }}
@@ -690,7 +689,7 @@
                   class="tg-slot"
                   style:top={`${h * HOUR_PX}px`}
                   style:height={`${HOUR_PX}px`}
-                  aria-label={`Create event at ${hourLabel(h)}`}
+                  aria-label={`Termin um ${hourLabel(h)} erstellen`}
                   onclick={() => openCreateAtHour(selectedDay, h)}
                 ></button>
               {/each}
@@ -713,7 +712,7 @@
                         class={"blk-check" + (e.done ? " on" : "")}
                         role="checkbox"
                         aria-checked={e.done}
-                        aria-label="Toggle done"
+                        aria-label="Erledigt umschalten"
                         tabindex="-1"
                         onclick={(ev) => toggleDone(e, ev)}
                         onkeydown={(ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleDone(e, ev); } }}
