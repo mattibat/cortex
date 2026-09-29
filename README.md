@@ -2,6 +2,9 @@
 
 <img src="assets/cortex-logo-withbg.png" width="128" alt="Cortex logo" />
 
+## Source
+Originaly forked from [PndaMan/cortex](https://github.com/PndaMan/cortex) until [This Commit](https://github.com/mattibat/cortex/commit/6d205c6b00f1a26660395a8789841aad462577ed)
+
 # Cortex
 
 **A local-first, open-source NotebookLM alternative — a desktop study OS for serious learners.**
@@ -272,9 +275,6 @@ Please keep changes scoped, match the surrounding style, and add a test when you
 ## License
 
 [Apache License 2.0](LICENSE).
-
-# Source
-Originaly forked from [PndaMan/cortex](https://github.com/PndaMan/cortex) until [This Commit](https://github.com/mattibat/cortex/commit/6d205c6b00f1a26660395a8789841aad462577ed)
 
 ---
 
